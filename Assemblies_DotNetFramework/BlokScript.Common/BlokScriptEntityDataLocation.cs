@@ -1,0 +1,22 @@
+﻿namespace BlokScript.Common
+{
+	public enum BlokScriptEntityDataLocation
+	{
+		//
+		// ENTITY DATA HAS NOT BEEN PULLED BUT WILL BE PULL FROM SERVER WHEN NEEDED.
+		//
+		OnDemand,
+
+		//
+		// ENTITY DATA WILL BE PULLED FROM THE LOCAL CACHE IMMEDIATELY, OR WAS ALREADY PULLED.
+		//
+		LocalCache,
+
+		//
+		// ENTITY DATA WILL BE PULLED FROM SERVER IMMEDIATELY, OR WAS ALREADY PULLED FROM THE SERVER.
+		//
+		Server,
+
+		FilePath
+	}
+}
