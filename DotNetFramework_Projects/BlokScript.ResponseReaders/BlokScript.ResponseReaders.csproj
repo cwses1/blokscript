@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8F58EF22-1265-4CC9-99F1-6E3DA6752AA1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BlokScript.ResponseReaders</RootNamespace>
+    <AssemblyName>BlokScript.ResponseReaders</AssemblyName>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CreateDatasourceEntryResponseReader.cs" />
+    <Compile Include="DatasourceEntryResponseReader.cs" />
+    <Compile Include="DatasourceEntriesResponseReader.cs" />
+    <Compile Include="DatasourcesResponseReader.cs" />
+    <Compile Include="StoriesResponseReader.cs" />
+    <Compile Include="ComponentsResponseReader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BlokScript.Common\BlokScript.Common.csproj">
+      <Project>{7c5850c3-3a4a-4969-aa02-f9fe0d5d78cd}</Project>
+      <Name>BlokScript.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BlokScript.Comparators\BlokScript.Comparators.csproj">
+      <Project>{9bbb0348-821d-4949-831b-bf3a11fea63b}</Project>
+      <Name>BlokScript.Comparators</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BlokScript.Entities\BlokScript.Entities.csproj">
+      <Project>{e9917b89-2d68-4c1c-af9f-9762b025c9b8}</Project>
+      <Name>BlokScript.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BlokScript.Formatters\BlokScript.Formatters.csproj">
+      <Project>{6f6af799-69e7-40be-8001-486c6a9f7e87}</Project>
+      <Name>BlokScript.Formatters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BlokScript.Parsers\BlokScript.Parsers.csproj">
+      <Project>{e22ad08d-2782-4a9c-bab0-214e16c56d2b}</Project>
+      <Name>BlokScript.Parsers</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

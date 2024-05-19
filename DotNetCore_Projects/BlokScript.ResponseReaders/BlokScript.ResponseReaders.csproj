@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\BlokScript.Common\BlokScript.Common.csproj" />
+    <ProjectReference Include="..\BlokScript.Comparators\BlokScript.Comparators.csproj" />
+    <ProjectReference Include="..\BlokScript.Entities\BlokScript.Entities.csproj" />
+    <ProjectReference Include="..\BlokScript.Formatters\BlokScript.Formatters.csproj" />
+    <ProjectReference Include="..\BlokScript.Parsers\BlokScript.Parsers.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

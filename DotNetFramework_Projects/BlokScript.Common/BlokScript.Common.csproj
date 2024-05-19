@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7C5850C3-3A4A-4969-AA02-F9FE0D5D78CD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BlokScript.Common</RootNamespace>
+    <AssemblyName>BlokScript.Common</AssemblyName>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DatasourceEntryConstraintDataType.cs" />
+    <Compile Include="StoryConstraintDataType.cs" />
+    <Compile Include="BlockConstraintDataType.cs" />
+    <Compile Include="DatasourceEntryConstraintField.cs" />
+    <Compile Include="DatasourceEntryConstraintOperator.cs" />
+    <Compile Include="StoryConstraintOperator.cs" />
+    <Compile Include="StoryConstraintField.cs" />
+    <Compile Include="BlockConstraintField.cs" />
+    <Compile Include="BlockConstraintOperator.cs" />
+    <Compile Include="StoryOutputLocation.cs" />
+    <Compile Include="BlocksOutputLocation.cs" />
+    <Compile Include="BlokScriptEntityDataLocation.cs" />
+    <Compile Include="BlokScriptSymbolType.cs" />
+    <Compile Include="BlokScriptVerbosity.cs" />
+    <Compile Include="RealDataLocation.cs" />
+    <Compile Include="BlockOutputLocation.cs" />
+    <Compile Include="SpacesOutputLocation.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
