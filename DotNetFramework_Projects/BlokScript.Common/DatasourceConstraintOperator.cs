@@ -1,11 +1,10 @@
 ﻿namespace BlokScript.Common
 {
-	public enum StoryConstraintOperator
+	public enum DatasourceConstraintOperator
 	{
 		Root,
 		Intersect,
 		Union,
-
 		Equals,
 		NotEquals,
 		In,
@@ -17,8 +16,6 @@
 		StartsWith,
 		DoesNotStartWith,
 		EndsWith,
-		DoesNotEndWith,
-		NoTags,
-		AnyTags
+		DoesNotEndWith
 	}
 }

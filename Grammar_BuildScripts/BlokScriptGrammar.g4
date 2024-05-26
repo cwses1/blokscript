@@ -6,6 +6,8 @@ STRINGLITERAL: '\'' ([ a-zA-Z0-9%_/-] | '.' | '#')* '\'';
 VARID: [a-zA-Z][a-zA-Z0-9_]+;
 INTLITERAL: [0-9]+;
 REGEXLITERAL: '/' ('^' | '$' | '*' | '[' | ']' | [a-z]+ | [A-Z]+ | [0-9]+ | '-' | '(' | ')' | '.' | '+' | '\\/')* '/';
+LINE_COMMENT: '//' ~( '\n'|'\r' )* '\r'? '\n' -> skip;
+BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 
 script: statementList;
 
@@ -13,41 +15,52 @@ statementList: (statement STATEMENTEND)+;
 
 statement: loginStatement
 	| varStatement
-	| copyStatement
 	| assignmentStatement
 	| printStatement
 	| verbosityStatement
 	| waitStatement
 	| compareStatement
-	| publishStoryStatement
-	| unpublishStoryStatement
-	| deleteStoryStatement
-	| copyStoriesStatement
-	| publishStoriesStatement
-	| unpublishStoriesStatement
-	| deleteStoriesStatement
 	| createDatasourceEntryStatement
 	| updateDatasourceEntriesStatement
 	| deleteDatasourceEntriesStatement
 	| copyDatasourceEntriesStatement
 	| syncDatasourceEntriesStatement
+	| copyBlocksStatement
+	| copySpacesStatement
+	| copyBlocksStatement
+	| copyStoriesStatement
+	| publishStoriesStatement
+	| unpublishStoriesStatement
+	| deleteStoriesStatement
+	| copyDatasourcesStatement
+	| deleteBlocksStatement
+	| deleteDatasourcesStatement
+	| createDatasourceStatement
+	| updateDatasourceStatement
+	| deleteDatasourceStatement
 	;
 
-createDatasourceEntryStatement: 'create' 'datasource' 'entry' '(' 'name' '=' stringExpr ',' 'value' '=' stringExpr ')' ('for' | 'in') datasourceSpec;
+createDatasourceStatement: 'create' 'datasource' (stringExpr | '(' datasourceUpdateList ')') ('for' | 'in') spaceSpec;
+deleteDatasourceStatement: 'delete' 'datasource' (datasourceShortSpec | datasourceSpec);
+updateDatasourceStatement: 'update' 'datasource' (datasourceShortSpec | datasourceSpec) 'set' datasourceUpdateList;
 
+datasourceUpdateList: datasourceUpdate (',' datasourceUpdateList)?;
+
+datasourceUpdate: 'name' '=' stringExpr
+	| 'slug' '=' stringExpr
+	;
+
+createDatasourceEntryStatement: 'create' 'datasource' 'entry' (stringExpr | datasourceEntryUpdateList) ('for' | 'in') datasourceSpec;
 updateDatasourceEntriesStatement: 'update' 'datasource' 'entries' 'in' datasourceSpec 'set' datasourceEntryUpdateList ('where' datasourceEntryConstraintExprList)?;
+deleteDatasourceEntriesStatement: 'delete' 'datasource' 'entries' 'in' datasourceSpec ('where' datasourceEntryConstraintExprList)?;
+copyDatasourceEntriesStatement: 'copy' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesTargetLocation ('where' datasourceEntryConstraintExprList)?;
+syncDatasourceEntriesStatement: 'sync' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesSourceLocation ('where' datasourceEntryConstraintExprList)?;
 
 datasourceEntryUpdateList: datasourceEntryUpdate (',' datasourceEntryUpdateList)?;
 
 datasourceEntryUpdate: 'name' '=' stringExpr
 	| 'value' '=' stringExpr
 	;
-
-deleteDatasourceEntriesStatement: 'delete' 'datasource' 'entries' 'in' datasourceSpec ('where' datasourceEntryConstraintExprList)?;
-
-copyDatasourceEntriesStatement: 'copy' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesTargetLocation ('where' datasourceEntryConstraintExprList)?;
-
-syncDatasourceEntriesStatement: 'sync' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesSourceLocation ('where' datasourceEntryConstraintExprList)?;
 
 datasourceEntriesSourceLocation: datasourceSpec
 	| urlSpec
@@ -82,9 +95,6 @@ datasourceEntryConstraint: 'id' ('=' | '!=') intExpr
 	| ('name' | 'value') ('ends' | 'does' 'not' 'end') 'with' stringExpr
 	;
 
-datasourceConstraintExpr: datasourceConstraint (('and' | 'or') datasourceConstraintExpr)?
-	| '(' datasourceConstraint (('and' | 'or') datasourceConstraintExpr)? ')'
-	;
 
 loginStatement: loginOnlyStatement 
 	| loginWithGlobalUserNameStatement
@@ -119,6 +129,8 @@ spaceSpec: 'space' (INTLITERAL | STRINGLITERAL | VARID) (varGetFrom)?
 	| VARID
 	;
 
+shortSpaceSpec: INTLITERAL | STRINGLITERAL;
+
 blockSpec: 'block' STRINGLITERAL 'in' (spaceSpec | fileSpec)
 	| 'block' VARID
 	;
@@ -131,9 +143,11 @@ datasourceEntrySpec: 'datasource' 'entry' (intExpr | stringExpr | VARID) ('from'
 	| VARID
 	;
 
-datasourceSpec: 'datasource' (intExpr | stringExpr | VARID) 'in' spaceSpec
+datasourceSpec: 'datasource' (VARID | INTLITERAL | STRINGLITERAL) 'in' spaceSpec
 	| VARID
 	;
+
+datasourceShortSpec: (VARID | INTLITERAL | STRINGLITERAL) 'in' spaceSpec;
 
 assignmentStatement: VARID '=' VARID
 	| spaceAssignmentStatement
@@ -144,18 +158,8 @@ assignmentStatement: VARID '=' VARID
 spaceAssignmentStatement: VARID '=' spaceSpec;
 blockAssignmentStatement: VARID '=' blockSpec;
 stringAssignmentStatement: VARID '=' STRINGLITERAL;
-
-copyStatement: copyBlockStatement
-	| copySpaceStatement
-	| copySpacesStatement
-	| copyBlocksStatement
-	| copyStoryStatement
-	;
 	
-copyBlockStatement: 'copy' blockSpec 'to' blockOutputLocation;
-copySpaceStatement: 'copy' spaceSpec 'to' spaceOutputLocation;
-
-copySpacesStatement: 'copy' 'all'? 'spaces' 'from' realDataLocation 'to' spacesOutputLocation;
+copySpacesStatement: 'copy' 'spaces' 'from' realDataLocation 'to' spacesOutputLocation;
 
 printStatement: printSpacesStatement
 	| printVarStatement
@@ -207,16 +211,20 @@ spaceOutputLocation: 'console'
 	| fileSpec
 	;
 
-varGetFrom: ('on' 'demand' | 'in' 'local' 'cache' | 'on' 'server' | 'in' fileSpec);
+varGetFrom: ('on' 'server' | 'in' fileSpec);
 
-copyBlocksStatement: 'copy' 'all'? 'blocks' ('where' blockConstraintList)? ('in' | 'from') spaceSpec 'to' blocksOutputLocation;
+createBlockStatement: 'create' 'block' '(' blockUpdateList ')' 'in' spaceSpec;
+updateBlocksStatement: 'update' 'blocks' 'in' spaceSpec 'set' blockUpdateList ('where' blockConstraintExprList)?;
+copyBlocksStatement: 'copy' 'blocks' ('in' | 'from') spaceSpec 'to' blocksOutputLocation ('where' blockConstraintExprList)?;
+deleteBlocksStatement: 'delete' 'blocks' ('in' | 'from') spaceSpec ('where' blockConstraintExprList)?;
 
-copyStoryStatement: 'copy' 'story' storySpec 'to' (storyOutputLocation | VARID);
+blockConstraintExprList: blockConstraintExpr (('and' | 'or') blockConstraintExprList)?;
 
-blockConstraintList: blockConstraint ('and' blockConstraintList)?
-	| blockConstraint ('or' blockConstraintList)?
+blockConstraintExpr: blockConstraint (('and' | 'or') blockConstraintExpr)?
+	| '(' blockConstraint (('and' | 'or') blockConstraintExpr)? ')'
+	| '(' blockConstraintExpr (('and' | 'or') blockConstraintExpr)? ')'
 	;
-	
+
 blockConstraint: 'id' ('=' | '!=') intExpr
 	| 'id' 'not'? 'in' '(' intExprList ')'
 	| 'name' ('=' | '!=') stringExpr
@@ -228,11 +236,23 @@ blockConstraint: 'id' ('=' | '!=') intExpr
 	| 'name' ('ends' | 'does' 'not' 'end') 'with' stringExpr
 	;
 
+blockUpdateList: blockUpdate (',' blockUpdateList)?;
+
+blockUpdate: 'technical' 'name' '=' stringExpr
+	| 'display' 'name' '=' stringExpr
+	| 'type' '=' ('nestable' | 'content' | 'universal')
+	| 'add' 'tag' stringExpr
+	| 'remove' 'tag' stringExpr
+	| 'preview' 'field' '=' stringExpr
+	| 'preview' 'template' '=' stringExpr
+	| 'preview' 'screenshot' '=' stringExpr
+	;
+
 intExprList: intExpr (',' intExprList)?;
 
 intExpr: (INTLITERAL | VARID) (('+' | '-' | '*' | '%') intExpr)?;
 
-verbosityStatement: 'be'? ('verbose' | 'quiet');
+verbosityStatement: 'be'? ('quiet' | 'verbose' | 'debugger');
 
 waitStatement: 'wait' INTLITERAL;
 
@@ -245,14 +265,11 @@ compareSpacesStatement: 'compare' spaceSpec 'and' spaceSpec;
 compareBlocksStatement: 'compare' blockSpec 'and' blockSpec;
 compareAllBlocksStatement: 'compare' 'all' 'blocks' 'in' spaceSpec 'and' spaceSpec;
 
-publishStoryStatement: 'publish' 'story' storySpec ('in' spaceSpec)?;
-unpublishStoryStatement: 'unpublish' 'story' storySpec ('in' spaceSpec)?;
-deleteStoryStatement: 'delete' 'story' storySpec ('in' spaceSpec)?;
-
 storiesInputLocation: 'local' 'cache'
 	| fileSpec
 	| filesSpec
 	| spaceSpec
+	| shortSpaceSpec
 	;
 
 storiesOutputLocation: 'console'
@@ -260,18 +277,19 @@ storiesOutputLocation: 'console'
 	| fileSpec
 	| filesSpec
 	| spaceSpec
+	| shortSpaceSpec
 	;
 
-copyStoriesStatement: 'copy' 'stories' (('where' | 'with') storyConstraintList)? ('in' | 'from') storiesInputLocation 'to' storiesOutputLocation;
+copyStoriesStatement: 'copy' 'stories' ('in' | 'from') storiesInputLocation 'to' storiesOutputLocation ('where' storyConstraintExprList)?;
+publishStoriesStatement: 'publish' 'stories' ('in' | 'from') spaceSpec ('where' storyConstraintExprList)?;
+unpublishStoriesStatement: 'unpublish' 'stories' ('in' | 'from') spaceSpec ('where' storyConstraintExprList)?;
+deleteStoriesStatement: 'delete' 'stories' ('in' | 'from') (spaceSpec | shortSpaceSpec) ('where' storyConstraintExprList)?;
 
-publishStoriesStatement: 'publish' 'stories' (('where' | 'with') storyConstraintList)? ('in' | 'from') spaceSpec;
+storyConstraintExprList: storyConstraintExpr (('and' | 'or') storyConstraintExprList)?;
 
-unpublishStoriesStatement: 'unpublish' 'stories' (('where' | 'with') storyConstraintList)? ('in' | 'from') spaceSpec;
-
-deleteStoriesStatement: 'delete' 'stories' (('where' | 'with') storyConstraintList)? ('in' | 'from') spaceSpec;
-
-storyConstraintList: storyConstraint ('and' storyConstraintList)?
-	| storyConstraint ('or' storyConstraintList)?
+storyConstraintExpr: storyConstraint (('and' | 'or') storyConstraintExpr)?
+	| '(' storyConstraint (('and' | 'or') storyConstraintExpr)? ')'
+	| '(' storyConstraintExpr (('and' | 'or') storyConstraintExpr)? ')'
 	;
 
 storyConstraint: 'id' ('=' | '!=') intExpr
@@ -301,15 +319,23 @@ regexExpr: STRINGLITERAL | REGEXLITERAL | VARID;
 
 regexExprList: regexExpr (',' regexExprList)?;
 
-copyDatasourceStatement: 'copy' 'datasource' (STRINGLITERAL | VARID | INTLITERAL) ('from' | 'in') (spaceSpec | VARID) 'to' (spaceSpec | VARID);
+copyDatasourcesStatement: 'copy' 'datasources' ('from' | 'in') spaceSpec 'to' spaceSpec ('where' datasourceConstraintExprList)?;
+updateDatasourcesStatement: 'update' 'datasources' ('from' | 'in') spaceSpec 'to' spaceSpec ('where' datasourceConstraintExprList)?;
+deleteDatasourcesStatement: 'delete' 'datasources' ('from' | 'in') spaceSpec ('where' datasourceConstraintExprList)?;
+syncDatasourcesStatement: 'copy' 'datasources' ('from' | 'in') spaceSpec 'to' spaceSpec ('where' datasourceConstraintExprList)?;
 
-copyDatasourcesStatement: 'copy' 'datasources' datasourceConstraintExpr? ('from' | 'in') (spaceSpec | VARID) 'to' (spaceSpec | VARID);
+datasourceConstraintExprList: datasourceConstraintExpr (('and' | 'or') datasourceConstraintExprList)?;
+
+datasourceConstraintExpr: datasourceConstraint (('and' | 'or') datasourceConstraintExpr)?
+	| '(' datasourceConstraint (('and' | 'or') datasourceConstraintExpr)? ')'
+	| '(' datasourceConstraintExpr (('and' | 'or') datasourceConstraintExpr)? ')'
+	;
 
 datasourceConstraint: 'id' ('=' | '!=') intExpr
 	| 'id' 'not'? 'in' '(' intExprList ')'
 	| ('name' | 'slug') ('=' | '!=') stringExpr
 	| ('name' | 'slug') 'not'? 'in' '(' stringExprList ')'
-	| ('name' | 'slug') ('matches' | 'does' 'not' 'match') 'regex'? (stringExpr | REGEXLITERAL)
+	| ('name' | 'slug') ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
 	| ('name' | 'slug') 'not'? 'in' '(' regexExprList ')'
 	| ('name' | 'slug') 'not'? 'like' stringExpr
 	| ('name' | 'slug') ('starts' | 'does' 'not' 'start') 'with' stringExpr

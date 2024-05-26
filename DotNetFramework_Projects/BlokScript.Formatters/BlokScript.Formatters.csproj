@@ -43,13 +43,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockConstraintFormatter.cs" />
-    <Compile Include="DatasourceEntityFormatter.cs" />
-    <Compile Include="DatasourceEntryEntityFormatter.cs" />
-    <Compile Include="StoryEntityFormatter.cs" />
+    <Compile Include="DatasourceFormatter.cs" />
+    <Compile Include="DatasourceEntryFormatter.cs" />
+    <Compile Include="StoryFormatter.cs" />
     <Compile Include="JsonFormatter.cs" />
     <Compile Include="BlockOutputLocationFormatter.cs" />
     <Compile Include="BlockFormatter.cs" />
     <Compile Include="SpaceFormatter.cs" />
+    <Compile Include="StringFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BlokScript.Common\BlokScript.Common.csproj">

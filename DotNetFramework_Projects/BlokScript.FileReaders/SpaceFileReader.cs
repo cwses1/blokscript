@@ -5,11 +5,11 @@ using BlokScript.Common;
 
 namespace BlokScript.FileReaders
 {
-	public class StoryEntityFileReader
+	public class SpaceFileReader
 	{
-		public static StoryEntity Read (string FilePath)
+		public static SpaceEntity Read (string FilePath)
 		{
-			return StoryParser.Parse(JsonFileReader.Read(FilePath));
+			return SpaceParser.Parse(StringFileReader.Read(FilePath));
 		}
 	}
 }

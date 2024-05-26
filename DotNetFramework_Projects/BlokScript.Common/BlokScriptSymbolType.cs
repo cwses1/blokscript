@@ -9,6 +9,7 @@
 		Story,
 		Int32,
 		Datasource,
-		DatasourceEntry
+		DatasourceEntry,
+		VerbosityEnum
 	}
 }

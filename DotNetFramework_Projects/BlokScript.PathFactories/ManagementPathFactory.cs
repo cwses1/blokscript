@@ -52,6 +52,11 @@
 			return $"/v1/spaces/{SpaceId}/datasources";
 		}
 
+		public static string CreateDatasourcePath (string SpaceId, string DatasourceId)
+		{
+			return $"/v1/spaces/{SpaceId}/datasources/{DatasourceId}";
+		}
+
 		public static string CreateDatasourceEntriesPath (string SpaceId, string DatasourceId)
 		{
 			return $"/v1/spaces/{SpaceId}/datasource_entries?datasource_id={DatasourceId}";

@@ -79,6 +79,13 @@ namespace BlokScript.Caches
 			DatasourceEntitiesByName[Datasource.Name] = Datasource;
 		}
 
+		public void RemoveDatasource (DatasourceEntity Datasource)
+		{
+			DatasourceEntitiesById.Remove(Datasource.DatasourceId);
+			DatasourceEntitiesBySlug.Remove(Datasource.Slug);
+			DatasourceEntitiesByName.Remove(Datasource.Name);
+		}
+
 		public bool ContainsDatasourceById (string DatasourceId)
 		{
 			return DatasourceEntitiesById.ContainsKey(DatasourceId);
@@ -119,11 +126,15 @@ namespace BlokScript.Caches
 			return DatasourceEntitiesByName[Name];
 		}
 
-
-
-
+		public DatasourceEntity[] GetDatasources ()
+		{
+			List<DatasourceEntity> DatasourceEntityList = new List<DatasourceEntity>();
+			DatasourceEntityList.AddRange(DatasourceEntitiesById.Values);
+			return DatasourceEntityList.ToArray();
+		}
 
 		public string SpaceId;
+		public string SpaceName;
 		public bool SpaceDataLoaded;
 		public SpaceEntity Space;
 

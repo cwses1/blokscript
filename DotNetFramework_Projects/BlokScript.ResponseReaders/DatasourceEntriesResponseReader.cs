@@ -9,7 +9,7 @@ namespace BlokScript.ResponseReaders
 {
 	public class DatasourceEntriesResponseReader
 	{
-		public static DatasourceEntryEntity[] ReadResponseString (string ResponseString, string DatasourceId)
+		public static DatasourceEntryEntity[] ReadResponseString (string ResponseString)
 		{
 			List<DatasourceEntryEntity> EntityList = new List<DatasourceEntryEntity>();
 
@@ -19,7 +19,6 @@ namespace BlokScript.ResponseReaders
 				CurrentEntity.DatasourceEntryId = CurrentComponentJson.id.ToString();
 				CurrentEntity.Name = CurrentComponentJson.name;
 				CurrentEntity.Value = CurrentComponentJson.value;
-				CurrentEntity.DatasourceId = DatasourceId;
 				CurrentEntity.Data = CurrentComponentJson;
 				EntityList.Add(CurrentEntity);
 			}

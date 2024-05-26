@@ -13,10 +13,31 @@ namespace BlokScript.Filters
 		{
 			List<StoryEntity> InList = new List<StoryEntity>();
 			InList.AddRange(Stories);
-
 			List<StoryEntity> OutList = new List<StoryEntity>();
 
-			if (Field == StoryConstraintField.Id)
+			if (Operator == StoryConstraintOperator.Root)
+			{
+				//
+				// THE ROOT OPERATOR IS SPECIAL.
+				// IT HAS ONE CHILD AND ONLY THE CHILD IS EVALUATED.
+				//
+				return ChildConstraint.Evaluate(Stories);
+			}
+			else if (Operator == StoryConstraintOperator.Intersect)
+			{
+				//
+				// THE INTERSECTION OPERATOR PERFORMS AN "AND" OPERATION BETWEEN SIBLINGS.
+				//
+				return Intersect(LeftChildConstraint.Evaluate(Stories), RightChildConstraint.Evaluate(Stories));
+			}
+			else if (Operator == StoryConstraintOperator.Union)
+			{
+				//
+				// THE UNION OPERATOR PERFORMS AN "OR" OPERATION BETWEEN SIBLINGS.
+				//
+				return Union(LeftChildConstraint.Evaluate(Stories), RightChildConstraint.Evaluate(Stories));
+			}
+			else if (Field == StoryConstraintField.Id)
 			{
 				if (Operator == StoryConstraintOperator.Equals)
 				{
@@ -1183,21 +1204,6 @@ namespace BlokScript.Filters
 					throw new NotImplementedException("StoryConstraint");
 			}
 
-			//
-			// COMBINE WITH CHILD STORIES.
-			//
-			if (ChildConstraint != null)
-			{
-				StoryEntity[] ChildStories = ChildConstraint.Evaluate(Stories);
-
-				if (ChildConstraintOperator == "and")
-					return Intersect(OutList.ToArray(), ChildStories);
-				else if (ChildConstraintOperator == "or")
-					return Union(OutList.ToArray(), ChildStories);
-				else
-					throw new NotImplementedException("StoryConstraint");
-			}
-
 			return OutList.ToArray();
 		}
 
@@ -1252,6 +1258,8 @@ namespace BlokScript.Filters
 		public object ConstraintData;
 		public StoryConstraintDataType ConstraintDataType;
 		public StoryConstraint ChildConstraint;
+		public StoryConstraint LeftChildConstraint;
+		public StoryConstraint RightChildConstraint;
 		public string ChildConstraintOperator;
 	}
 }

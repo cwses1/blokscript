@@ -40,6 +40,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CreateComponentResponseReader.cs" />
+    <Compile Include="SpaceResponseReader.cs" />
+    <Compile Include="SpacesResponseReader.cs" />
     <Compile Include="CreateDatasourceEntryResponseReader.cs" />
     <Compile Include="DatasourceEntryResponseReader.cs" />
     <Compile Include="DatasourceEntriesResponseReader.cs" />

@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A9677B8D-E381-42E7-8B51-6ED7D1D1AF50}</ProjectGuid>
+    <ProjectGuid>{2671D2BC-D3C2-454E-8B1E-52DEE4E8FD50}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlokScript.FileReaders</RootNamespace>
-    <AssemblyName>BlokScript.FileReaders</AssemblyName>
+    <RootNamespace>BlokScript.EntityDataFactories</RootNamespace>
+    <AssemblyName>BlokScript.EntityDataFactories</AssemblyName>
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
@@ -36,39 +36,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SpaceFileReader.cs" />
-    <Compile Include="StoryEntityFileReader.cs" />
-    <Compile Include="BlockSchemaEntityFileReader.cs" />
-    <Compile Include="BlokScriptEnvFileReader.cs" />
-    <Compile Include="StringFileReader.cs" />
-    <Compile Include="JsonFileReader.cs" />
+    <Compile Include="DatasourceEntryEntityDataFactory.cs" />
+    <Compile Include="DatasourceEntityDataFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlokScript.Common\BlokScript.Common.csproj">
-      <Project>{7c5850c3-3a4a-4969-aa02-f9fe0d5d78cd}</Project>
-      <Name>BlokScript.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BlokScript.Entities\BlokScript.Entities.csproj">
       <Project>{e9917b89-2d68-4c1c-af9f-9762b025c9b8}</Project>
       <Name>BlokScript.Entities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Models\BlokScript.Models.csproj">
-      <Project>{49b90e66-32d4-4844-a6dc-4aa4d1004a3d}</Project>
-      <Name>BlokScript.Models</Name>
+    <ProjectReference Include="..\BlokScript.Serializers\BlokScript.Serializers.csproj">
+      <Project>{6c62ce13-65f6-4ed0-b381-1c65d03539fc}</Project>
+      <Name>BlokScript.Serializers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Parsers\BlokScript.Parsers.csproj">
-      <Project>{e22ad08d-2782-4a9c-bab0-214e16c56d2b}</Project>
-      <Name>BlokScript.Parsers</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

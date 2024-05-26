@@ -44,7 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlokScriptGlobalEnvParser.cs" />
-    <Compile Include="StoryEntityParser.cs" />
+    <Compile Include="DatasourceParser.cs" />
+    <Compile Include="SpaceParser.cs" />
+    <Compile Include="StoryParser.cs" />
     <Compile Include="BlokScriptVerbosityParser.cs" />
     <Compile Include="BlockSchemaEntityParser.cs" />
     <Compile Include="JsonParser.cs" />

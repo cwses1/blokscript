@@ -15,7 +15,7 @@ namespace BlokScript.ResponseReaders
 
 			foreach (dynamic CurrentEntityJson in JsonParser.ParseAsDynamic(ResponseString).stories)
 			{
-				StoryEntity CurrentEntity = BlokScriptVerbosityParser.Parse(CurrentEntityJson);
+				StoryEntity CurrentEntity = StoryParser.Parse(CurrentEntityJson);
 				EntityList.Add(CurrentEntity);
 			}
 

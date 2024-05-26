@@ -11,12 +11,36 @@ namespace BlokScript.Filters
 		public BlockSchemaEntity[] Evaluate (BlockSchemaEntity[] Blocks)
 		{
 			List<BlockSchemaEntity> InList = new List<BlockSchemaEntity>();
-			InList.AddRange(AndChildConstraint != null ? AndChildConstraint.Evaluate(Blocks) : Blocks);
-
+			InList.AddRange(Blocks);
 			List<BlockSchemaEntity> OutList = new List<BlockSchemaEntity>();
 
-			if (Field == BlockConstraintField.Id)
+			if (Operator == BlockConstraintOperator.Root)
 			{
+				//
+				// THE ROOT OPERATOR IS SPECIAL.
+				// IT HAS ONE CHILD AND ONLY THE CHILD IS EVALUATED.
+				//
+				return ChildConstraint.Evaluate(Blocks);
+			}
+			else if (Operator == BlockConstraintOperator.Intersect)
+			{
+				//
+				// THE INTERSECTION OPERATOR PERFORMS AN "AND" OPERATION BETWEEN SIBLINGS.
+				//
+				return Intersect(LeftChildConstraint.Evaluate(Blocks), RightChildConstraint.Evaluate(Blocks));
+			}
+			else if (Operator == BlockConstraintOperator.Union)
+			{
+				//
+				// THE UNION OPERATOR PERFORMS AN "OR" OPERATION BETWEEN SIBLINGS.
+				//
+				return Union(LeftChildConstraint.Evaluate(Blocks), RightChildConstraint.Evaluate(Blocks));
+			}
+			else if (Field == BlockConstraintField.Id)
+			{
+				//
+				// CONSTRAINT BY ID.
+				//
 				if (Operator == BlockConstraintOperator.Equals)
 				{
 					int ContraintValue = (int)ConstraintData;
@@ -78,6 +102,9 @@ namespace BlokScript.Filters
 			}
 			if (Field == BlockConstraintField.Name)
 			{
+				//
+				// CONSTRAINT BY NAME.
+				//
 				if (Operator == BlockConstraintOperator.Equals)
 				{
 					string ContraintParam = (string)ConstraintData;
@@ -298,9 +325,50 @@ namespace BlokScript.Filters
 					throw new NotImplementedException("BlockConstraint");
 			}
 
-			if (OrChildConstraint != null)
-				OutList.AddRange(OrChildConstraint.Evaluate(OutList.ToArray()));
+			return OutList.ToArray();
+		}
 
+		public static BlockSchemaEntity[] Intersect (BlockSchemaEntity[] LeftBlockEntries, BlockSchemaEntity[] RightBlockEntries)
+		{
+			Dictionary<string, BlockSchemaEntity> LeftHash = new Dictionary<string, BlockSchemaEntity>();
+			Dictionary<string, BlockSchemaEntity> RightHash = new Dictionary<string, BlockSchemaEntity>();
+			List<BlockSchemaEntity> OutList = new List<BlockSchemaEntity>();
+
+			foreach (BlockSchemaEntity LeftBlock in LeftBlockEntries)
+			{
+				LeftHash[LeftBlock.BlockId] = LeftBlock;
+			}
+
+			foreach (BlockSchemaEntity RightBlock in RightBlockEntries)
+			{
+				RightHash[RightBlock.BlockId] = RightBlock;
+			}
+
+			foreach (string BlockId in LeftHash.Keys)
+			{
+				if (RightHash.ContainsKey(BlockId))
+					OutList.Add(RightHash[BlockId]);
+			}
+
+			return OutList.ToArray();
+		}
+
+		public static BlockSchemaEntity[] Union (BlockSchemaEntity[] LeftBlockEntries, BlockSchemaEntity[] RightBlockEntries)
+		{
+			Dictionary<string, BlockSchemaEntity> UnionHash = new Dictionary<string, BlockSchemaEntity>();
+			List<BlockSchemaEntity> OutList = new List<BlockSchemaEntity>();
+
+			foreach (BlockSchemaEntity LeftBlock in LeftBlockEntries)
+			{
+				UnionHash[LeftBlock.BlockId] = LeftBlock;
+			}
+
+			foreach (BlockSchemaEntity RightBlock in RightBlockEntries)
+			{
+				UnionHash[RightBlock.BlockId] = RightBlock;
+			}
+
+			OutList.AddRange(UnionHash.Values);
 			return OutList.ToArray();
 		}
 
@@ -308,7 +376,9 @@ namespace BlokScript.Filters
 		public BlockConstraintOperator Operator;
 		public object ConstraintData;
 		public BlockConstraintDataType ConstraintDataType;
-		public BlockConstraint AndChildConstraint;
-		public BlockConstraint OrChildConstraint;
+
+		public BlockConstraint ChildConstraint;
+		public BlockConstraint LeftChildConstraint;
+		public BlockConstraint RightChildConstraint;
 	}
 }

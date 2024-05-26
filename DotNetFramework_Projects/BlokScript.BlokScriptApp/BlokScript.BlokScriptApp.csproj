@@ -179,6 +179,10 @@
       <Project>{e9917b89-2d68-4c1c-af9f-9762b025c9b8}</Project>
       <Name>BlokScript.Entities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\BlokScript.EntityDataFactories\BlokScript.EntityDataFactories.csproj">
+      <Project>{2671d2bc-d3c2-454e-8b1e-52dee4e8fd50}</Project>
+      <Name>BlokScript.EntityDataFactories</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BlokScript.FileReaders\BlokScript.FileReaders.csproj">
       <Project>{a9677b8d-e381-42e7-8b51-6ed7d1d1af50}</Project>
       <Name>BlokScript.FileReaders</Name>

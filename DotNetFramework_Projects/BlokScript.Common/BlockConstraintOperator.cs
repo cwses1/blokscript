@@ -2,6 +2,10 @@
 {
 	public enum BlockConstraintOperator
 	{
+		Root,
+		Intersect,
+		Union,
+
 		Equals,
 		NotEquals,
 		In,

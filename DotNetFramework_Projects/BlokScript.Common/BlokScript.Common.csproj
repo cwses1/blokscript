@@ -39,7 +39,10 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DatasourceConstraintDataType.cs" />
     <Compile Include="DatasourceEntryConstraintDataType.cs" />
+    <Compile Include="DatasourceConstraintOperator.cs" />
+    <Compile Include="DatasourceConstraintField.cs" />
     <Compile Include="StoryConstraintDataType.cs" />
     <Compile Include="BlockConstraintDataType.cs" />
     <Compile Include="DatasourceEntryConstraintField.cs" />

@@ -9,7 +9,7 @@ namespace BlokScript.ResponseReaders
 {
 	public class ComponentsResponseReader
 	{
-		public static BlockSchemaEntity[] ReadResponseString (string ResponseString, string SpaceId)
+		public static BlockSchemaEntity[] ReadResponseString (string ResponseString)
 		{
 			List<BlockSchemaEntity> BlockSchemaEntityList = new List<BlockSchemaEntity>();
 
@@ -18,9 +18,7 @@ namespace BlokScript.ResponseReaders
 				BlockSchemaEntity CurrentEntity = new BlockSchemaEntity();
 				CurrentEntity.BlockId = CurrentComponentJson.id.ToString();
 				CurrentEntity.ComponentName = CurrentComponentJson.name;
-				CurrentEntity.SpaceId = SpaceId;
 				CurrentEntity.Data = CurrentComponentJson;
-				CurrentEntity.DataLocation = BlokScriptEntityDataLocation.Server;
 				BlockSchemaEntityList.Add(CurrentEntity);
 			}
 

@@ -64,46 +64,62 @@ namespace BlokScript.BlokScriptApp
 					MessageBuilder.AppendLine("blokscript-env.json not found.");
 
 				MessageBuilder.AppendLine("USAGE:");
-				MessageBuilder.AppendLine("blokscript <file>");
+				MessageBuilder.AppendLine("blokscript -f <file>");
+				MessageBuilder.AppendLine("blokscript -s \"<script>\"");
 				Console.Write(MessageBuilder.ToString());
 				return;
 			}
 
-
-
-			//
-			// blokscript filename.txt
-			//
-			if (Args.Length != 1)
+			if (Args.Length != 2)
 			{
 				//
 				// NO SCRIPT NAME.  GIVE THE USER SOME HELP.
 				//
 				StringBuilder MessageBuilder = new StringBuilder();
-				MessageBuilder.AppendLine("blokscript <file>");
+				MessageBuilder.AppendLine("blokscript -f <file>");
+				MessageBuilder.AppendLine("blokscript -s \"<script>\"");
 				Console.Write(MessageBuilder.ToString());
 				return;
 			}
 
-			string ScriptFilePath = Args[0];
-
-			//
-			// ENSURE THE SCRIPT FILE EXISTS.
-			//
-			if (!File.Exists(ScriptFilePath))
-			{
-				_Log.Error("Could not open script file.");
-				return;
-			}
-
-			//
-			// READ THE FILE CONTENTS INTO A STRING.
-			//
+			string Option = Args[0];
+			string ScriptOrFilePath = Args[1];
 			string ScriptString;
 
-			using (StreamReader ScriptFileReader = new StreamReader(ScriptFilePath))
+			if (Option == "-s")
 			{
-				ScriptString = ScriptFileReader.ReadToEnd();
+				ScriptString = ScriptOrFilePath;
+			}
+			else if (Option == "-f")
+			{
+				string ScriptFilePath = ScriptOrFilePath;
+
+				//
+				// ENSURE THE SCRIPT FILE EXISTS.
+				//
+				if (!File.Exists(ScriptFilePath))
+				{
+					_Log.Error("Could not open script file.");
+					return;
+				}
+
+				//
+				// READ THE FILE CONTENTS INTO A STRING.
+				//
+				using (StreamReader ScriptFileReader = new StreamReader(ScriptFilePath))
+				{
+					ScriptString = ScriptFileReader.ReadToEnd();
+				}
+			}
+			else
+			{
+				StringBuilder MessageBuilder = new StringBuilder();
+				MessageBuilder.AppendLine($"Invalid option: '{Option}'.");
+				MessageBuilder.AppendLine("USAGE:");
+				MessageBuilder.AppendLine("blokscript -f <file>");
+				MessageBuilder.AppendLine("blokscript -s \"<script>\"");
+				Console.Write(MessageBuilder.ToString());
+				return;
 			}
 
 			//
@@ -115,8 +131,8 @@ namespace BlokScript.BlokScriptApp
 			}
 			catch (Exception E)
 			{
-				_Log.Error("An error occurred during parsing.");
-				_Log.Error(E);
+				Console.WriteLine(E.Message);
+				Console.WriteLine(E.StackTrace);
 			}
 		}
 

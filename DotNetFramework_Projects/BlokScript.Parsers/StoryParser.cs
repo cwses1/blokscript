@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace BlokScript.Parsers
 {
-	public class StoryEntityParser
+	public class StoryParser
 	{
 		public static StoryEntity Parse (dynamic EntityJson)
 		{

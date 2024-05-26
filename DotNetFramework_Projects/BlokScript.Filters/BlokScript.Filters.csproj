@@ -39,6 +39,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DatasourceConstraint.cs" />
     <Compile Include="DatasourceEntryConstraint.cs" />
     <Compile Include="StoryConstraint.cs" />
     <Compile Include="BlockConstraint.cs" />

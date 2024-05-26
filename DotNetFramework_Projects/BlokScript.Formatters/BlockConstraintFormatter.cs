@@ -16,8 +16,8 @@ namespace BlokScript.Formatters
 			OutputBuilder.AppendLine($"Operator: {Constraint.Operator}");
 			OutputBuilder.AppendLine($"ConstraintData: {Constraint.ConstraintData}");
 			OutputBuilder.AppendLine($"ConstraintDataType: {Constraint.ConstraintDataType}");
-			OutputBuilder.AppendLine($"AndChildConstraint: {Constraint.AndChildConstraint}");
-			OutputBuilder.AppendLine($"OrChildConstraint: {Constraint.OrChildConstraint}");
+			OutputBuilder.AppendLine($"ChildConstraint: {Constraint.ChildConstraint}");
+			OutputBuilder.AppendLine($"LeftChildConstraint: {Constraint.LeftChildConstraint}");
 			return OutputBuilder.ToString();
 		}
 	}

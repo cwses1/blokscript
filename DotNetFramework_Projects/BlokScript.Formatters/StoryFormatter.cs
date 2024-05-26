@@ -4,7 +4,7 @@ using BlokScript.Entities;
 
 namespace BlokScript.Formatters
 {
-	public class StoryEntityFormatter
+	public class StoryFormatter
 	{
 		public static string FormatJson (StoryEntity Story)
 		{
@@ -26,6 +26,11 @@ namespace BlokScript.Formatters
 			OutputBuilder.AppendLine($"FilePath: {Story.FilePath}");
 			OutputBuilder.AppendLine($"ServerPath: {Story.ServerPath}");
 			return OutputBuilder.ToString();
+		}
+
+		public static string FormatHumanFriendly (StoryEntity Story)
+		{
+			return $"'{Story.Name} ({Story.Url})'";
 		}
 	}
 }

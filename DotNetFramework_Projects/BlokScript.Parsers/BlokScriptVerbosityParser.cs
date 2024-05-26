@@ -10,6 +10,7 @@ namespace BlokScript.Parsers
 			_ParserHash = new Dictionary<string, BlokScriptVerbosity>();
 			_ParserHash["verbose"] = BlokScriptVerbosity.Verbose;
 			_ParserHash["quiet"] = BlokScriptVerbosity.Quiet;
+			_ParserHash["debugger"] = BlokScriptVerbosity.Debugger;
 		}
 
 		public static BlokScriptVerbosity Parse (string VerbosityStringParam)

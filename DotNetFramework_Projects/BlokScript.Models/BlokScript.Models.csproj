@@ -46,6 +46,7 @@
     <Compile Include="StoriesInputLocation.cs" />
     <Compile Include="DatasourceEntriesTargetLocation.cs" />
     <Compile Include="StoriesOutputLocation.cs" />
+    <Compile Include="UpdateModel.cs" />
     <Compile Include="UrlSpec.cs" />
     <Compile Include="VarGetFromDirective.cs" />
   </ItemGroup>

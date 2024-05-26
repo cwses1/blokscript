@@ -2,7 +2,8 @@
 {
 	public enum BlokScriptVerbosity
 	{
-		Quiet,
-		Verbose
+		Quiet = 0,
+		Verbose = 1,
+		Debugger = 2
 	}
 }
