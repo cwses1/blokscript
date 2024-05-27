@@ -7,8 +7,6 @@ using System.Text.RegularExpressions;
 
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using log4net;
-using log4net.Repository.Hierarchy;
 using Newtonsoft.Json.Linq;
 
 using BlokScript.Common;
@@ -28,7 +26,6 @@ using BlokScript.Filters;
 using BlokScript.Serializers;
 using BlokScript.FileWriters;
 using System.Data;
-using System.Runtime.Remoting.Contexts;
 using System.Net;
 using BlokScript.EntityDataFactories;
 
@@ -36,11 +33,6 @@ namespace BlokScript.BlokScriptApp
 {
 	public class BlokScriptGrammarConcreteVisitor : BlokScriptGrammarBaseVisitor<object>
 	{
-		static BlokScriptGrammarConcreteVisitor ()
-		{
-			_Log = LogManager.GetLogger(typeof(BlokScriptGrammarConcreteVisitor));
-		}
-
 		public BlokScriptGrammarConcreteVisitor ()
 		{
 		}
@@ -781,95 +773,92 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitCopySpacesStatement ([NotNull] BlokScriptGrammarParser.CopySpacesStatementContext Context)
 		{
 			/*
-			copySpacesStatement: 'copy' 'all'? 'spaces' 'from' realDataLocation 'to' spacesOutputLocation;
-			
-			copy all spaces from server to console;
-			copy all spaces from server to file 'spaces.json';
-			copy all spaces from server to local cache;
-			copy all spaces from local cache to console;
-
-			copySpacesStatement: 'copy' 'all'? 'spaces' 'from' realDataLocation 'to' spacesOutputLocation;
+			copySpacesStatement: 'copy' 'spaces' ('from' realDataLocation)? 'to' spacesOutputLocation;
 			*/
-			RealDataLocation SourceLocation = (RealDataLocation)VisitRealDataLocation(Context.realDataLocation());
+			OutputSpacesToLocation(GetSpacesFromLocation(Context.realDataLocation() != null ? (RealDataLocation)VisitRealDataLocation(Context.realDataLocation()) : RealDataLocation.Server), (SpacesOutputLocation)VisitSpacesOutputLocation(Context.spacesOutputLocation()));
+			return null;
+		}
 
+		public SpaceEntity[] GetSpacesFromLocation (RealDataLocation Location)
+		{
 			List<SpaceEntity> SpaceEntityList = new List<SpaceEntity>();
 
-			if (SourceLocation == RealDataLocation.LocalCache)
-			{
-				foreach (string SpaceKey in _SpaceCacheByIdDict.Keys)
-				{
-					SpaceEntityList.Add(_SpaceCacheByIdDict[SpaceKey].Space);
-				}
-			}
-			else if (SourceLocation == RealDataLocation.Server)
-			{
-				string RequestPath = ManagementPathFactory.CreateSpacesPath();
-
-				if (_Log.IsDebugEnabled)
-					_Log.Debug(RequestPath);
-
-				EchoAction($"API GET {RequestPath}. Loading all spaces.");
-
-				dynamic ResponseModel = JsonParser.ParseAsDynamic(GetManagementWebClient().GetString(RequestPath));
-
-				foreach (dynamic SpaceData in ResponseModel.spaces)
-				{
-					SpaceEntity CurrentSpaceEntity = new SpaceEntity();
-					CurrentSpaceEntity.SpaceId = SpaceData.id.ToString();
-					CurrentSpaceEntity.Data = SpaceData;
-					CurrentSpaceEntity.DataLocation = BlokScriptEntityDataLocation.Server;
-					CurrentSpaceEntity.ServerPath = RequestPath;
-					SpaceEntityList.Add(CurrentSpaceEntity);
-				}
-			}
+			if (Location == RealDataLocation.LocalCache)
+				return GetSpacesFromLocalCache();
+			else if (Location == RealDataLocation.Server)
+				return GetSpacesFromServer();
 			else
 				throw new NotImplementedException("SourceLocation == RealDataLocation in VisitCopySpacesStatement.");
+		}
 
-			//
-			// GET THE TARGET LOCATION.
-			//
-			SpacesOutputLocation TargetLocation = (SpacesOutputLocation)VisitSpacesOutputLocation(Context.spacesOutputLocation());
+		public SpaceEntity[] GetSpacesFromLocalCache ()
+		{
+			List<SpaceEntity> SpaceEntityList = new List<SpaceEntity>();
 
+			foreach (string SpaceKey in _SpaceCacheByIdDict.Keys)
+			{
+				SpaceEntityList.Add(_SpaceCacheByIdDict[SpaceKey].Space);
+			}
+
+			return SpaceEntityList.ToArray();
+		}
+
+		public SpaceEntity[] GetSpacesFromServer ()
+		{
+			EnsureSpaceDictsLoaded();
+			return GetSpacesFromLocalCache();
+		}
+
+		public void OutputSpacesToLocation (SpaceEntity[] Spaces, SpacesOutputLocation TargetLocation)
+		{
 			if (TargetLocation.ToConsole)
-			{
-				List<object> SpaceDataList = new List<object>();
-
-				foreach (SpaceEntity CurrentEntity in SpaceEntityList)
-				{
-					SpaceDataList.Add(CurrentEntity.Data);
-				}
-
-				Console.WriteLine(JsonFormatter.FormatIndented(SpaceDataList));
-			}
+				OutputSpacesToConsole(Spaces);
 			else if (TargetLocation.ToLocalCache)
-			{
-				foreach (SpaceEntity CurrentSpaceEntity in SpaceEntityList)
-				{
-					SpaceCache CreatedCache = new SpaceCache();
-					CreatedCache.Space = CurrentSpaceEntity;
-					CreatedCache.SpaceDataLoaded = true;
-
-					_SpaceCacheByIdDict[CurrentSpaceEntity.SpaceId] = CreatedCache;
-				}
-			}
+				OutputSpacesToLocalCache(Spaces);
 			else if (TargetLocation.ToFile)
-			{
-				List<object> SpaceDataList = new List<object>();
-
-				foreach (SpaceEntity CurrentEntity in SpaceEntityList)
-				{
-					SpaceDataList.Add(CurrentEntity.Data);
-				}
-
-				using (StreamWriter SpaceWriter = new StreamWriter(TargetLocation.FilePath))
-				{
-					SpaceWriter.WriteLine(JsonFormatter.FormatIndented(SpaceDataList));
-				}
-			}
+				OutputSpacesToFile(Spaces, TargetLocation.FilePath);
 			else
-				throw new NotImplementedException("TargetLocation in VisitCopySpacesStatement");
+				throw new NotImplementedException();
+		}
 
-			return null;
+		public void OutputSpacesToConsole (SpaceEntity[] Spaces)
+		{
+			List<object> SpaceDataList = new List<object>();
+
+			foreach (SpaceEntity CurrentEntity in Spaces)
+			{
+				SpaceDataList.Add(CurrentEntity.Data);
+			}
+
+			Console.WriteLine(JsonFormatter.FormatIndented(SpaceDataList));
+		}
+
+		public void OutputSpacesToLocalCache (SpaceEntity[] Spaces)
+		{
+			foreach (SpaceEntity Space in Spaces)
+			{
+				CacheSpace(Space);
+			}
+		}
+
+		public void OutputSpacesToFile (SpaceEntity[] Spaces, string FilePath)
+		{
+			string EffectiveFilePath = FilePath;
+
+			if (EffectiveFilePath == null)
+				EffectiveFilePath = "spaces.json";
+
+			List<object> SpaceDataList = new List<object>();
+
+			foreach (SpaceEntity CurrentEntity in Spaces)
+			{
+				SpaceDataList.Add(CurrentEntity.Data);
+			}
+
+			using (StreamWriter SpaceWriter = new StreamWriter(EffectiveFilePath))
+			{
+				SpaceWriter.WriteLine(JsonFormatter.FormatIndented(SpaceDataList));
+			}
 		}
 
 		public override object VisitPrintStatement ([NotNull] BlokScriptGrammarParser.PrintStatementContext Context)
@@ -1115,14 +1104,6 @@ namespace BlokScript.BlokScriptApp
 					// THE TARGET SPACE DOES NOT HAVE THIS BLOCK.  CREATE THE BLOCK IN THE TARGET SPACE.
 					//
 					string RequestPath = ManagementPathFactory.CreateComponentsPath(SpaceId);
-
-					if (_Log.IsDebugEnabled)
-					{
-						_Log.Debug($"Space {SpaceId} does not have block {SourceBlock.ComponentName}.");
-						_Log.Debug($"Creating block {SourceBlock.ComponentName} in space {SpaceId}.");
-						_Log.Debug($"VisitCopyBlocksStatement: POST {RequestPath}");
-					}
-
 					EchoAction($"API POST {RequestPath}. Creating block {BlockFormatter.FormatHumanFriendly(SourceBlock)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
 
 					string CreatedBlockString = WebClient.PostJson(RequestPath, RequestBody);
@@ -1159,7 +1140,6 @@ namespace BlokScript.BlokScriptApp
 			if (Token == "quiet")
 			{
 				VerbositySymbol.Value = (int)BlokScriptVerbosity.Quiet;
-				_Log.Info("Verbosity set to 'quiet'.");
 			}
 			else if (Token == "verbose")
 			{
@@ -1398,8 +1378,6 @@ namespace BlokScript.BlokScriptApp
 
 		public override object VisitBlockConstraint ([NotNull] BlokScriptGrammarParser.BlockConstraintContext Context)
 		{
-			_Log.Debug("VisitBlockConstraint");
-
 			/*
 			blockConstraint: 'id' ('=' | '!=') intExpr
 				| 'id' 'not'? 'in' '(' intExprList ')'
@@ -1811,7 +1789,6 @@ namespace BlokScript.BlokScriptApp
 
 		public override object VisitStoryConstraint ([NotNull] BlokScriptGrammarParser.StoryConstraintContext Context)
 		{
-			_Log.Debug("VisitStoryConstraint");
 			/*
 			storyConstraint: 'id' ('=' | '!=') intExpr
 				| 'id' 'not'? 'in' '(' intExprList ')'
@@ -2573,12 +2550,6 @@ namespace BlokScript.BlokScriptApp
 						//
 						string RequestPath = ManagementPathFactory.CreateStoriesPath(TargetSpace.SpaceId);
 
-						if (_Log.IsDebugEnabled)
-						{
-							_Log.Debug($"Space {TargetSpace.SpaceId} does not have story {SourceStory.Url}.");
-							_Log.Debug($"Creating story {SourceStory.Url} in space {TargetSpace.SpaceId}.");
-							_Log.Debug($"VisitCopyStoryStatement: POST {RequestPath}");
-						}
 
 						EchoAction($"API POST {RequestPath}. Creating story {StoryFormatter.FormatHumanFriendly(SourceStory)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
 
@@ -2598,7 +2569,6 @@ namespace BlokScript.BlokScriptApp
 						}
 						catch (Exception E)
 						{
-							_Log.Error(E);
 							EchoError(E.Message);
 							throw;
 						}
@@ -2618,7 +2588,6 @@ namespace BlokScript.BlokScriptApp
 						}
 						catch (Exception E)
 						{
-							_Log.Error(E);
 							EchoError(E.Message);
 							throw;
 						}
@@ -3420,42 +3389,69 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitCopyDatasourceEntriesStatement ([NotNull] BlokScriptGrammarParser.CopyDatasourceEntriesStatementContext Context)
 		{
 			/*
-			copyDatasourceEntriesStatement: 'copy' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesTargetLocation ('where' datasourceEntryConstraintExprList)?;
+			copyDatasourceEntriesStatement: 'copy' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesTargetLocation ('where' datasourceEntryConstraintExprList)? datasourceEntryCopyOptionList?;
 			*/
+
+			//if (Context.datasourceEntryConstraintExprList() != null)
+				//VisitDatasourceEnryConstraintExprList(Context.datasourceEntryConstraintExprList());
+
 			DatasourceEntriesSourceLocation SourceLocation = (DatasourceEntriesSourceLocation)VisitDatasourceEntriesSourceLocation(Context.datasourceEntriesSourceLocation());
-
-			//
-			// GET THE SOURCE ENTRIES.
-			//
-			DatasourceEntryEntity[] SourceEntries;
-
-			if (SourceLocation.FromDatasource)
-			{
-				DatasourceEntity SourceDatasource = SourceLocation.Datasource;
-				EnsureDatasourceHasEntriesLoaded(SourceDatasource);
-				SourceEntries = SourceDatasource.GetEntries();
-			}
-			else
-				throw new NotImplementedException("VisitCopyDatasourceEntriesStatement");
-
-			//
-			// COPY TO THE TARGET LOCATION.
-			//
 			DatasourceEntriesTargetLocation TargetLocation = (DatasourceEntriesTargetLocation)VisitDatasourceEntriesTargetLocation(Context.datasourceEntriesTargetLocation());
+
+			DatasourceEntryEntity[] SourceEntries = GetDatasourceEntriesFromFromLocation(SourceLocation);
+
+			DatasourceEntryCopyOptionSet CopyOptionSet = new DatasourceEntryCopyOptionSet();
+
+			if (Context.datasourceEntryCopyOptionList() != null)
+			{
+				DatasourceEntryCopyOption[] CopyOptions = (DatasourceEntryCopyOption[])VisitDatasourceEntryCopyOptionList(Context.datasourceEntryCopyOptionList());
+
+				foreach (DatasourceEntryCopyOption CopyOption in CopyOptions)
+				{
+					if (CopyOption.CommandKeyword == "skip")
+					{
+						if (CopyOption.Param1.StartsWith("update"))
+							CopyOptionSet.SkipUpdate = true;
+						else if (CopyOption.Param1.StartsWith("create"))
+							CopyOptionSet.SkipCreate = true;
+					}
+				}
+			}
 
 			if (TargetLocation.ToDatasource)
 			{
 				DatasourceEntity TargetDatasource = TargetLocation.Datasource;
 
-				foreach (DatasourceEntryEntity CurrentEntry in SourceEntries)
+				foreach (DatasourceEntryEntity SourceEntry in SourceEntries)
 				{
-					CopyEntryToDatasource(CurrentEntry, TargetDatasource);
+					CopyEntryToDatasource(SourceEntry, TargetDatasource, CopyOptionSet);
 				}
 			}
 			else
-				throw new NotImplementedException("VisitCopyDatasourceEntriesStatement");
+				throw new NotImplementedException();
 
 			return null;
+		}
+
+		public DatasourceEntryEntity[] GetDatasourceEntriesFromFromLocation (DatasourceEntriesSourceLocation SourceLocation)
+		{
+			if (SourceLocation.FromDatasource)
+			{
+				DatasourceEntity SourceDatasource = SourceLocation.Datasource;
+				EnsureDatasourceHasEntriesLoaded(SourceDatasource);
+				return SourceDatasource.GetEntries();
+			}
+			else if (SourceLocation.FromFile)
+			{
+				string EffectiveFilePath = SourceLocation.FilePath;
+
+				if (EffectiveFilePath == null)
+					EffectiveFilePath = "datasource-entries.json";
+
+				return DatasourceEntriesFileReader.Read(EffectiveFilePath);
+			}
+			else
+				throw new NotImplementedException();
 		}
 
 		public override object VisitDatasourceEntriesSourceLocation ([NotNull] BlokScriptGrammarParser.DatasourceEntriesSourceLocationContext Context)
@@ -3476,13 +3472,13 @@ namespace BlokScript.BlokScriptApp
 			}
 			else if (Context.urlSpec() != null)
 			{
-				Location.ToUrl = true;
+				Location.FromUrl = true;
 				Location.UrlSpec = (UrlSpec)VisitUrlSpec(Context.urlSpec());
 			}
 			else if (Context.fileSpec() != null)
 			{
 				Location.FromFile = true;
-				Location.FileSpec = (FileSpec)VisitFileSpec(Context.fileSpec());
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
 			}
 			else if (Context.GetChild(0).GetText() == "local")
 			{
@@ -4305,6 +4301,30 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
+		public override object VisitDatasourceEntryCopyOptionList ([NotNull] BlokScriptGrammarParser.DatasourceEntryCopyOptionListContext Context)
+		{
+			/*
+			datasourceEntryCopyOptionList: datasourceEntryCopyOption (',' datasourceEntryCopyOptionList);
+			*/
+			List<DatasourceEntryCopyOption> CopyOptionList = new List<DatasourceEntryCopyOption>();
+			CopyOptionList.Add((DatasourceEntryCopyOption)VisitDatasourceEntryCopyOption(Context.datasourceEntryCopyOption()));
+
+			if (Context.datasourceEntryCopyOptionList() != null)
+				CopyOptionList.AddRange((DatasourceEntryCopyOption[])VisitDatasourceEntryCopyOptionList(Context.datasourceEntryCopyOptionList()));
+
+			return CopyOptionList.ToArray();
+		}
+
+		public override object VisitDatasourceEntryCopyOption ([NotNull] BlokScriptGrammarParser.DatasourceEntryCopyOptionContext Context)
+		{
+			/*
+			datasourceEntryCopyOption: 'skip' ('update' | 'updates' | 'create' | 'creates');
+			*/
+			DatasourceEntryCopyOption CopyOption = new DatasourceEntryCopyOption();
+			CopyOption.CommandKeyword = Context.GetChild(0).GetText();
+			CopyOption.Param1 = Context.GetChild(1).GetText();
+			return CopyOption;
+		}
 
 		public void DeleteBlocks (BlockSchemaEntity[] Blocks)
 		{
@@ -4445,7 +4465,7 @@ namespace BlokScript.BlokScriptApp
 
 			string RequestPath = ManagementPathFactory.CreateSpacePath(TargetSpaceCache.SpaceId);
 
-			EchoAction($"API GET {RequestPath}. Caching space {SpaceFormatter.FormatHumanFriendly(Space)} data.");
+			EchoAction($"API GET {RequestPath}. Caching space data for {SpaceFormatter.FormatHumanFriendly(Space)}.");
 			SpaceEntity TargetSpace = SpaceParser.Parse(GetManagementWebClient().GetString(RequestPath));
 			TargetSpace.DataLocation = BlokScriptEntityDataLocation.Server;
 			TargetSpace.ServerPath = RequestPath;
@@ -4499,9 +4519,6 @@ namespace BlokScript.BlokScriptApp
 		{
 			string RequestPath = ManagementPathFactory.CreateDatasourcesPath(TargetSpaceCache.SpaceId);
 
-			if (_Log.IsDebugEnabled)
-				_Log.Debug($"LoadSpaceCacheDatasources: GET {RequestPath}");
-
 			EchoAction($"API GET {RequestPath}. Getting datasources in space '{TargetSpaceCache.SpaceId}'.");
 
 			string ResponseString = GetManagementWebClient().GetString(RequestPath);
@@ -4520,24 +4537,55 @@ namespace BlokScript.BlokScriptApp
 
 		public void LoadDatasourceEntries (DatasourceEntity Datasource)
 		{
+			string SpaceId = Datasource.SpaceId;
 			string DatasourceId = Datasource.DatasourceId;
-			string RequestPath = ManagementPathFactory.CreateDatasourceEntriesPath(Datasource.SpaceId, DatasourceId);
+			int Page = 1;
+			int RequestedPageSize = 1000;
+			int ActualPageSize;
+			
+			List<DatasourceEntryEntity> DatasourceEntryEntityList = new List<DatasourceEntryEntity>();
 
-			EchoAction($"API GET {RequestPath}. Getting datasource entries in datasource '{DatasourceId}' space '{Datasource.SpaceId}'.");
-
-			string ResponseString = GetManagementWebClient().GetString(RequestPath);
-
-			EchoDebug("ResponseString", ResponseString);
-
-			foreach (DatasourceEntryEntity Entry in DatasourceEntriesResponseReader.ReadResponseString(ResponseString))
+			do
 			{
-				Entry.DatasourceId = Datasource.DatasourceId;
-				Entry.DataLocation = BlokScriptEntityDataLocation.Server;
-				Entry.ServerPath = RequestPath;
-				Datasource.InsertDatasourceEntry(Entry);
+				DatasourceEntryEntity[] DatasourceEntryEntitiesPage = GetDatasourceEntryPage(SpaceId, Datasource, Page++, RequestedPageSize);
+				ActualPageSize = DatasourceEntryEntitiesPage.Length;
+				DatasourceEntryEntityList.AddRange(DatasourceEntryEntitiesPage);
+
+				EchoVerbose($"Caching {DatasourceEntryEntitiesPage.Length} datasource entries in datasource {DatasourceFormatter.FormatHumanFriendly(Datasource)} space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Datasource.SpaceId))}.");
+
+				foreach (DatasourceEntryEntity Entry in DatasourceEntryEntitiesPage)
+				{
+					Datasource.InsertDatasourceEntry(Entry);
+				}
 			}
+			while (ActualPageSize == RequestedPageSize);
+
+			EchoVerbose($"Cached {DatasourceEntryEntityList.Count} datasource entries in datasource {DatasourceFormatter.FormatHumanFriendly(Datasource)} space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Datasource.SpaceId))}.");
 
 			Datasource.DatasourceEntriesLoaded = true;
+		}
+
+		public DatasourceEntryEntity[] GetDatasourceEntryPage (string SpaceId, DatasourceEntity Datasource, int Page, int RequestedPageSize)
+		{
+			SpaceEntity Space = GetSpaceById(SpaceId);
+			string DatasourceId = Datasource.DatasourceId;
+
+			string RequestPath = ManagementPathFactory.CreateDatasourceEntriesPath(SpaceId, DatasourceId, Page, RequestedPageSize);
+			EchoAction($"API GET {RequestPath}. Getting datasource entries in datasource {DatasourceFormatter.FormatHumanFriendly(Datasource)} space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Datasource.SpaceId))}.");
+
+			string ResponseString = GetManagementWebClient().GetString(RequestPath);
+			EchoDebug("ResponseString", ResponseString);
+
+			DatasourceEntryEntity[] Entries = DatasourceEntriesResponseReader.ReadResponseString(ResponseString);
+
+			foreach (DatasourceEntryEntity Entry in Entries)
+			{
+				Entry.DatasourceId = DatasourceId;
+				Entry.DataLocation = BlokScriptEntityDataLocation.Server;
+				Entry.ServerPath = RequestPath;
+			}
+
+			return Entries;
 		}
 
 		public void	EnsureDatasourceHasEntriesLoaded (DatasourceEntity Datasource)
@@ -4546,65 +4594,80 @@ namespace BlokScript.BlokScriptApp
 				LoadDatasourceEntries(Datasource);
 		}
 
-		public void	CopyEntryToDatasource (DatasourceEntryEntity SourceEntry, DatasourceEntity Datasource)
+		public void	CopyEntryToDatasource (DatasourceEntryEntity SourceEntry, DatasourceEntity TargetDatasource, DatasourceEntryCopyOptionSet CopyOptionSet)
 		{
-			EnsureDatasourceHasEntriesLoaded(Datasource);
+			EnsureDatasourceHasEntriesLoaded(TargetDatasource);
+
 			DatasourceEntryEntity TargetEntry;
 
-			if (Datasource.HasEntryByName(SourceEntry.Name))
+			if (TargetDatasource.HasEntryByName(SourceEntry.Name))
 			{
-				TargetEntry = Datasource.GetEntryByName(SourceEntry.Name);
+				//
+				// EXISTING ENTRY.  THIS WILL BE AN UPDATE.
+				//
+				if (CopyOptionSet.SkipUpdate)
+					return;
+
+				TargetEntry = TargetDatasource.GetEntryByName(SourceEntry.Name);
 				TargetEntry.Name = SourceEntry.Name;
 				TargetEntry.Value = SourceEntry.Value;
-				TargetEntry.DatasourceId = Datasource.DatasourceId;
+				TargetEntry.DatasourceId = TargetDatasource.DatasourceId;
 				TargetEntry.Data = CreateDatasourceEntryData(TargetEntry);
 			}
 			else
 			{
+				//
+				// NEW ENTRY.  THIS IS A CREATE.
+				//
+				if (CopyOptionSet.SkipCreate)
+					return;
+
 				TargetEntry = new DatasourceEntryEntity();
 				TargetEntry.Name = SourceEntry.Name;
 				TargetEntry.Value = SourceEntry.Value;
-				TargetEntry.DatasourceId = Datasource.DatasourceId;
+				TargetEntry.DatasourceId = TargetDatasource.DatasourceId;
 				TargetEntry.Data = CreateDatasourceEntryData(TargetEntry);
-				Datasource.InsertDatasourceEntry(TargetEntry);
+				TargetDatasource.InsertDatasourceEntry(TargetEntry);
 			}
 
-			FlushDatasourceEntry(Datasource, TargetEntry);
+			FlushDatasourceEntry(TargetDatasource, TargetEntry);
 		}
 
 		public void FlushDatasourceEntry (DatasourceEntity Datasource, DatasourceEntryEntity Entry)
 		{
 			if (Datasource.DataLocation == BlokScriptEntityDataLocation.Server)
-			{
 				FlushDatasourceEntryToServer(Datasource, Entry);
-			}
 			else if (Datasource.DataLocation == BlokScriptEntityDataLocation.FilePath)
-			{
 				FlushDatasourceEntryToFile(Datasource, Entry);
-			}
 			else
-				throw new NotImplementedException("FlushDatasourceEntry");
+				throw new NotImplementedException();
 		}
 
 		public void FlushDatasourceEntryToServer (DatasourceEntity Datasource, DatasourceEntryEntity Entry)
 		{
 			if (Entry.DatasourceEntryId == null)
 			{
-				//
-				// THIS IS A NEW DATASOURCE ENTRY.  CREATE IT.
-				//
+				EchoDebug($"Datasource entry {DatasourceEntryFormatter.FormatHumanFriendly(Entry)} has no id.  Assuming this is a new entry.");
+
 				string RequestPath = ManagementPathFactory.CreateDatasourceEntriesPath(Datasource.SpaceId, Datasource.DatasourceId);
-				EchoAction($"API POST {RequestPath}. Creating datasource entry '{Entry.Name}'.");
-				GetManagementWebClient().PostJson(RequestPath, JsonSerializer.Serialize(Entry.Data));
+				EchoAction($"API POST {RequestPath}. Creating datasource entry {DatasourceEntryFormatter.FormatHumanFriendly(Entry)}.");
+
+				string RequestBody = JsonSerializer.Serialize(Entry.Data);
+				EchoDebug(RequestBody);
+
+				GetManagementWebClient().PostJson(RequestPath, RequestBody);
 			}
 			else
 			{
-				//
-				// THIS IS AN EXISTING DATASOURCE ENTRY.  UPDATE IT.
-				//
+				EchoDebug($"Datasource entry {DatasourceEntryFormatter.FormatHumanFriendly(Entry)} has an id.");
+
 				string RequestPath = ManagementPathFactory.CreateDatasourceEntryPath(Datasource.SpaceId, Entry.DatasourceEntryId);
-				EchoAction($"API PUT {RequestPath}. Updating datasource entry '{Entry.DatasourceEntryId}'.");
-				GetManagementWebClient().PutJson(RequestPath, JsonSerializer.Serialize(Entry.Data));
+				EchoAction($"API PUT {RequestPath}. Updating datasource entry {DatasourceEntryFormatter.FormatHumanFriendly(Entry)}.");
+
+				string RequestBody = JsonSerializer.Serialize(Entry.Data);
+				EchoDebug(RequestBody);
+
+				GetManagementWebClient().PutJson(RequestPath, RequestBody);
 			}
 		}
 
@@ -4747,7 +4810,5 @@ namespace BlokScript.BlokScriptApp
 		private bool _SpaceDictsLoaded;
 		private int _ActionNumber = 1;
 		private string _WorkingDir;
-
-		private static ILog _Log;
 	}
 }

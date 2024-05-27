@@ -9,4 +9,3 @@ DotNetCore_Projects/**/*.cs
 *.log
 Logs/
 Logs/*.log
-

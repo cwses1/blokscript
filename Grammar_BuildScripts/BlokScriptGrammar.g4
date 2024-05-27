@@ -1,5 +1,7 @@
 grammar BlokScriptGrammar;
 
+@header {#pragma warning disable 3021}
+
 STATEMENTEND: ';';
 WS: [ \r\t\n]+ -> skip ;
 STRINGLITERAL: '\'' ([ a-zA-Z0-9%_/-] | '.' | '#')* '\'';
@@ -53,8 +55,12 @@ datasourceUpdate: 'name' '=' stringExpr
 createDatasourceEntryStatement: 'create' 'datasource' 'entry' (stringExpr | datasourceEntryUpdateList) ('for' | 'in') datasourceSpec;
 updateDatasourceEntriesStatement: 'update' 'datasource' 'entries' 'in' datasourceSpec 'set' datasourceEntryUpdateList ('where' datasourceEntryConstraintExprList)?;
 deleteDatasourceEntriesStatement: 'delete' 'datasource' 'entries' 'in' datasourceSpec ('where' datasourceEntryConstraintExprList)?;
-copyDatasourceEntriesStatement: 'copy' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesTargetLocation ('where' datasourceEntryConstraintExprList)?;
+copyDatasourceEntriesStatement: 'copy' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesTargetLocation ('where' datasourceEntryConstraintExprList)? datasourceEntryCopyOptionList?;
 syncDatasourceEntriesStatement: 'sync' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesSourceLocation ('where' datasourceEntryConstraintExprList)?;
+
+datasourceEntryCopyOptionList: datasourceEntryCopyOption (',' datasourceEntryCopyOptionList)?;
+
+datasourceEntryCopyOption: 'skip' ('update' | 'updates' | 'create' | 'creates');
 
 datasourceEntryUpdateList: datasourceEntryUpdate (',' datasourceEntryUpdateList)?;
 
@@ -159,7 +165,7 @@ spaceAssignmentStatement: VARID '=' spaceSpec;
 blockAssignmentStatement: VARID '=' blockSpec;
 stringAssignmentStatement: VARID '=' STRINGLITERAL;
 	
-copySpacesStatement: 'copy' 'spaces' 'from' realDataLocation 'to' spacesOutputLocation;
+copySpacesStatement: 'copy' 'spaces' ('from' realDataLocation)? 'to' spacesOutputLocation;
 
 printStatement: printSpacesStatement
 	| printVarStatement

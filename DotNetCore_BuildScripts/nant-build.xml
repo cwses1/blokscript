@@ -13,17 +13,15 @@
 	</target>
 
 	<target name="load">
-		<foreach item="Line" in="DotNetFramework_Projects.txt" property="ProjectDir">
-			<copy todir="${DotNetCore_ProjectsDir}/${ProjectDir}">
-				<fileset basedir="${DotNetFramework_ProjectsDir}/${ProjectDir}">
-					<include name="*.cs" />
-				</fileset>
-			</copy>
-		</foreach>
+		<copy todir="${DotNetCore_ProjectsDir}">
+			<fileset basedir="${DotNetFramework_ProjectsDir}/BlokScript.BlokScriptApp">
+				<include name="/**/*.cs" />
+			</fileset>
+		</copy>
 	</target>
 	
 	<target name="build">
-		<exec program="dotnet" workingdir="${DotNetCore_ProjectsDir}/BlokScript.BlokScriptApp">
+		<exec program="dotnet" workingdir="${DotNetCore_ProjectsDir}">
 			<arg value="build" />
 		</exec>
 	</target>

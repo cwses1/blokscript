@@ -88,6 +88,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -97,10 +98,11 @@
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.17.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.17\lib\net45\log4net.dll</HintPath>
+    <Reference Include="Antlr4.Runtime.Standard, Version=4.13.1.0, Culture=neutral, PublicKeyToken=e78b2c5abd1fcb3f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr4.Runtime.Standard.4.13.1\lib\net45\Antlr4.Runtime.Standard.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -142,7 +144,102 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlokScriptGrammarConcreteLexer.cs" />
+    <Compile Include="Caches\SpaceCache.cs" />
+    <Compile Include="Common\BlockConstraintDataType.cs" />
+    <Compile Include="Common\BlockConstraintField.cs" />
+    <Compile Include="Common\BlockConstraintOperator.cs" />
+    <Compile Include="Common\BlockOutputLocation.cs" />
+    <Compile Include="Common\BlocksOutputLocation.cs" />
+    <Compile Include="Common\BlokScriptEntityDataLocation.cs" />
+    <Compile Include="Common\BlokScriptSymbolType.cs" />
+    <Compile Include="Common\BlokScriptVerbosity.cs" />
+    <Compile Include="Common\DatasourceConstraintDataType.cs" />
+    <Compile Include="Common\DatasourceConstraintField.cs" />
+    <Compile Include="Common\DatasourceConstraintOperator.cs" />
+    <Compile Include="Common\DatasourceEntryConstraintDataType.cs" />
+    <Compile Include="Common\DatasourceEntryConstraintField.cs" />
+    <Compile Include="Common\DatasourceEntryConstraintOperator.cs" />
+    <Compile Include="Common\RealDataLocation.cs" />
+    <Compile Include="Common\SpacesOutputLocation.cs" />
+    <Compile Include="Common\StoryConstraintDataType.cs" />
+    <Compile Include="Common\StoryConstraintField.cs" />
+    <Compile Include="Common\StoryConstraintOperator.cs" />
+    <Compile Include="Common\StoryOutputLocation.cs" />
+    <Compile Include="Comparators\BlockComparator.cs" />
+    <Compile Include="Comparators\Diff.cs" />
+    <Compile Include="Comparators\DiffCategory.cs" />
+    <Compile Include="Comparators\DiffNode.cs" />
+    <Compile Include="Comparators\DiffTree.cs" />
+    <Compile Include="Entities\BlockSchemaEntity.cs" />
+    <Compile Include="Entities\DatasourceEntity.cs" />
+    <Compile Include="Entities\DatasourceEntryEntity.cs" />
+    <Compile Include="Entities\SpaceEntity.cs" />
+    <Compile Include="Entities\SpaceOutputLocation.cs" />
+    <Compile Include="Entities\StoryEntity.cs" />
+    <Compile Include="EntityDataFactories\DatasourceEntityDataFactory.cs" />
+    <Compile Include="EntityDataFactories\DatasourceEntryEntityDataFactory.cs" />
+    <Compile Include="FileReaders\BlockSchemaEntityFileReader.cs" />
+    <Compile Include="FileReaders\BlokScriptEnvFileReader.cs" />
+    <Compile Include="FileReaders\JsonFileReader.cs" />
+    <Compile Include="FileReaders\SpaceFileReader.cs" />
+    <Compile Include="FileReaders\DatasourceEntriesFileReader.cs" />
+    <Compile Include="FileReaders\StoryEntityFileReader.cs" />
+    <Compile Include="FileReaders\StringFileReader.cs" />
+    <Compile Include="FileWriters\JsonFileWriter.cs" />
+    <Compile Include="Filters\BlockConstraint.cs" />
+    <Compile Include="Filters\DatasourceConstraint.cs" />
+    <Compile Include="Filters\DatasourceEntryConstraint.cs" />
+    <Compile Include="Filters\StoryConstraint.cs" />
+    <Compile Include="Formatters\BlockConstraintFormatter.cs" />
+    <Compile Include="Formatters\BlockFormatter.cs" />
+    <Compile Include="Formatters\BlockOutputLocationFormatter.cs" />
+    <Compile Include="Formatters\DatasourceEntryFormatter.cs" />
+    <Compile Include="Formatters\DatasourceFormatter.cs" />
+    <Compile Include="Formatters\JsonFormatter.cs" />
+    <Compile Include="Formatters\SpaceFormatter.cs" />
+    <Compile Include="Formatters\StoryFormatter.cs" />
+    <Compile Include="Formatters\StringFormatter.cs" />
+    <Compile Include="IO\FileCopier.cs" />
+    <Compile Include="IO\StreamCopier.cs" />
+    <Compile Include="Models\BlokScriptGlobalEnv.cs" />
+    <Compile Include="Models\DatasourceEntryCopyOption.cs" />
+    <Compile Include="Models\DatasourceEntryCopyOptionSet.cs" />
+    <Compile Include="Models\DatasourceEntriesSourceLocation.cs" />
+    <Compile Include="Models\DatasourceEntriesTargetLocation.cs" />
+    <Compile Include="Models\DatasourceEntryUpdate.cs" />
+    <Compile Include="Models\FileSpec.cs" />
+    <Compile Include="Models\StoriesInputLocation.cs" />
+    <Compile Include="Models\StoriesOutputLocation.cs" />
+    <Compile Include="Models\UpdateModel.cs" />
+    <Compile Include="Models\UrlSpec.cs" />
+    <Compile Include="Models\VarGetFromDirective.cs" />
+    <Compile Include="Parsers\BlockSchemaEntityParser.cs" />
+    <Compile Include="Parsers\BlokScriptGlobalEnvParser.cs" />
+    <Compile Include="Parsers\BlokScriptVerbosityParser.cs" />
+    <Compile Include="Parsers\DatasourceEntriesParser.cs" />
+    <Compile Include="Parsers\DatasourceEntryParser.cs" />
+    <Compile Include="Parsers\DatasourceParser.cs" />
+    <Compile Include="Parsers\JsonParser.cs" />
+    <Compile Include="Parsers\SpaceParser.cs" />
+    <Compile Include="Parsers\StoryParser.cs" />
+    <Compile Include="Parser\BlokScriptGrammarBaseVisitor.cs" />
+    <Compile Include="Parser\BlokScriptGrammarLexer.cs" />
+    <Compile Include="Parser\BlokScriptGrammarParser.cs" />
+    <Compile Include="Parser\BlokScriptGrammarVisitor.cs" />
+    <Compile Include="PathFactories\ManagementPathFactory.cs" />
+    <Compile Include="RequestModels\UpdateDatasourceEntryRequestModel.cs" />
+    <Compile Include="ResponseReaders\ComponentsResponseReader.cs" />
+    <Compile Include="ResponseReaders\CreateComponentResponseReader.cs" />
+    <Compile Include="ResponseReaders\CreateDatasourceEntryResponseReader.cs" />
+    <Compile Include="ResponseReaders\DatasourceEntriesResponseReader.cs" />
+    <Compile Include="ResponseReaders\DatasourceEntryResponseReader.cs" />
+    <Compile Include="ResponseReaders\DatasourcesResponseReader.cs" />
+    <Compile Include="ResponseReaders\SpaceResponseReader.cs" />
+    <Compile Include="ResponseReaders\SpacesResponseReader.cs" />
+    <Compile Include="ResponseReaders\StoriesResponseReader.cs" />
+    <Compile Include="Serializers\JsonSerializer.cs" />
     <Compile Include="SpaceObjectNotFoundException.cs" />
+    <Compile Include="StoryblokModels\DatasourceEntryModel.cs" />
     <Compile Include="StoryNotFoundException.cs" />
     <Compile Include="BlokScriptGrammarConcreteVisitor.cs" />
     <Compile Include="BlokScriptSymbol.cs" />
@@ -154,85 +251,18 @@
     <Compile Include="SymbolTypeException.cs" />
     <Compile Include="TypeNotAllowedException.cs" />
     <Compile Include="SymbolNotFoundException.cs" />
+    <Compile Include="Utils\RegexLiteralTrimmer.cs" />
+    <Compile Include="Utils\SpaceLiteralTrimmer.cs" />
+    <Compile Include="Utils\StringLiteralTrimmer.cs" />
+    <Compile Include="Utils\TokenTrimmer.cs" />
     <Compile Include="VariableNotDeclaredException.cs" />
     <Compile Include="TypeAssignmentException.cs" />
     <Compile Include="SymbolConflictException.cs" />
+    <Compile Include="WebClients\StoryblokContentDeliveryWebClient.cs" />
+    <Compile Include="WebClients\StoryblokManagementWebClient.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Antlr4.Runtime\Antlr4.Runtime.csproj">
-      <Project>{37fc0f57-49dc-44cf-9825-4cc367323802}</Project>
-      <Name>Antlr4.Runtime</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Caches\BlokScript.Caches.csproj">
-      <Project>{8e2de315-692c-4b58-b984-31a4bd411203}</Project>
-      <Name>BlokScript.Caches</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Common\BlokScript.Common.csproj">
-      <Project>{7c5850c3-3a4a-4969-aa02-f9fe0d5d78cd}</Project>
-      <Name>BlokScript.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Comparators\BlokScript.Comparators.csproj">
-      <Project>{9bbb0348-821d-4949-831b-bf3a11fea63b}</Project>
-      <Name>BlokScript.Comparators</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Entities\BlokScript.Entities.csproj">
-      <Project>{e9917b89-2d68-4c1c-af9f-9762b025c9b8}</Project>
-      <Name>BlokScript.Entities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.EntityDataFactories\BlokScript.EntityDataFactories.csproj">
-      <Project>{2671d2bc-d3c2-454e-8b1e-52dee4e8fd50}</Project>
-      <Name>BlokScript.EntityDataFactories</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.FileReaders\BlokScript.FileReaders.csproj">
-      <Project>{a9677b8d-e381-42e7-8b51-6ed7d1d1af50}</Project>
-      <Name>BlokScript.FileReaders</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.FileWriters\BlokScript.FileWriters.csproj">
-      <Project>{09fcd249-b41b-4865-b52e-1f314c96019d}</Project>
-      <Name>BlokScript.FileWriters</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Filters\BlokScript.Filters.csproj">
-      <Project>{6698c718-9080-4b48-8a1b-e6e4cfd17ce9}</Project>
-      <Name>BlokScript.Filters</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Formatters\BlokScript.Formatters.csproj">
-      <Project>{6f6af799-69e7-40be-8001-486c6a9f7e87}</Project>
-      <Name>BlokScript.Formatters</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Models\BlokScript.Models.csproj">
-      <Project>{49b90e66-32d4-4844-a6dc-4aa4d1004a3d}</Project>
-      <Name>BlokScript.Models</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Parsers\BlokScript.Parsers.csproj">
-      <Project>{e22ad08d-2782-4a9c-bab0-214e16c56d2b}</Project>
-      <Name>BlokScript.Parsers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Parser\BlokScript.Parser.csproj">
-      <Project>{f1806724-a813-4a9a-a02a-06cfae302081}</Project>
-      <Name>BlokScript.Parser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.PathFactories\BlokScript.PathFactories.csproj">
-      <Project>{a4f0937d-f08c-4ced-ac66-3a274c686e56}</Project>
-      <Name>BlokScript.PathFactories</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.ResponseReaders\BlokScript.ResponseReaders.csproj">
-      <Project>{8f58ef22-1265-4cc9-99f1-6e3da6752aa1}</Project>
-      <Name>BlokScript.ResponseReaders</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Serializers\BlokScript.Serializers.csproj">
-      <Project>{6c62ce13-65f6-4ed0-b381-1c65d03539fc}</Project>
-      <Name>BlokScript.Serializers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.Utils\BlokScript.Utils.csproj">
-      <Project>{d635f676-361d-4275-a0bd-c0e04871b67b}</Project>
-      <Name>BlokScript.Utils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BlokScript.WebClients\BlokScript.WebClients.csproj">
-      <Project>{959d0dd1-42a8-4f00-87e6-8cdf6c622d4a}</Project>
-      <Name>BlokScript.WebClients</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

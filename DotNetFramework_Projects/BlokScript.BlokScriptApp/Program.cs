@@ -3,9 +3,6 @@ using System.Configuration;
 using System.IO;
 using System.Text;
 
-using log4net;
-using log4net.Config;
-
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Antlr4.Runtime.Misc;
@@ -30,23 +27,14 @@ namespace BlokScript.BlokScriptApp
 			_BaseDir = Directory.GetCurrentDirectory();
 			_ConfigDir = _BaseDir;
 
-			//
-			// START THE LOG.
-			//
-			string Log4NetConfigPath = _ConfigDir + "\\log4net.config.xml";
-			XmlConfigurator.ConfigureAndWatch(new FileInfo(Log4NetConfigPath));
-			_Log = LogManager.GetLogger(typeof(Program));
-			_Log.Debug("Initialized the log.");
-			_Log.Info("Started.");
-
 			try
 			{
 				MainInternal(Args);
 			}
 			catch (Exception E)
 			{
-				_Log.Error(E);
-				throw;
+				Console.WriteLine(E.Message);
+				Console.WriteLine(E.StackTrace);
 			}
 		}
 
@@ -99,7 +87,6 @@ namespace BlokScript.BlokScriptApp
 				//
 				if (!File.Exists(ScriptFilePath))
 				{
-					_Log.Error("Could not open script file.");
 					return;
 				}
 
@@ -157,6 +144,5 @@ namespace BlokScript.BlokScriptApp
 		private static DateTime _CurrentDateTime;
 		private static string _BaseDir;
 		private static string _ConfigDir;
-		public static ILog _Log;
 	}
 }
