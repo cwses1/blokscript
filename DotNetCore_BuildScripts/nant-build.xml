@@ -26,4 +26,10 @@
 		</exec>
 	</target>
 
+	<target name="pack">
+		<exec program="dotnet" workingdir="${DotNetCore_ProjectsDir}">
+			<arg value="pack" />
+		</exec>
+	</target>
+
 </project>

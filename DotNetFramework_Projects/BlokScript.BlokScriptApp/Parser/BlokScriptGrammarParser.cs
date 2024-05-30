@@ -58,79 +58,84 @@ public partial class BlokScriptGrammarParser : Parser {
 		RULE_script = 0, RULE_statementList = 1, RULE_statement = 2, RULE_createDatasourceStatement = 3, 
 		RULE_deleteDatasourceStatement = 4, RULE_updateDatasourceStatement = 5, 
 		RULE_datasourceUpdateList = 6, RULE_datasourceUpdate = 7, RULE_createDatasourceEntryStatement = 8, 
-		RULE_updateDatasourceEntriesStatement = 9, RULE_deleteDatasourceEntriesStatement = 10, 
-		RULE_copyDatasourceEntriesStatement = 11, RULE_syncDatasourceEntriesStatement = 12, 
-		RULE_datasourceEntryCopyOptionList = 13, RULE_datasourceEntryCopyOption = 14, 
-		RULE_datasourceEntryUpdateList = 15, RULE_datasourceEntryUpdate = 16, 
-		RULE_datasourceEntriesSourceLocation = 17, RULE_urlSpec = 18, RULE_datasourceEntriesTargetLocation = 19, 
-		RULE_datasourceEntryConstraintExprList = 20, RULE_datasourceEntryConstraintExpr = 21, 
-		RULE_datasourceEntryConstraint = 22, RULE_loginStatement = 23, RULE_loginOnlyStatement = 24, 
-		RULE_loginWithGlobalUserNameStatement = 25, RULE_loginWithGlobalPasswordStatement = 26, 
-		RULE_loginWithGlobalTokenStatement = 27, RULE_loginWithGlobalUserNameAndPasswordStatement = 28, 
-		RULE_varStatement = 29, RULE_spaceVarStatement = 30, RULE_blockVarStatement = 31, 
-		RULE_stringVarStatement = 32, RULE_regexVarStatement = 33, RULE_storyVarStatement = 34, 
-		RULE_datasourceEntryVarStatement = 35, RULE_spaceSpec = 36, RULE_shortSpaceSpec = 37, 
-		RULE_blockSpec = 38, RULE_storySpec = 39, RULE_datasourceEntrySpec = 40, 
-		RULE_datasourceSpec = 41, RULE_datasourceShortSpec = 42, RULE_assignmentStatement = 43, 
-		RULE_spaceAssignmentStatement = 44, RULE_blockAssignmentStatement = 45, 
-		RULE_stringAssignmentStatement = 46, RULE_copySpacesStatement = 47, RULE_printStatement = 48, 
-		RULE_printSpacesStatement = 49, RULE_printVarStatement = 50, RULE_printSpaceStatement = 51, 
-		RULE_printStringLiteralStatement = 52, RULE_printSymbolTableStatement = 53, 
-		RULE_printLocalCacheStatement = 54, RULE_realDataLocation = 55, RULE_spacesOutputLocation = 56, 
-		RULE_fileSpec = 57, RULE_blockOutputLocation = 58, RULE_blocksOutputLocation = 59, 
-		RULE_storyOutputLocation = 60, RULE_filesSpec = 61, RULE_spaceOutputLocation = 62, 
-		RULE_varGetFrom = 63, RULE_createBlockStatement = 64, RULE_updateBlocksStatement = 65, 
-		RULE_copyBlocksStatement = 66, RULE_deleteBlocksStatement = 67, RULE_blockConstraintExprList = 68, 
-		RULE_blockConstraintExpr = 69, RULE_blockConstraint = 70, RULE_blockUpdateList = 71, 
-		RULE_blockUpdate = 72, RULE_intExprList = 73, RULE_intExpr = 74, RULE_verbosityStatement = 75, 
-		RULE_waitStatement = 76, RULE_compareStatement = 77, RULE_compareSpacesStatement = 78, 
-		RULE_compareBlocksStatement = 79, RULE_compareAllBlocksStatement = 80, 
-		RULE_storiesInputLocation = 81, RULE_storiesOutputLocation = 82, RULE_copyStoriesStatement = 83, 
-		RULE_publishStoriesStatement = 84, RULE_unpublishStoriesStatement = 85, 
-		RULE_deleteStoriesStatement = 86, RULE_storyConstraintExprList = 87, RULE_storyConstraintExpr = 88, 
-		RULE_storyConstraint = 89, RULE_regexExpr = 90, RULE_regexExprList = 91, 
-		RULE_copyDatasourcesStatement = 92, RULE_updateDatasourcesStatement = 93, 
-		RULE_deleteDatasourcesStatement = 94, RULE_syncDatasourcesStatement = 95, 
-		RULE_datasourceConstraintExprList = 96, RULE_datasourceConstraintExpr = 97, 
-		RULE_datasourceConstraint = 98, RULE_stringExprList = 99, RULE_stringExpr = 100, 
-		RULE_forEachStatement = 101;
+		RULE_deleteDatasourceEntryStatement = 9, RULE_updateDatasourceEntryStatement = 10, 
+		RULE_datasourceEntryFullSpec = 11, RULE_datasourceEntryShortSpec = 12, 
+		RULE_datasourceEntryIdentifier = 13, RULE_updateDatasourceEntriesStatement = 14, 
+		RULE_deleteDatasourceEntriesStatement = 15, RULE_copyDatasourceEntriesStatement = 16, 
+		RULE_syncDatasourceEntriesStatement = 17, RULE_datasourceEntryCopyOptionList = 18, 
+		RULE_datasourceEntryCopyOption = 19, RULE_datasourceEntryUpdateList = 20, 
+		RULE_datasourceEntryUpdate = 21, RULE_datasourceEntriesSourceLocation = 22, 
+		RULE_urlSpec = 23, RULE_datasourceEntriesTargetLocation = 24, RULE_datasourceEntryConstraintExprList = 25, 
+		RULE_datasourceEntryConstraintExpr = 26, RULE_datasourceEntryConstraint = 27, 
+		RULE_loginStatement = 28, RULE_loginOnlyStatement = 29, RULE_loginWithGlobalUserNameStatement = 30, 
+		RULE_loginWithGlobalPasswordStatement = 31, RULE_loginWithGlobalTokenStatement = 32, 
+		RULE_loginWithGlobalUserNameAndPasswordStatement = 33, RULE_varStatement = 34, 
+		RULE_spaceVarStatement = 35, RULE_blockVarStatement = 36, RULE_stringVarStatement = 37, 
+		RULE_regexVarStatement = 38, RULE_storyVarStatement = 39, RULE_datasourceEntryVarStatement = 40, 
+		RULE_spaceSpec = 41, RULE_shortSpaceSpec = 42, RULE_longOrShortSpaceSpec = 43, 
+		RULE_blockSpec = 44, RULE_storySpec = 45, RULE_datasourceEntrySpec = 46, 
+		RULE_datasourceSpec = 47, RULE_datasourceShortSpec = 48, RULE_assignmentStatement = 49, 
+		RULE_spaceAssignmentStatement = 50, RULE_blockAssignmentStatement = 51, 
+		RULE_stringAssignmentStatement = 52, RULE_copySpacesStatement = 53, RULE_printStatement = 54, 
+		RULE_printSpacesStatement = 55, RULE_printVarStatement = 56, RULE_printSpaceStatement = 57, 
+		RULE_printStringLiteralStatement = 58, RULE_printSymbolTableStatement = 59, 
+		RULE_printLocalCacheStatement = 60, RULE_realDataLocation = 61, RULE_spacesOutputLocation = 62, 
+		RULE_fileSpec = 63, RULE_blockOutputLocation = 64, RULE_blocksOutputLocation = 65, 
+		RULE_storyOutputLocation = 66, RULE_filesSpec = 67, RULE_spaceOutputLocation = 68, 
+		RULE_varGetFrom = 69, RULE_createBlockStatement = 70, RULE_updateBlocksStatement = 71, 
+		RULE_copyBlocksStatement = 72, RULE_deleteBlocksStatement = 73, RULE_blockConstraintExprList = 74, 
+		RULE_blockConstraintExpr = 75, RULE_blockConstraint = 76, RULE_blockUpdateList = 77, 
+		RULE_blockUpdate = 78, RULE_intExprList = 79, RULE_intExpr = 80, RULE_verbosityStatement = 81, 
+		RULE_waitStatement = 82, RULE_compareStatement = 83, RULE_compareSpacesStatement = 84, 
+		RULE_compareBlocksStatement = 85, RULE_compareAllBlocksStatement = 86, 
+		RULE_storiesInputLocation = 87, RULE_storiesOutputLocation = 88, RULE_copyStoriesStatement = 89, 
+		RULE_publishStoriesStatement = 90, RULE_unpublishStoriesStatement = 91, 
+		RULE_deleteStoriesStatement = 92, RULE_storyConstraintExprList = 93, RULE_storyConstraintExpr = 94, 
+		RULE_storyConstraint = 95, RULE_regexExpr = 96, RULE_regexExprList = 97, 
+		RULE_copyDatasourcesStatement = 98, RULE_updateDatasourcesStatement = 99, 
+		RULE_deleteDatasourcesStatement = 100, RULE_syncDatasourcesStatement = 101, 
+		RULE_datasourceConstraintExprList = 102, RULE_datasourceConstraintExpr = 103, 
+		RULE_datasourceConstraint = 104, RULE_stringExprList = 105, RULE_stringExpr = 106, 
+		RULE_forEachStatement = 107;
 	public static readonly string[] ruleNames = {
 		"script", "statementList", "statement", "createDatasourceStatement", "deleteDatasourceStatement", 
 		"updateDatasourceStatement", "datasourceUpdateList", "datasourceUpdate", 
-		"createDatasourceEntryStatement", "updateDatasourceEntriesStatement", 
-		"deleteDatasourceEntriesStatement", "copyDatasourceEntriesStatement", 
-		"syncDatasourceEntriesStatement", "datasourceEntryCopyOptionList", "datasourceEntryCopyOption", 
-		"datasourceEntryUpdateList", "datasourceEntryUpdate", "datasourceEntriesSourceLocation", 
-		"urlSpec", "datasourceEntriesTargetLocation", "datasourceEntryConstraintExprList", 
-		"datasourceEntryConstraintExpr", "datasourceEntryConstraint", "loginStatement", 
-		"loginOnlyStatement", "loginWithGlobalUserNameStatement", "loginWithGlobalPasswordStatement", 
-		"loginWithGlobalTokenStatement", "loginWithGlobalUserNameAndPasswordStatement", 
+		"createDatasourceEntryStatement", "deleteDatasourceEntryStatement", "updateDatasourceEntryStatement", 
+		"datasourceEntryFullSpec", "datasourceEntryShortSpec", "datasourceEntryIdentifier", 
+		"updateDatasourceEntriesStatement", "deleteDatasourceEntriesStatement", 
+		"copyDatasourceEntriesStatement", "syncDatasourceEntriesStatement", "datasourceEntryCopyOptionList", 
+		"datasourceEntryCopyOption", "datasourceEntryUpdateList", "datasourceEntryUpdate", 
+		"datasourceEntriesSourceLocation", "urlSpec", "datasourceEntriesTargetLocation", 
+		"datasourceEntryConstraintExprList", "datasourceEntryConstraintExpr", 
+		"datasourceEntryConstraint", "loginStatement", "loginOnlyStatement", "loginWithGlobalUserNameStatement", 
+		"loginWithGlobalPasswordStatement", "loginWithGlobalTokenStatement", "loginWithGlobalUserNameAndPasswordStatement", 
 		"varStatement", "spaceVarStatement", "blockVarStatement", "stringVarStatement", 
 		"regexVarStatement", "storyVarStatement", "datasourceEntryVarStatement", 
-		"spaceSpec", "shortSpaceSpec", "blockSpec", "storySpec", "datasourceEntrySpec", 
-		"datasourceSpec", "datasourceShortSpec", "assignmentStatement", "spaceAssignmentStatement", 
-		"blockAssignmentStatement", "stringAssignmentStatement", "copySpacesStatement", 
-		"printStatement", "printSpacesStatement", "printVarStatement", "printSpaceStatement", 
-		"printStringLiteralStatement", "printSymbolTableStatement", "printLocalCacheStatement", 
-		"realDataLocation", "spacesOutputLocation", "fileSpec", "blockOutputLocation", 
-		"blocksOutputLocation", "storyOutputLocation", "filesSpec", "spaceOutputLocation", 
-		"varGetFrom", "createBlockStatement", "updateBlocksStatement", "copyBlocksStatement", 
-		"deleteBlocksStatement", "blockConstraintExprList", "blockConstraintExpr", 
-		"blockConstraint", "blockUpdateList", "blockUpdate", "intExprList", "intExpr", 
-		"verbosityStatement", "waitStatement", "compareStatement", "compareSpacesStatement", 
-		"compareBlocksStatement", "compareAllBlocksStatement", "storiesInputLocation", 
-		"storiesOutputLocation", "copyStoriesStatement", "publishStoriesStatement", 
-		"unpublishStoriesStatement", "deleteStoriesStatement", "storyConstraintExprList", 
-		"storyConstraintExpr", "storyConstraint", "regexExpr", "regexExprList", 
-		"copyDatasourcesStatement", "updateDatasourcesStatement", "deleteDatasourcesStatement", 
-		"syncDatasourcesStatement", "datasourceConstraintExprList", "datasourceConstraintExpr", 
-		"datasourceConstraint", "stringExprList", "stringExpr", "forEachStatement"
+		"spaceSpec", "shortSpaceSpec", "longOrShortSpaceSpec", "blockSpec", "storySpec", 
+		"datasourceEntrySpec", "datasourceSpec", "datasourceShortSpec", "assignmentStatement", 
+		"spaceAssignmentStatement", "blockAssignmentStatement", "stringAssignmentStatement", 
+		"copySpacesStatement", "printStatement", "printSpacesStatement", "printVarStatement", 
+		"printSpaceStatement", "printStringLiteralStatement", "printSymbolTableStatement", 
+		"printLocalCacheStatement", "realDataLocation", "spacesOutputLocation", 
+		"fileSpec", "blockOutputLocation", "blocksOutputLocation", "storyOutputLocation", 
+		"filesSpec", "spaceOutputLocation", "varGetFrom", "createBlockStatement", 
+		"updateBlocksStatement", "copyBlocksStatement", "deleteBlocksStatement", 
+		"blockConstraintExprList", "blockConstraintExpr", "blockConstraint", "blockUpdateList", 
+		"blockUpdate", "intExprList", "intExpr", "verbosityStatement", "waitStatement", 
+		"compareStatement", "compareSpacesStatement", "compareBlocksStatement", 
+		"compareAllBlocksStatement", "storiesInputLocation", "storiesOutputLocation", 
+		"copyStoriesStatement", "publishStoriesStatement", "unpublishStoriesStatement", 
+		"deleteStoriesStatement", "storyConstraintExprList", "storyConstraintExpr", 
+		"storyConstraint", "regexExpr", "regexExprList", "copyDatasourcesStatement", 
+		"updateDatasourcesStatement", "deleteDatasourcesStatement", "syncDatasourcesStatement", 
+		"datasourceConstraintExprList", "datasourceConstraintExpr", "datasourceConstraint", 
+		"stringExprList", "stringExpr", "forEachStatement"
 	};
 
 	private static readonly string[] _LiteralNames = {
 		null, "'create'", "'datasource'", "'('", "')'", "'for'", "'in'", "'delete'", 
-		"'update'", "'set'", "','", "'name'", "'='", "'slug'", "'entry'", "'entries'", 
-		"'where'", "'copy'", "'from'", "'to'", "'sync'", "'skip'", "'updates'", 
+		"'update'", "'set'", "','", "'name'", "'='", "'slug'", "'entry'", "'from'", 
+		"'entries'", "'where'", "'copy'", "'to'", "'sync'", "'skip'", "'updates'", 
 		"'creates'", "'value'", "'local cache'", "'csv'", "'json'", "'url'", "'console'", 
 		"'and'", "'or'", "'id'", "'!='", "'not'", "'matches'", "'does'", "'match'", 
 		"'regex'", "'like'", "'starts'", "'start'", "'with'", "'ends'", "'end'", 
@@ -212,7 +217,7 @@ public partial class BlokScriptGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 204;
+			State = 216;
 			statementList();
 			}
 		}
@@ -259,22 +264,22 @@ public partial class BlokScriptGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 209;
+			State = 221;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			do {
 				{
 				{
-				State = 206;
+				State = 218;
 				statement();
-				State = 207;
+				State = 219;
 				Match(STATEMENTEND);
 				}
 				}
-				State = 211;
+				State = 223;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 106995950401225094L) != 0) || ((((_la - 83)) & ~0x3f) == 0 && ((1L << (_la - 83)) & 2097983L) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 106995950401356166L) != 0) || ((((_la - 83)) & ~0x3f) == 0 && ((1L << (_la - 83)) & 2097983L) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -309,21 +314,6 @@ public partial class BlokScriptGrammarParser : Parser {
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public CompareStatementContext compareStatement() {
 			return GetRuleContext<CompareStatementContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public CreateDatasourceEntryStatementContext createDatasourceEntryStatement() {
-			return GetRuleContext<CreateDatasourceEntryStatementContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public UpdateDatasourceEntriesStatementContext updateDatasourceEntriesStatement() {
-			return GetRuleContext<UpdateDatasourceEntriesStatementContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public DeleteDatasourceEntriesStatementContext deleteDatasourceEntriesStatement() {
-			return GetRuleContext<DeleteDatasourceEntriesStatementContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public CopyDatasourceEntriesStatementContext copyDatasourceEntriesStatement() {
-			return GetRuleContext<CopyDatasourceEntriesStatementContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public SyncDatasourceEntriesStatementContext syncDatasourceEntriesStatement() {
-			return GetRuleContext<SyncDatasourceEntriesStatementContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public CopyBlocksStatementContext copyBlocksStatement() {
 			return GetRuleContext<CopyBlocksStatementContext>(0);
@@ -361,6 +351,30 @@ public partial class BlokScriptGrammarParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public DeleteDatasourceStatementContext deleteDatasourceStatement() {
 			return GetRuleContext<DeleteDatasourceStatementContext>(0);
 		}
+		[System.Diagnostics.DebuggerNonUserCode] public CreateDatasourceEntryStatementContext createDatasourceEntryStatement() {
+			return GetRuleContext<CreateDatasourceEntryStatementContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DeleteDatasourceEntryStatementContext deleteDatasourceEntryStatement() {
+			return GetRuleContext<DeleteDatasourceEntryStatementContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public UpdateDatasourceEntryStatementContext updateDatasourceEntryStatement() {
+			return GetRuleContext<UpdateDatasourceEntryStatementContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public UpdateDatasourceEntriesStatementContext updateDatasourceEntriesStatement() {
+			return GetRuleContext<UpdateDatasourceEntriesStatementContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DeleteDatasourceEntriesStatementContext deleteDatasourceEntriesStatement() {
+			return GetRuleContext<DeleteDatasourceEntriesStatementContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public CopyDatasourceEntriesStatementContext copyDatasourceEntriesStatement() {
+			return GetRuleContext<CopyDatasourceEntriesStatementContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public SyncDatasourceEntriesStatementContext syncDatasourceEntriesStatement() {
+			return GetRuleContext<SyncDatasourceEntriesStatementContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public UpdateDatasourcesStatementContext updateDatasourcesStatement() {
+			return GetRuleContext<UpdateDatasourcesStatementContext>(0);
+		}
 		public StatementContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -379,182 +393,203 @@ public partial class BlokScriptGrammarParser : Parser {
 		StatementContext _localctx = new StatementContext(Context, State);
 		EnterRule(_localctx, 4, RULE_statement);
 		try {
-			State = 238;
+			State = 253;
 			ErrorHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(TokenStream,1,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 213;
+				State = 225;
 				loginStatement();
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 214;
+				State = 226;
 				varStatement();
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 215;
+				State = 227;
 				assignmentStatement();
 				}
 				break;
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 216;
+				State = 228;
 				printStatement();
 				}
 				break;
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 217;
+				State = 229;
 				verbosityStatement();
 				}
 				break;
 			case 6:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 218;
+				State = 230;
 				waitStatement();
 				}
 				break;
 			case 7:
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 219;
+				State = 231;
 				compareStatement();
 				}
 				break;
 			case 8:
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 220;
-				createDatasourceEntryStatement();
+				State = 232;
+				copyBlocksStatement();
 				}
 				break;
 			case 9:
 				EnterOuterAlt(_localctx, 9);
 				{
-				State = 221;
-				updateDatasourceEntriesStatement();
+				State = 233;
+				copySpacesStatement();
 				}
 				break;
 			case 10:
 				EnterOuterAlt(_localctx, 10);
 				{
-				State = 222;
-				deleteDatasourceEntriesStatement();
+				State = 234;
+				copyBlocksStatement();
 				}
 				break;
 			case 11:
 				EnterOuterAlt(_localctx, 11);
 				{
-				State = 223;
-				copyDatasourceEntriesStatement();
+				State = 235;
+				copyStoriesStatement();
 				}
 				break;
 			case 12:
 				EnterOuterAlt(_localctx, 12);
 				{
-				State = 224;
-				syncDatasourceEntriesStatement();
+				State = 236;
+				publishStoriesStatement();
 				}
 				break;
 			case 13:
 				EnterOuterAlt(_localctx, 13);
 				{
-				State = 225;
-				copyBlocksStatement();
+				State = 237;
+				unpublishStoriesStatement();
 				}
 				break;
 			case 14:
 				EnterOuterAlt(_localctx, 14);
 				{
-				State = 226;
-				copySpacesStatement();
+				State = 238;
+				deleteStoriesStatement();
 				}
 				break;
 			case 15:
 				EnterOuterAlt(_localctx, 15);
 				{
-				State = 227;
-				copyBlocksStatement();
+				State = 239;
+				copyDatasourcesStatement();
 				}
 				break;
 			case 16:
 				EnterOuterAlt(_localctx, 16);
 				{
-				State = 228;
-				copyStoriesStatement();
+				State = 240;
+				deleteBlocksStatement();
 				}
 				break;
 			case 17:
 				EnterOuterAlt(_localctx, 17);
 				{
-				State = 229;
-				publishStoriesStatement();
+				State = 241;
+				deleteDatasourcesStatement();
 				}
 				break;
 			case 18:
 				EnterOuterAlt(_localctx, 18);
 				{
-				State = 230;
-				unpublishStoriesStatement();
+				State = 242;
+				createDatasourceStatement();
 				}
 				break;
 			case 19:
 				EnterOuterAlt(_localctx, 19);
 				{
-				State = 231;
-				deleteStoriesStatement();
+				State = 243;
+				updateDatasourceStatement();
 				}
 				break;
 			case 20:
 				EnterOuterAlt(_localctx, 20);
 				{
-				State = 232;
-				copyDatasourcesStatement();
+				State = 244;
+				deleteDatasourceStatement();
 				}
 				break;
 			case 21:
 				EnterOuterAlt(_localctx, 21);
 				{
-				State = 233;
-				deleteBlocksStatement();
+				State = 245;
+				createDatasourceEntryStatement();
 				}
 				break;
 			case 22:
 				EnterOuterAlt(_localctx, 22);
 				{
-				State = 234;
-				deleteDatasourcesStatement();
+				State = 246;
+				deleteDatasourceEntryStatement();
 				}
 				break;
 			case 23:
 				EnterOuterAlt(_localctx, 23);
 				{
-				State = 235;
-				createDatasourceStatement();
+				State = 247;
+				updateDatasourceEntryStatement();
 				}
 				break;
 			case 24:
 				EnterOuterAlt(_localctx, 24);
 				{
-				State = 236;
-				updateDatasourceStatement();
+				State = 248;
+				updateDatasourceEntriesStatement();
 				}
 				break;
 			case 25:
 				EnterOuterAlt(_localctx, 25);
 				{
-				State = 237;
-				deleteDatasourceStatement();
+				State = 249;
+				deleteDatasourceEntriesStatement();
+				}
+				break;
+			case 26:
+				EnterOuterAlt(_localctx, 26);
+				{
+				State = 250;
+				copyDatasourceEntriesStatement();
+				}
+				break;
+			case 27:
+				EnterOuterAlt(_localctx, 27);
+				{
+				State = 251;
+				syncDatasourceEntriesStatement();
+				}
+				break;
+			case 28:
+				EnterOuterAlt(_localctx, 28);
+				{
+				State = 252;
+				updateDatasourcesStatement();
 				}
 				break;
 			}
@@ -571,14 +606,17 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class CreateDatasourceStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
-		}
 		[System.Diagnostics.DebuggerNonUserCode] public StringExprContext stringExpr() {
 			return GetRuleContext<StringExprContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public DatasourceUpdateListContext datasourceUpdateList() {
 			return GetRuleContext<DatasourceUpdateListContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
+			return GetRuleContext<SpaceSpecContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ShortSpaceSpecContext shortSpaceSpec() {
+			return GetRuleContext<ShortSpaceSpecContext>(0);
 		}
 		public CreateDatasourceStatementContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -601,34 +639,34 @@ public partial class BlokScriptGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 240;
+			State = 255;
 			Match(T__0);
-			State = 241;
+			State = 256;
 			Match(T__1);
-			State = 247;
+			State = 262;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case STRINGLITERAL:
 			case VARID:
 				{
-				State = 242;
+				State = 257;
 				stringExpr();
 				}
 				break;
 			case T__2:
 				{
-				State = 243;
+				State = 258;
 				Match(T__2);
-				State = 244;
+				State = 259;
 				datasourceUpdateList();
-				State = 245;
+				State = 260;
 				Match(T__3);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			State = 249;
+			State = 264;
 			_la = TokenStream.LA(1);
 			if ( !(_la==T__4 || _la==T__5) ) {
 			ErrorHandler.RecoverInline(this);
@@ -637,8 +675,26 @@ public partial class BlokScriptGrammarParser : Parser {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 250;
-			spaceSpec();
+			State = 267;
+			ErrorHandler.Sync(this);
+			switch (TokenStream.LA(1)) {
+			case T__50:
+			case VARID:
+				{
+				State = 265;
+				spaceSpec();
+				}
+				break;
+			case STRINGLITERAL:
+			case INTLITERAL:
+				{
+				State = 266;
+				shortSpaceSpec();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -679,22 +735,22 @@ public partial class BlokScriptGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 252;
+			State = 269;
 			Match(T__6);
-			State = 253;
+			State = 270;
 			Match(T__1);
-			State = 256;
+			State = 273;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,3,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,4,Context) ) {
 			case 1:
 				{
-				State = 254;
+				State = 271;
 				datasourceShortSpec();
 				}
 				break;
 			case 2:
 				{
-				State = 255;
+				State = 272;
 				datasourceSpec();
 				}
 				break;
@@ -742,29 +798,29 @@ public partial class BlokScriptGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 258;
+			State = 275;
 			Match(T__7);
-			State = 259;
+			State = 276;
 			Match(T__1);
-			State = 262;
+			State = 279;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,4,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,5,Context) ) {
 			case 1:
 				{
-				State = 260;
+				State = 277;
 				datasourceShortSpec();
 				}
 				break;
 			case 2:
 				{
-				State = 261;
+				State = 278;
 				datasourceSpec();
 				}
 				break;
 			}
-			State = 264;
+			State = 281;
 			Match(T__8);
-			State = 265;
+			State = 282;
 			datasourceUpdateList();
 			}
 		}
@@ -807,16 +863,16 @@ public partial class BlokScriptGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 267;
+			State = 284;
 			datasourceUpdate();
-			State = 270;
+			State = 287;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__9) {
 				{
-				State = 268;
+				State = 285;
 				Match(T__9);
-				State = 269;
+				State = 286;
 				datasourceUpdateList();
 				}
 			}
@@ -856,28 +912,28 @@ public partial class BlokScriptGrammarParser : Parser {
 		DatasourceUpdateContext _localctx = new DatasourceUpdateContext(Context, State);
 		EnterRule(_localctx, 14, RULE_datasourceUpdate);
 		try {
-			State = 278;
+			State = 295;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__10:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 272;
+				State = 289;
 				Match(T__10);
-				State = 273;
+				State = 290;
 				Match(T__11);
-				State = 274;
+				State = 291;
 				stringExpr();
 				}
 				break;
 			case T__12:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 275;
+				State = 292;
 				Match(T__12);
-				State = 276;
+				State = 293;
 				Match(T__11);
-				State = 277;
+				State = 294;
 				stringExpr();
 				}
 				break;
@@ -897,14 +953,17 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class CreateDatasourceEntryStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public DatasourceSpecContext datasourceSpec() {
-			return GetRuleContext<DatasourceSpecContext>(0);
-		}
 		[System.Diagnostics.DebuggerNonUserCode] public StringExprContext stringExpr() {
 			return GetRuleContext<StringExprContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public DatasourceEntryUpdateListContext datasourceEntryUpdateList() {
 			return GetRuleContext<DatasourceEntryUpdateListContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceSpecContext datasourceSpec() {
+			return GetRuleContext<DatasourceSpecContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceShortSpecContext datasourceShortSpec() {
+			return GetRuleContext<DatasourceShortSpecContext>(0);
 		}
 		public CreateDatasourceEntryStatementContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -927,33 +986,33 @@ public partial class BlokScriptGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 280;
+			State = 297;
 			Match(T__0);
-			State = 281;
+			State = 298;
 			Match(T__1);
-			State = 282;
+			State = 299;
 			Match(T__13);
-			State = 285;
+			State = 302;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case STRINGLITERAL:
 			case VARID:
 				{
-				State = 283;
+				State = 300;
 				stringExpr();
 				}
 				break;
 			case T__10:
 			case T__23:
 				{
-				State = 284;
+				State = 301;
 				datasourceEntryUpdateList();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			State = 287;
+			State = 304;
 			_la = TokenStream.LA(1);
 			if ( !(_la==T__4 || _la==T__5) ) {
 			ErrorHandler.RecoverInline(this);
@@ -962,8 +1021,294 @@ public partial class BlokScriptGrammarParser : Parser {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 288;
+			State = 307;
+			ErrorHandler.Sync(this);
+			switch ( Interpreter.AdaptivePredict(TokenStream,9,Context) ) {
+			case 1:
+				{
+				State = 305;
+				datasourceSpec();
+				}
+				break;
+			case 2:
+				{
+				State = 306;
+				datasourceShortSpec();
+				}
+				break;
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class DeleteDatasourceEntryStatementContext : ParserRuleContext {
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceEntryShortSpecContext datasourceEntryShortSpec() {
+			return GetRuleContext<DatasourceEntryShortSpecContext>(0);
+		}
+		public DeleteDatasourceEntryStatementContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_deleteDatasourceEntryStatement; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IBlokScriptGrammarVisitor<TResult> typedVisitor = visitor as IBlokScriptGrammarVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDeleteDatasourceEntryStatement(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public DeleteDatasourceEntryStatementContext deleteDatasourceEntryStatement() {
+		DeleteDatasourceEntryStatementContext _localctx = new DeleteDatasourceEntryStatementContext(Context, State);
+		EnterRule(_localctx, 18, RULE_deleteDatasourceEntryStatement);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 309;
+			Match(T__6);
+			State = 310;
+			Match(T__1);
+			State = 311;
+			Match(T__13);
+			State = 312;
+			datasourceEntryShortSpec();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class UpdateDatasourceEntryStatementContext : ParserRuleContext {
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceEntryShortSpecContext datasourceEntryShortSpec() {
+			return GetRuleContext<DatasourceEntryShortSpecContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceEntryUpdateListContext datasourceEntryUpdateList() {
+			return GetRuleContext<DatasourceEntryUpdateListContext>(0);
+		}
+		public UpdateDatasourceEntryStatementContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_updateDatasourceEntryStatement; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IBlokScriptGrammarVisitor<TResult> typedVisitor = visitor as IBlokScriptGrammarVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitUpdateDatasourceEntryStatement(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public UpdateDatasourceEntryStatementContext updateDatasourceEntryStatement() {
+		UpdateDatasourceEntryStatementContext _localctx = new UpdateDatasourceEntryStatementContext(Context, State);
+		EnterRule(_localctx, 20, RULE_updateDatasourceEntryStatement);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 314;
+			Match(T__7);
+			State = 315;
+			Match(T__1);
+			State = 316;
+			Match(T__13);
+			State = 317;
+			datasourceEntryShortSpec();
+			State = 318;
+			Match(T__8);
+			State = 319;
+			datasourceEntryUpdateList();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class DatasourceEntryFullSpecContext : ParserRuleContext {
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceEntryIdentifierContext datasourceEntryIdentifier() {
+			return GetRuleContext<DatasourceEntryIdentifierContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceSpecContext datasourceSpec() {
+			return GetRuleContext<DatasourceSpecContext>(0);
+		}
+		public DatasourceEntryFullSpecContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_datasourceEntryFullSpec; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IBlokScriptGrammarVisitor<TResult> typedVisitor = visitor as IBlokScriptGrammarVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDatasourceEntryFullSpec(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public DatasourceEntryFullSpecContext datasourceEntryFullSpec() {
+		DatasourceEntryFullSpecContext _localctx = new DatasourceEntryFullSpecContext(Context, State);
+		EnterRule(_localctx, 22, RULE_datasourceEntryFullSpec);
+		int _la;
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 321;
+			Match(T__1);
+			State = 322;
+			Match(T__13);
+			State = 323;
+			datasourceEntryIdentifier();
+			State = 324;
+			_la = TokenStream.LA(1);
+			if ( !(_la==T__5 || _la==T__14) ) {
+			ErrorHandler.RecoverInline(this);
+			}
+			else {
+				ErrorHandler.ReportMatch(this);
+			    Consume();
+			}
+			State = 325;
 			datasourceSpec();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class DatasourceEntryShortSpecContext : ParserRuleContext {
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceEntryIdentifierContext datasourceEntryIdentifier() {
+			return GetRuleContext<DatasourceEntryIdentifierContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceSpecContext datasourceSpec() {
+			return GetRuleContext<DatasourceSpecContext>(0);
+		}
+		public DatasourceEntryShortSpecContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_datasourceEntryShortSpec; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IBlokScriptGrammarVisitor<TResult> typedVisitor = visitor as IBlokScriptGrammarVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDatasourceEntryShortSpec(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public DatasourceEntryShortSpecContext datasourceEntryShortSpec() {
+		DatasourceEntryShortSpecContext _localctx = new DatasourceEntryShortSpecContext(Context, State);
+		EnterRule(_localctx, 24, RULE_datasourceEntryShortSpec);
+		int _la;
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 327;
+			datasourceEntryIdentifier();
+			State = 328;
+			_la = TokenStream.LA(1);
+			if ( !(_la==T__5 || _la==T__14) ) {
+			ErrorHandler.RecoverInline(this);
+			}
+			else {
+				ErrorHandler.ReportMatch(this);
+			    Consume();
+			}
+			State = 329;
+			datasourceSpec();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class DatasourceEntryIdentifierContext : ParserRuleContext {
+		[System.Diagnostics.DebuggerNonUserCode] public IntExprContext intExpr() {
+			return GetRuleContext<IntExprContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public StringExprContext stringExpr() {
+			return GetRuleContext<StringExprContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode VARID() { return GetToken(BlokScriptGrammarParser.VARID, 0); }
+		public DatasourceEntryIdentifierContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_datasourceEntryIdentifier; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IBlokScriptGrammarVisitor<TResult> typedVisitor = visitor as IBlokScriptGrammarVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDatasourceEntryIdentifier(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public DatasourceEntryIdentifierContext datasourceEntryIdentifier() {
+		DatasourceEntryIdentifierContext _localctx = new DatasourceEntryIdentifierContext(Context, State);
+		EnterRule(_localctx, 26, RULE_datasourceEntryIdentifier);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 334;
+			ErrorHandler.Sync(this);
+			switch ( Interpreter.AdaptivePredict(TokenStream,10,Context) ) {
+			case 1:
+				{
+				State = 331;
+				intExpr();
+				}
+				break;
+			case 2:
+				{
+				State = 332;
+				stringExpr();
+				}
+				break;
+			case 3:
+				{
+				State = 333;
+				Match(VARID);
+				}
+				break;
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -1003,33 +1348,33 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public UpdateDatasourceEntriesStatementContext updateDatasourceEntriesStatement() {
 		UpdateDatasourceEntriesStatementContext _localctx = new UpdateDatasourceEntriesStatementContext(Context, State);
-		EnterRule(_localctx, 18, RULE_updateDatasourceEntriesStatement);
+		EnterRule(_localctx, 28, RULE_updateDatasourceEntriesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 290;
+			State = 336;
 			Match(T__7);
-			State = 291;
+			State = 337;
 			Match(T__1);
-			State = 292;
-			Match(T__14);
-			State = 293;
+			State = 338;
+			Match(T__15);
+			State = 339;
 			Match(T__5);
-			State = 294;
+			State = 340;
 			datasourceSpec();
-			State = 295;
+			State = 341;
 			Match(T__8);
-			State = 296;
+			State = 342;
 			datasourceEntryUpdateList();
-			State = 299;
+			State = 345;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 297;
-				Match(T__15);
-				State = 298;
+				State = 343;
+				Match(T__16);
+				State = 344;
 				datasourceEntryConstraintExprList();
 				}
 			}
@@ -1051,6 +1396,9 @@ public partial class BlokScriptGrammarParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public DatasourceSpecContext datasourceSpec() {
 			return GetRuleContext<DatasourceSpecContext>(0);
 		}
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceShortSpecContext datasourceShortSpec() {
+			return GetRuleContext<DatasourceShortSpecContext>(0);
+		}
 		[System.Diagnostics.DebuggerNonUserCode] public DatasourceEntryConstraintExprListContext datasourceEntryConstraintExprList() {
 			return GetRuleContext<DatasourceEntryConstraintExprListContext>(0);
 		}
@@ -1070,29 +1418,50 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DeleteDatasourceEntriesStatementContext deleteDatasourceEntriesStatement() {
 		DeleteDatasourceEntriesStatementContext _localctx = new DeleteDatasourceEntriesStatementContext(Context, State);
-		EnterRule(_localctx, 20, RULE_deleteDatasourceEntriesStatement);
+		EnterRule(_localctx, 30, RULE_deleteDatasourceEntriesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 301;
+			State = 347;
 			Match(T__6);
-			State = 302;
+			State = 348;
 			Match(T__1);
-			State = 303;
-			Match(T__14);
-			State = 304;
-			Match(T__5);
-			State = 305;
-			datasourceSpec();
-			State = 308;
+			State = 349;
+			Match(T__15);
+			State = 350;
+			_la = TokenStream.LA(1);
+			if ( !(_la==T__5 || _la==T__14) ) {
+			ErrorHandler.RecoverInline(this);
+			}
+			else {
+				ErrorHandler.ReportMatch(this);
+			    Consume();
+			}
+			State = 353;
+			ErrorHandler.Sync(this);
+			switch ( Interpreter.AdaptivePredict(TokenStream,12,Context) ) {
+			case 1:
+				{
+				State = 351;
+				datasourceSpec();
+				}
+				break;
+			case 2:
+				{
+				State = 352;
+				datasourceShortSpec();
+				}
+				break;
+			}
+			State = 357;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 306;
-				Match(T__15);
-				State = 307;
+				State = 355;
+				Match(T__16);
+				State = 356;
 				datasourceEntryConstraintExprList();
 				}
 			}
@@ -1139,50 +1508,50 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public CopyDatasourceEntriesStatementContext copyDatasourceEntriesStatement() {
 		CopyDatasourceEntriesStatementContext _localctx = new CopyDatasourceEntriesStatementContext(Context, State);
-		EnterRule(_localctx, 22, RULE_copyDatasourceEntriesStatement);
+		EnterRule(_localctx, 32, RULE_copyDatasourceEntriesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 310;
-			Match(T__16);
-			State = 311;
+			State = 359;
+			Match(T__17);
+			State = 360;
 			Match(T__1);
-			State = 312;
-			Match(T__14);
-			State = 313;
+			State = 361;
+			Match(T__15);
+			State = 362;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 314;
+			State = 363;
 			datasourceEntriesSourceLocation();
-			State = 315;
+			State = 364;
 			Match(T__18);
-			State = 316;
+			State = 365;
 			datasourceEntriesTargetLocation();
-			State = 319;
+			State = 368;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 317;
-				Match(T__15);
-				State = 318;
+				State = 366;
+				Match(T__16);
+				State = 367;
 				datasourceEntryConstraintExprList();
 				}
 			}
 
-			State = 322;
+			State = 371;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__20) {
 				{
-				State = 321;
+				State = 370;
 				datasourceEntryCopyOptionList();
 				}
 			}
@@ -1226,40 +1595,40 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public SyncDatasourceEntriesStatementContext syncDatasourceEntriesStatement() {
 		SyncDatasourceEntriesStatementContext _localctx = new SyncDatasourceEntriesStatementContext(Context, State);
-		EnterRule(_localctx, 24, RULE_syncDatasourceEntriesStatement);
+		EnterRule(_localctx, 34, RULE_syncDatasourceEntriesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 324;
+			State = 373;
 			Match(T__19);
-			State = 325;
+			State = 374;
 			Match(T__1);
-			State = 326;
-			Match(T__14);
-			State = 327;
+			State = 375;
+			Match(T__15);
+			State = 376;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 328;
+			State = 377;
 			datasourceEntriesSourceLocation();
-			State = 329;
+			State = 378;
 			Match(T__18);
-			State = 330;
+			State = 379;
 			datasourceEntriesSourceLocation();
-			State = 333;
+			State = 382;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 331;
-				Match(T__15);
-				State = 332;
+				State = 380;
+				Match(T__16);
+				State = 381;
 				datasourceEntryConstraintExprList();
 				}
 			}
@@ -1300,21 +1669,21 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceEntryCopyOptionListContext datasourceEntryCopyOptionList() {
 		DatasourceEntryCopyOptionListContext _localctx = new DatasourceEntryCopyOptionListContext(Context, State);
-		EnterRule(_localctx, 26, RULE_datasourceEntryCopyOptionList);
+		EnterRule(_localctx, 36, RULE_datasourceEntryCopyOptionList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 335;
+			State = 384;
 			datasourceEntryCopyOption();
-			State = 338;
+			State = 387;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__9) {
 				{
-				State = 336;
+				State = 385;
 				Match(T__9);
-				State = 337;
+				State = 386;
 				datasourceEntryCopyOptionList();
 				}
 			}
@@ -1349,14 +1718,14 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceEntryCopyOptionContext datasourceEntryCopyOption() {
 		DatasourceEntryCopyOptionContext _localctx = new DatasourceEntryCopyOptionContext(Context, State);
-		EnterRule(_localctx, 28, RULE_datasourceEntryCopyOption);
+		EnterRule(_localctx, 38, RULE_datasourceEntryCopyOption);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 340;
+			State = 389;
 			Match(T__20);
-			State = 341;
+			State = 390;
 			_la = TokenStream.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 12583170L) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
@@ -1401,21 +1770,21 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceEntryUpdateListContext datasourceEntryUpdateList() {
 		DatasourceEntryUpdateListContext _localctx = new DatasourceEntryUpdateListContext(Context, State);
-		EnterRule(_localctx, 30, RULE_datasourceEntryUpdateList);
+		EnterRule(_localctx, 40, RULE_datasourceEntryUpdateList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 343;
+			State = 392;
 			datasourceEntryUpdate();
-			State = 346;
+			State = 395;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__9) {
 				{
-				State = 344;
+				State = 393;
 				Match(T__9);
-				State = 345;
+				State = 394;
 				datasourceEntryUpdateList();
 				}
 			}
@@ -1453,30 +1822,30 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceEntryUpdateContext datasourceEntryUpdate() {
 		DatasourceEntryUpdateContext _localctx = new DatasourceEntryUpdateContext(Context, State);
-		EnterRule(_localctx, 32, RULE_datasourceEntryUpdate);
+		EnterRule(_localctx, 42, RULE_datasourceEntryUpdate);
 		try {
-			State = 354;
+			State = 403;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__10:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 348;
+				State = 397;
 				Match(T__10);
-				State = 349;
+				State = 398;
 				Match(T__11);
-				State = 350;
+				State = 399;
 				stringExpr();
 				}
 				break;
 			case T__23:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 351;
+				State = 400;
 				Match(T__23);
-				State = 352;
+				State = 401;
 				Match(T__11);
-				State = 353;
+				State = 402;
 				stringExpr();
 				}
 				break;
@@ -1498,6 +1867,9 @@ public partial class BlokScriptGrammarParser : Parser {
 	public partial class DatasourceEntriesSourceLocationContext : ParserRuleContext {
 		[System.Diagnostics.DebuggerNonUserCode] public DatasourceSpecContext datasourceSpec() {
 			return GetRuleContext<DatasourceSpecContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceShortSpecContext datasourceShortSpec() {
+			return GetRuleContext<DatasourceShortSpecContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public UrlSpecContext urlSpec() {
 			return GetRuleContext<UrlSpecContext>(0);
@@ -1521,44 +1893,46 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceEntriesSourceLocationContext datasourceEntriesSourceLocation() {
 		DatasourceEntriesSourceLocationContext _localctx = new DatasourceEntriesSourceLocationContext(Context, State);
-		EnterRule(_localctx, 34, RULE_datasourceEntriesSourceLocation);
+		EnterRule(_localctx, 44, RULE_datasourceEntriesSourceLocation);
 		try {
-			State = 360;
+			State = 410;
 			ErrorHandler.Sync(this);
-			switch (TokenStream.LA(1)) {
-			case T__1:
-			case VARID:
+			switch ( Interpreter.AdaptivePredict(TokenStream,20,Context) ) {
+			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 356;
+				State = 405;
 				datasourceSpec();
 				}
 				break;
-			case T__25:
-			case T__26:
-			case T__27:
+			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 357;
+				State = 406;
+				datasourceShortSpec();
+				}
+				break;
+			case 3:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 407;
 				urlSpec();
 				}
 				break;
-			case T__61:
-				EnterOuterAlt(_localctx, 3);
+			case 4:
+				EnterOuterAlt(_localctx, 4);
 				{
-				State = 358;
+				State = 408;
 				fileSpec();
 				}
 				break;
-			case T__24:
-				EnterOuterAlt(_localctx, 4);
+			case 5:
+				EnterOuterAlt(_localctx, 5);
 				{
-				State = 359;
+				State = 409;
 				Match(T__24);
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1592,17 +1966,17 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public UrlSpecContext urlSpec() {
 		UrlSpecContext _localctx = new UrlSpecContext(Context, State);
-		EnterRule(_localctx, 36, RULE_urlSpec);
+		EnterRule(_localctx, 46, RULE_urlSpec);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 363;
+			State = 413;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__25 || _la==T__26) {
 				{
-				State = 362;
+				State = 412;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__25 || _la==T__26) ) {
 				ErrorHandler.RecoverInline(this);
@@ -1614,9 +1988,9 @@ public partial class BlokScriptGrammarParser : Parser {
 				}
 			}
 
-			State = 365;
+			State = 415;
 			Match(T__27);
-			State = 366;
+			State = 416;
 			stringExpr();
 			}
 		}
@@ -1634,6 +2008,9 @@ public partial class BlokScriptGrammarParser : Parser {
 	public partial class DatasourceEntriesTargetLocationContext : ParserRuleContext {
 		[System.Diagnostics.DebuggerNonUserCode] public DatasourceSpecContext datasourceSpec() {
 			return GetRuleContext<DatasourceSpecContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceShortSpecContext datasourceShortSpec() {
+			return GetRuleContext<DatasourceShortSpecContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public UrlSpecContext urlSpec() {
 			return GetRuleContext<UrlSpecContext>(0);
@@ -1657,51 +2034,53 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceEntriesTargetLocationContext datasourceEntriesTargetLocation() {
 		DatasourceEntriesTargetLocationContext _localctx = new DatasourceEntriesTargetLocationContext(Context, State);
-		EnterRule(_localctx, 38, RULE_datasourceEntriesTargetLocation);
+		EnterRule(_localctx, 48, RULE_datasourceEntriesTargetLocation);
 		try {
-			State = 373;
+			State = 424;
 			ErrorHandler.Sync(this);
-			switch (TokenStream.LA(1)) {
-			case T__1:
-			case VARID:
+			switch ( Interpreter.AdaptivePredict(TokenStream,22,Context) ) {
+			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 368;
+				State = 418;
 				datasourceSpec();
 				}
 				break;
-			case T__25:
-			case T__26:
-			case T__27:
+			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 369;
+				State = 419;
+				datasourceShortSpec();
+				}
+				break;
+			case 3:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 420;
 				urlSpec();
 				}
 				break;
-			case T__61:
-				EnterOuterAlt(_localctx, 3);
+			case 4:
+				EnterOuterAlt(_localctx, 4);
 				{
-				State = 370;
+				State = 421;
 				fileSpec();
 				}
 				break;
-			case T__24:
-				EnterOuterAlt(_localctx, 4);
+			case 5:
+				EnterOuterAlt(_localctx, 5);
 				{
-				State = 371;
+				State = 422;
 				Match(T__24);
 				}
 				break;
-			case T__28:
-				EnterOuterAlt(_localctx, 5);
+			case 6:
+				EnterOuterAlt(_localctx, 6);
 				{
-				State = 372;
+				State = 423;
 				Match(T__28);
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1738,19 +2117,19 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceEntryConstraintExprListContext datasourceEntryConstraintExprList() {
 		DatasourceEntryConstraintExprListContext _localctx = new DatasourceEntryConstraintExprListContext(Context, State);
-		EnterRule(_localctx, 40, RULE_datasourceEntryConstraintExprList);
+		EnterRule(_localctx, 50, RULE_datasourceEntryConstraintExprList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 375;
+			State = 426;
 			datasourceEntryConstraintExpr();
-			State = 378;
+			State = 429;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__29 || _la==T__30) {
 				{
-				State = 376;
+				State = 427;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__29 || _la==T__30) ) {
 				ErrorHandler.RecoverInline(this);
@@ -1759,7 +2138,7 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 377;
+				State = 428;
 				datasourceEntryConstraintExprList();
 				}
 			}
@@ -1803,23 +2182,23 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceEntryConstraintExprContext datasourceEntryConstraintExpr() {
 		DatasourceEntryConstraintExprContext _localctx = new DatasourceEntryConstraintExprContext(Context, State);
-		EnterRule(_localctx, 42, RULE_datasourceEntryConstraintExpr);
+		EnterRule(_localctx, 52, RULE_datasourceEntryConstraintExpr);
 		int _la;
 		try {
-			State = 401;
+			State = 452;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,23,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,27,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 380;
+				State = 431;
 				datasourceEntryConstraint();
-				State = 383;
+				State = 434;
 				ErrorHandler.Sync(this);
-				switch ( Interpreter.AdaptivePredict(TokenStream,20,Context) ) {
+				switch ( Interpreter.AdaptivePredict(TokenStream,24,Context) ) {
 				case 1:
 					{
-					State = 381;
+					State = 432;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -1828,7 +2207,7 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 382;
+					State = 433;
 					datasourceEntryConstraintExpr();
 					}
 					break;
@@ -1838,16 +2217,16 @@ public partial class BlokScriptGrammarParser : Parser {
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 385;
+				State = 436;
 				Match(T__2);
-				State = 386;
+				State = 437;
 				datasourceEntryConstraint();
-				State = 389;
+				State = 440;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__29 || _la==T__30) {
 					{
-					State = 387;
+					State = 438;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -1856,28 +2235,28 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 388;
+					State = 439;
 					datasourceEntryConstraintExpr();
 					}
 				}
 
-				State = 391;
+				State = 442;
 				Match(T__3);
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 393;
+				State = 444;
 				Match(T__2);
-				State = 394;
+				State = 445;
 				datasourceEntryConstraintExpr();
-				State = 397;
+				State = 448;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__29 || _la==T__30) {
 					{
-					State = 395;
+					State = 446;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -1886,12 +2265,12 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 396;
+					State = 447;
 					datasourceEntryConstraintExpr();
 					}
 				}
 
-				State = 399;
+				State = 450;
 				Match(T__3);
 				}
 				break;
@@ -1943,18 +2322,18 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceEntryConstraintContext datasourceEntryConstraint() {
 		DatasourceEntryConstraintContext _localctx = new DatasourceEntryConstraintContext(Context, State);
-		EnterRule(_localctx, 44, RULE_datasourceEntryConstraint);
+		EnterRule(_localctx, 54, RULE_datasourceEntryConstraint);
 		int _la;
 		try {
-			State = 474;
+			State = 525;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,33,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,37,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 403;
+				State = 454;
 				Match(T__31);
-				State = 404;
+				State = 455;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__11 || _la==T__32) ) {
 				ErrorHandler.RecoverInline(this);
@@ -1963,39 +2342,39 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 405;
+				State = 456;
 				intExpr();
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 406;
+				State = 457;
 				Match(T__31);
-				State = 408;
+				State = 459;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 407;
+					State = 458;
 					Match(T__33);
 					}
 				}
 
-				State = 410;
+				State = 461;
 				Match(T__5);
-				State = 411;
+				State = 462;
 				Match(T__2);
-				State = 412;
+				State = 463;
 				intExprList();
-				State = 413;
+				State = 464;
 				Match(T__3);
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 415;
+				State = 466;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__23) ) {
 				ErrorHandler.RecoverInline(this);
@@ -2004,7 +2383,7 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 416;
+				State = 467;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__11 || _la==T__32) ) {
 				ErrorHandler.RecoverInline(this);
@@ -2013,14 +2392,14 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 417;
+				State = 468;
 				stringExpr();
 				}
 				break;
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 418;
+				State = 469;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__23) ) {
 				ErrorHandler.RecoverInline(this);
@@ -2029,44 +2408,44 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 420;
+				State = 471;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 419;
+					State = 470;
 					Match(T__33);
 					}
 				}
 
-				State = 422;
+				State = 473;
 				Match(T__5);
-				State = 423;
+				State = 474;
 				Match(T__2);
-				State = 426;
+				State = 477;
 				ErrorHandler.Sync(this);
-				switch ( Interpreter.AdaptivePredict(TokenStream,26,Context) ) {
+				switch ( Interpreter.AdaptivePredict(TokenStream,30,Context) ) {
 				case 1:
 					{
-					State = 424;
+					State = 475;
 					stringExprList();
 					}
 					break;
 				case 2:
 					{
-					State = 425;
+					State = 476;
 					regexExprList();
 					}
 					break;
 				}
-				State = 428;
+				State = 479;
 				Match(T__3);
 				}
 				break;
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 430;
+				State = 481;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__23) ) {
 				ErrorHandler.RecoverInline(this);
@@ -2075,46 +2454,46 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 435;
+				State = 486;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__34:
 					{
-					State = 431;
+					State = 482;
 					Match(T__34);
 					}
 					break;
 				case T__35:
 					{
-					State = 432;
+					State = 483;
 					Match(T__35);
-					State = 433;
+					State = 484;
 					Match(T__33);
-					State = 434;
+					State = 485;
 					Match(T__36);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 438;
+				State = 489;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__37) {
 					{
-					State = 437;
+					State = 488;
 					Match(T__37);
 					}
 				}
 
-				State = 440;
+				State = 491;
 				regexExpr();
 				}
 				break;
 			case 6:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 441;
+				State = 492;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__23) ) {
 				ErrorHandler.RecoverInline(this);
@@ -2123,30 +2502,30 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 443;
+				State = 494;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 442;
+					State = 493;
 					Match(T__33);
 					}
 				}
 
-				State = 445;
+				State = 496;
 				Match(T__5);
-				State = 446;
+				State = 497;
 				Match(T__2);
-				State = 447;
+				State = 498;
 				stringExprList();
-				State = 448;
+				State = 499;
 				Match(T__3);
 				}
 				break;
 			case 7:
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 450;
+				State = 501;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__23) ) {
 				ErrorHandler.RecoverInline(this);
@@ -2155,26 +2534,26 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 452;
+				State = 503;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 451;
+					State = 502;
 					Match(T__33);
 					}
 				}
 
-				State = 454;
+				State = 505;
 				Match(T__38);
-				State = 455;
+				State = 506;
 				stringExpr();
 				}
 				break;
 			case 8:
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 456;
+				State = 507;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__23) ) {
 				ErrorHandler.RecoverInline(this);
@@ -2183,38 +2562,38 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 461;
+				State = 512;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__39:
 					{
-					State = 457;
+					State = 508;
 					Match(T__39);
 					}
 					break;
 				case T__35:
 					{
-					State = 458;
+					State = 509;
 					Match(T__35);
-					State = 459;
+					State = 510;
 					Match(T__33);
-					State = 460;
+					State = 511;
 					Match(T__40);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 463;
+				State = 514;
 				Match(T__41);
-				State = 464;
+				State = 515;
 				stringExpr();
 				}
 				break;
 			case 9:
 				EnterOuterAlt(_localctx, 9);
 				{
-				State = 465;
+				State = 516;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__23) ) {
 				ErrorHandler.RecoverInline(this);
@@ -2223,31 +2602,31 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 470;
+				State = 521;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__42:
 					{
-					State = 466;
+					State = 517;
 					Match(T__42);
 					}
 					break;
 				case T__35:
 					{
-					State = 467;
+					State = 518;
 					Match(T__35);
-					State = 468;
+					State = 519;
 					Match(T__33);
-					State = 469;
+					State = 520;
 					Match(T__43);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 472;
+				State = 523;
 				Match(T__41);
-				State = 473;
+				State = 524;
 				stringExpr();
 				}
 				break;
@@ -2296,43 +2675,43 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public LoginStatementContext loginStatement() {
 		LoginStatementContext _localctx = new LoginStatementContext(Context, State);
-		EnterRule(_localctx, 46, RULE_loginStatement);
+		EnterRule(_localctx, 56, RULE_loginStatement);
 		try {
-			State = 481;
+			State = 532;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,34,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,38,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 476;
+				State = 527;
 				loginOnlyStatement();
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 477;
+				State = 528;
 				loginWithGlobalUserNameStatement();
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 478;
+				State = 529;
 				loginWithGlobalPasswordStatement();
 				}
 				break;
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 479;
+				State = 530;
 				loginWithGlobalTokenStatement();
 				}
 				break;
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 480;
+				State = 531;
 				loginWithGlobalUserNameAndPasswordStatement();
 				}
 				break;
@@ -2366,11 +2745,11 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public LoginOnlyStatementContext loginOnlyStatement() {
 		LoginOnlyStatementContext _localctx = new LoginOnlyStatementContext(Context, State);
-		EnterRule(_localctx, 48, RULE_loginOnlyStatement);
+		EnterRule(_localctx, 58, RULE_loginOnlyStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 483;
+			State = 534;
 			Match(T__44);
 			}
 		}
@@ -2402,17 +2781,17 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public LoginWithGlobalUserNameStatementContext loginWithGlobalUserNameStatement() {
 		LoginWithGlobalUserNameStatementContext _localctx = new LoginWithGlobalUserNameStatementContext(Context, State);
-		EnterRule(_localctx, 50, RULE_loginWithGlobalUserNameStatement);
+		EnterRule(_localctx, 60, RULE_loginWithGlobalUserNameStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 485;
+			State = 536;
 			Match(T__44);
-			State = 486;
+			State = 537;
 			Match(T__41);
-			State = 487;
+			State = 538;
 			Match(T__45);
-			State = 488;
+			State = 539;
 			Match(T__46);
 			}
 		}
@@ -2444,17 +2823,17 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public LoginWithGlobalPasswordStatementContext loginWithGlobalPasswordStatement() {
 		LoginWithGlobalPasswordStatementContext _localctx = new LoginWithGlobalPasswordStatementContext(Context, State);
-		EnterRule(_localctx, 52, RULE_loginWithGlobalPasswordStatement);
+		EnterRule(_localctx, 62, RULE_loginWithGlobalPasswordStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 490;
+			State = 541;
 			Match(T__44);
-			State = 491;
+			State = 542;
 			Match(T__41);
-			State = 492;
+			State = 543;
 			Match(T__45);
-			State = 493;
+			State = 544;
 			Match(T__47);
 			}
 		}
@@ -2486,17 +2865,17 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public LoginWithGlobalTokenStatementContext loginWithGlobalTokenStatement() {
 		LoginWithGlobalTokenStatementContext _localctx = new LoginWithGlobalTokenStatementContext(Context, State);
-		EnterRule(_localctx, 54, RULE_loginWithGlobalTokenStatement);
+		EnterRule(_localctx, 64, RULE_loginWithGlobalTokenStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 495;
+			State = 546;
 			Match(T__44);
-			State = 496;
+			State = 547;
 			Match(T__41);
-			State = 497;
+			State = 548;
 			Match(T__45);
-			State = 498;
+			State = 549;
 			Match(T__48);
 			}
 		}
@@ -2528,21 +2907,21 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public LoginWithGlobalUserNameAndPasswordStatementContext loginWithGlobalUserNameAndPasswordStatement() {
 		LoginWithGlobalUserNameAndPasswordStatementContext _localctx = new LoginWithGlobalUserNameAndPasswordStatementContext(Context, State);
-		EnterRule(_localctx, 56, RULE_loginWithGlobalUserNameAndPasswordStatement);
+		EnterRule(_localctx, 66, RULE_loginWithGlobalUserNameAndPasswordStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 500;
+			State = 551;
 			Match(T__44);
-			State = 501;
+			State = 552;
 			Match(T__41);
-			State = 502;
+			State = 553;
 			Match(T__45);
-			State = 503;
+			State = 554;
 			Match(T__46);
-			State = 504;
+			State = 555;
 			Match(T__29);
-			State = 505;
+			State = 556;
 			Match(T__47);
 			}
 		}
@@ -2620,116 +2999,116 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public VarStatementContext varStatement() {
 		VarStatementContext _localctx = new VarStatementContext(Context, State);
-		EnterRule(_localctx, 58, RULE_varStatement);
+		EnterRule(_localctx, 68, RULE_varStatement);
 		try {
-			State = 527;
+			State = 578;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__50:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 507;
+				State = 558;
 				spaceVarStatement();
 				}
 				break;
 			case T__51:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 508;
+				State = 559;
 				blockVarStatement();
 				}
 				break;
 			case T__52:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 509;
+				State = 560;
 				stringVarStatement();
 				}
 				break;
 			case T__37:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 510;
+				State = 561;
 				regexVarStatement();
 				}
 				break;
 			case T__53:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 511;
+				State = 562;
 				storyVarStatement();
 				}
 				break;
 			case T__1:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 512;
+				State = 563;
 				datasourceEntryVarStatement();
 				}
 				break;
 			case T__49:
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 513;
+				State = 564;
 				Match(T__49);
-				State = 514;
+				State = 565;
 				Match(VARID);
-				State = 515;
+				State = 566;
 				Match(T__11);
-				State = 525;
+				State = 576;
 				ErrorHandler.Sync(this);
-				switch ( Interpreter.AdaptivePredict(TokenStream,35,Context) ) {
+				switch ( Interpreter.AdaptivePredict(TokenStream,39,Context) ) {
 				case 1:
 					{
-					State = 516;
+					State = 567;
 					Match(VARID);
 					}
 					break;
 				case 2:
 					{
-					State = 517;
+					State = 568;
 					spaceSpec();
 					}
 					break;
 				case 3:
 					{
-					State = 518;
+					State = 569;
 					blockSpec();
 					}
 					break;
 				case 4:
 					{
-					State = 519;
+					State = 570;
 					stringExpr();
 					}
 					break;
 				case 5:
 					{
-					State = 520;
+					State = 571;
 					regexExpr();
 					}
 					break;
 				case 6:
 					{
-					State = 521;
+					State = 572;
 					storySpec();
 					}
 					break;
 				case 7:
 					{
-					State = 522;
+					State = 573;
 					intExpr();
 					}
 					break;
 				case 8:
 					{
-					State = 523;
+					State = 574;
 					datasourceEntrySpec();
 					}
 					break;
 				case 9:
 					{
-					State = 524;
+					State = 575;
 					datasourceSpec();
 					}
 					break;
@@ -2772,23 +3151,23 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public SpaceVarStatementContext spaceVarStatement() {
 		SpaceVarStatementContext _localctx = new SpaceVarStatementContext(Context, State);
-		EnterRule(_localctx, 60, RULE_spaceVarStatement);
+		EnterRule(_localctx, 70, RULE_spaceVarStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 529;
+			State = 580;
 			Match(T__50);
-			State = 530;
+			State = 581;
 			Match(VARID);
-			State = 533;
+			State = 584;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__11) {
 				{
-				State = 531;
+				State = 582;
 				Match(T__11);
-				State = 532;
+				State = 583;
 				spaceSpec();
 				}
 			}
@@ -2827,23 +3206,23 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public BlockVarStatementContext blockVarStatement() {
 		BlockVarStatementContext _localctx = new BlockVarStatementContext(Context, State);
-		EnterRule(_localctx, 62, RULE_blockVarStatement);
+		EnterRule(_localctx, 72, RULE_blockVarStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 535;
+			State = 586;
 			Match(T__51);
-			State = 536;
+			State = 587;
 			Match(VARID);
-			State = 539;
+			State = 590;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__11) {
 				{
-				State = 537;
+				State = 588;
 				Match(T__11);
-				State = 538;
+				State = 589;
 				blockSpec();
 				}
 			}
@@ -2882,23 +3261,23 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StringVarStatementContext stringVarStatement() {
 		StringVarStatementContext _localctx = new StringVarStatementContext(Context, State);
-		EnterRule(_localctx, 64, RULE_stringVarStatement);
+		EnterRule(_localctx, 74, RULE_stringVarStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 541;
+			State = 592;
 			Match(T__52);
-			State = 542;
+			State = 593;
 			Match(VARID);
-			State = 545;
+			State = 596;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__11) {
 				{
-				State = 543;
+				State = 594;
 				Match(T__11);
-				State = 544;
+				State = 595;
 				stringExpr();
 				}
 			}
@@ -2937,23 +3316,23 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public RegexVarStatementContext regexVarStatement() {
 		RegexVarStatementContext _localctx = new RegexVarStatementContext(Context, State);
-		EnterRule(_localctx, 66, RULE_regexVarStatement);
+		EnterRule(_localctx, 76, RULE_regexVarStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 547;
+			State = 598;
 			Match(T__37);
-			State = 548;
+			State = 599;
 			Match(VARID);
-			State = 551;
+			State = 602;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__11) {
 				{
-				State = 549;
+				State = 600;
 				Match(T__11);
-				State = 550;
+				State = 601;
 				regexExpr();
 				}
 			}
@@ -2992,23 +3371,23 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StoryVarStatementContext storyVarStatement() {
 		StoryVarStatementContext _localctx = new StoryVarStatementContext(Context, State);
-		EnterRule(_localctx, 68, RULE_storyVarStatement);
+		EnterRule(_localctx, 78, RULE_storyVarStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 553;
+			State = 604;
 			Match(T__53);
-			State = 554;
+			State = 605;
 			Match(VARID);
-			State = 557;
+			State = 608;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__11) {
 				{
-				State = 555;
+				State = 606;
 				Match(T__11);
-				State = 556;
+				State = 607;
 				storySpec();
 				}
 			}
@@ -3047,25 +3426,25 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceEntryVarStatementContext datasourceEntryVarStatement() {
 		DatasourceEntryVarStatementContext _localctx = new DatasourceEntryVarStatementContext(Context, State);
-		EnterRule(_localctx, 70, RULE_datasourceEntryVarStatement);
+		EnterRule(_localctx, 80, RULE_datasourceEntryVarStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 559;
+			State = 610;
 			Match(T__1);
-			State = 560;
+			State = 611;
 			Match(T__13);
-			State = 561;
+			State = 612;
 			Match(VARID);
-			State = 564;
+			State = 615;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__11) {
 				{
-				State = 562;
+				State = 613;
 				Match(T__11);
-				State = 563;
+				State = 614;
 				datasourceEntrySpec();
 				}
 			}
@@ -3106,18 +3485,18 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public SpaceSpecContext spaceSpec() {
 		SpaceSpecContext _localctx = new SpaceSpecContext(Context, State);
-		EnterRule(_localctx, 72, RULE_spaceSpec);
+		EnterRule(_localctx, 82, RULE_spaceSpec);
 		int _la;
 		try {
-			State = 572;
+			State = 623;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__50:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 566;
+				State = 617;
 				Match(T__50);
-				State = 567;
+				State = 618;
 				_la = TokenStream.LA(1);
 				if ( !(((((_la - 103)) & ~0x3f) == 0 && ((1L << (_la - 103)) & 7L) != 0)) ) {
 				ErrorHandler.RecoverInline(this);
@@ -3126,12 +3505,12 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 569;
+				State = 620;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__5 || _la==T__63) {
 					{
-					State = 568;
+					State = 619;
 					varGetFrom();
 					}
 				}
@@ -3141,7 +3520,7 @@ public partial class BlokScriptGrammarParser : Parser {
 			case VARID:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 571;
+				State = 622;
 				Match(VARID);
 				}
 				break;
@@ -3179,12 +3558,12 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public ShortSpaceSpecContext shortSpaceSpec() {
 		ShortSpaceSpecContext _localctx = new ShortSpaceSpecContext(Context, State);
-		EnterRule(_localctx, 74, RULE_shortSpaceSpec);
+		EnterRule(_localctx, 84, RULE_shortSpaceSpec);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 574;
+			State = 625;
 			_la = TokenStream.LA(1);
 			if ( !(_la==STRINGLITERAL || _la==INTLITERAL) ) {
 			ErrorHandler.RecoverInline(this);
@@ -3193,6 +3572,65 @@ public partial class BlokScriptGrammarParser : Parser {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class LongOrShortSpaceSpecContext : ParserRuleContext {
+		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
+			return GetRuleContext<SpaceSpecContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ShortSpaceSpecContext shortSpaceSpec() {
+			return GetRuleContext<ShortSpaceSpecContext>(0);
+		}
+		public LongOrShortSpaceSpecContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_longOrShortSpaceSpec; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IBlokScriptGrammarVisitor<TResult> typedVisitor = visitor as IBlokScriptGrammarVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitLongOrShortSpaceSpec(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public LongOrShortSpaceSpecContext longOrShortSpaceSpec() {
+		LongOrShortSpaceSpecContext _localctx = new LongOrShortSpaceSpecContext(Context, State);
+		EnterRule(_localctx, 86, RULE_longOrShortSpaceSpec);
+		try {
+			State = 629;
+			ErrorHandler.Sync(this);
+			switch (TokenStream.LA(1)) {
+			case T__50:
+			case VARID:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 627;
+				spaceSpec();
+				}
+				break;
+			case STRINGLITERAL:
+			case INTLITERAL:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 628;
+				shortSpaceSpec();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -3231,33 +3669,33 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public BlockSpecContext blockSpec() {
 		BlockSpecContext _localctx = new BlockSpecContext(Context, State);
-		EnterRule(_localctx, 76, RULE_blockSpec);
+		EnterRule(_localctx, 88, RULE_blockSpec);
 		try {
-			State = 585;
+			State = 640;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,46,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,51,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 576;
+				State = 631;
 				Match(T__51);
-				State = 577;
+				State = 632;
 				Match(STRINGLITERAL);
-				State = 578;
+				State = 633;
 				Match(T__5);
-				State = 581;
+				State = 636;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__50:
 				case VARID:
 					{
-					State = 579;
+					State = 634;
 					spaceSpec();
 					}
 					break;
 				case T__61:
 					{
-					State = 580;
+					State = 635;
 					fileSpec();
 					}
 					break;
@@ -3269,9 +3707,9 @@ public partial class BlokScriptGrammarParser : Parser {
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 583;
+				State = 638;
 				Match(T__51);
-				State = 584;
+				State = 639;
 				Match(VARID);
 				}
 				break;
@@ -3314,16 +3752,16 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StorySpecContext storySpec() {
 		StorySpecContext _localctx = new StorySpecContext(Context, State);
-		EnterRule(_localctx, 78, RULE_storySpec);
+		EnterRule(_localctx, 90, RULE_storySpec);
 		int _la;
 		try {
-			State = 594;
+			State = 649;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,48,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,53,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 587;
+				State = 642;
 				_la = TokenStream.LA(1);
 				if ( !(((((_la - 103)) & ~0x3f) == 0 && ((1L << (_la - 103)) & 7L) != 0)) ) {
 				ErrorHandler.RecoverInline(this);
@@ -3332,28 +3770,28 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 588;
+				State = 643;
 				_la = TokenStream.LA(1);
-				if ( !(_la==T__5 || _la==T__17) ) {
+				if ( !(_la==T__5 || _la==T__14) ) {
 				ErrorHandler.RecoverInline(this);
 				}
 				else {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 591;
+				State = 646;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__50:
 				case VARID:
 					{
-					State = 589;
+					State = 644;
 					spaceSpec();
 					}
 					break;
 				case T__61:
 					{
-					State = 590;
+					State = 645;
 					fileSpec();
 					}
 					break;
@@ -3365,7 +3803,7 @@ public partial class BlokScriptGrammarParser : Parser {
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 593;
+				State = 648;
 				Match(VARID);
 				}
 				break;
@@ -3409,58 +3847,58 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceEntrySpecContext datasourceEntrySpec() {
 		DatasourceEntrySpecContext _localctx = new DatasourceEntrySpecContext(Context, State);
-		EnterRule(_localctx, 80, RULE_datasourceEntrySpec);
+		EnterRule(_localctx, 92, RULE_datasourceEntrySpec);
 		int _la;
 		try {
-			State = 606;
+			State = 661;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 596;
+				State = 651;
 				Match(T__1);
-				State = 597;
+				State = 652;
 				Match(T__13);
-				State = 601;
+				State = 656;
 				ErrorHandler.Sync(this);
-				switch ( Interpreter.AdaptivePredict(TokenStream,49,Context) ) {
+				switch ( Interpreter.AdaptivePredict(TokenStream,54,Context) ) {
 				case 1:
 					{
-					State = 598;
+					State = 653;
 					intExpr();
 					}
 					break;
 				case 2:
 					{
-					State = 599;
+					State = 654;
 					stringExpr();
 					}
 					break;
 				case 3:
 					{
-					State = 600;
+					State = 655;
 					Match(VARID);
 					}
 					break;
 				}
-				State = 603;
+				State = 658;
 				_la = TokenStream.LA(1);
-				if ( !(_la==T__5 || _la==T__17) ) {
+				if ( !(_la==T__5 || _la==T__14) ) {
 				ErrorHandler.RecoverInline(this);
 				}
 				else {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 604;
+				State = 659;
 				datasourceSpec();
 				}
 				break;
 			case VARID:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 605;
+				State = 660;
 				Match(VARID);
 				}
 				break;
@@ -3480,12 +3918,15 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class DatasourceSpecContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
-		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode VARID() { return GetToken(BlokScriptGrammarParser.VARID, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INTLITERAL() { return GetToken(BlokScriptGrammarParser.INTLITERAL, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRINGLITERAL() { return GetToken(BlokScriptGrammarParser.STRINGLITERAL, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
+			return GetRuleContext<SpaceSpecContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ShortSpaceSpecContext shortSpaceSpec() {
+			return GetRuleContext<ShortSpaceSpecContext>(0);
+		}
 		public DatasourceSpecContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -3502,18 +3943,18 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceSpecContext datasourceSpec() {
 		DatasourceSpecContext _localctx = new DatasourceSpecContext(Context, State);
-		EnterRule(_localctx, 82, RULE_datasourceSpec);
+		EnterRule(_localctx, 94, RULE_datasourceSpec);
 		int _la;
 		try {
-			State = 613;
+			State = 671;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 608;
+				State = 663;
 				Match(T__1);
-				State = 609;
+				State = 664;
 				_la = TokenStream.LA(1);
 				if ( !(((((_la - 103)) & ~0x3f) == 0 && ((1L << (_la - 103)) & 7L) != 0)) ) {
 				ErrorHandler.RecoverInline(this);
@@ -3522,16 +3963,41 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 610;
-				Match(T__5);
-				State = 611;
-				spaceSpec();
+				State = 665;
+				_la = TokenStream.LA(1);
+				if ( !(_la==T__5 || _la==T__14) ) {
+				ErrorHandler.RecoverInline(this);
+				}
+				else {
+					ErrorHandler.ReportMatch(this);
+				    Consume();
+				}
+				State = 668;
+				ErrorHandler.Sync(this);
+				switch (TokenStream.LA(1)) {
+				case T__50:
+				case VARID:
+					{
+					State = 666;
+					spaceSpec();
+					}
+					break;
+				case STRINGLITERAL:
+				case INTLITERAL:
+					{
+					State = 667;
+					shortSpaceSpec();
+					}
+					break;
+				default:
+					throw new NoViableAltException(this);
+				}
 				}
 				break;
 			case VARID:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 612;
+				State = 670;
 				Match(VARID);
 				}
 				break;
@@ -3551,12 +4017,15 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class DatasourceShortSpecContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
-		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode VARID() { return GetToken(BlokScriptGrammarParser.VARID, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INTLITERAL() { return GetToken(BlokScriptGrammarParser.INTLITERAL, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRINGLITERAL() { return GetToken(BlokScriptGrammarParser.STRINGLITERAL, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
+			return GetRuleContext<SpaceSpecContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ShortSpaceSpecContext shortSpaceSpec() {
+			return GetRuleContext<ShortSpaceSpecContext>(0);
+		}
 		public DatasourceShortSpecContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -3573,12 +4042,12 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceShortSpecContext datasourceShortSpec() {
 		DatasourceShortSpecContext _localctx = new DatasourceShortSpecContext(Context, State);
-		EnterRule(_localctx, 84, RULE_datasourceShortSpec);
+		EnterRule(_localctx, 96, RULE_datasourceShortSpec);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 615;
+			State = 673;
 			_la = TokenStream.LA(1);
 			if ( !(((((_la - 103)) & ~0x3f) == 0 && ((1L << (_la - 103)) & 7L) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
@@ -3587,10 +4056,28 @@ public partial class BlokScriptGrammarParser : Parser {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 616;
+			State = 674;
 			Match(T__5);
-			State = 617;
-			spaceSpec();
+			State = 677;
+			ErrorHandler.Sync(this);
+			switch (TokenStream.LA(1)) {
+			case T__50:
+			case VARID:
+				{
+				State = 675;
+				spaceSpec();
+				}
+				break;
+			case STRINGLITERAL:
+			case INTLITERAL:
+				{
+				State = 676;
+				shortSpaceSpec();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -3634,40 +4121,40 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public AssignmentStatementContext assignmentStatement() {
 		AssignmentStatementContext _localctx = new AssignmentStatementContext(Context, State);
-		EnterRule(_localctx, 86, RULE_assignmentStatement);
+		EnterRule(_localctx, 98, RULE_assignmentStatement);
 		try {
-			State = 625;
+			State = 685;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,52,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,59,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 619;
+				State = 679;
 				Match(VARID);
-				State = 620;
+				State = 680;
 				Match(T__11);
-				State = 621;
+				State = 681;
 				Match(VARID);
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 622;
+				State = 682;
 				spaceAssignmentStatement();
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 623;
+				State = 683;
 				stringAssignmentStatement();
 				}
 				break;
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 624;
+				State = 684;
 				blockAssignmentStatement();
 				}
 				break;
@@ -3705,15 +4192,15 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public SpaceAssignmentStatementContext spaceAssignmentStatement() {
 		SpaceAssignmentStatementContext _localctx = new SpaceAssignmentStatementContext(Context, State);
-		EnterRule(_localctx, 88, RULE_spaceAssignmentStatement);
+		EnterRule(_localctx, 100, RULE_spaceAssignmentStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 627;
+			State = 687;
 			Match(VARID);
-			State = 628;
+			State = 688;
 			Match(T__11);
-			State = 629;
+			State = 689;
 			spaceSpec();
 			}
 		}
@@ -3749,15 +4236,15 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public BlockAssignmentStatementContext blockAssignmentStatement() {
 		BlockAssignmentStatementContext _localctx = new BlockAssignmentStatementContext(Context, State);
-		EnterRule(_localctx, 90, RULE_blockAssignmentStatement);
+		EnterRule(_localctx, 102, RULE_blockAssignmentStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 631;
+			State = 691;
 			Match(VARID);
-			State = 632;
+			State = 692;
 			Match(T__11);
-			State = 633;
+			State = 693;
 			blockSpec();
 			}
 		}
@@ -3791,15 +4278,15 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StringAssignmentStatementContext stringAssignmentStatement() {
 		StringAssignmentStatementContext _localctx = new StringAssignmentStatementContext(Context, State);
-		EnterRule(_localctx, 92, RULE_stringAssignmentStatement);
+		EnterRule(_localctx, 104, RULE_stringAssignmentStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 635;
+			State = 695;
 			Match(VARID);
-			State = 636;
+			State = 696;
 			Match(T__11);
-			State = 637;
+			State = 697;
 			Match(STRINGLITERAL);
 			}
 		}
@@ -3837,30 +4324,30 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public CopySpacesStatementContext copySpacesStatement() {
 		CopySpacesStatementContext _localctx = new CopySpacesStatementContext(Context, State);
-		EnterRule(_localctx, 94, RULE_copySpacesStatement);
+		EnterRule(_localctx, 106, RULE_copySpacesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 639;
-			Match(T__16);
-			State = 640;
+			State = 699;
+			Match(T__17);
+			State = 700;
 			Match(T__54);
-			State = 643;
+			State = 703;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__17) {
+			if (_la==T__14) {
 				{
-				State = 641;
-				Match(T__17);
-				State = 642;
+				State = 701;
+				Match(T__14);
+				State = 702;
 				realDataLocation();
 				}
 			}
 
-			State = 645;
+			State = 705;
 			Match(T__18);
-			State = 646;
+			State = 706;
 			spacesOutputLocation();
 			}
 		}
@@ -3910,50 +4397,50 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public PrintStatementContext printStatement() {
 		PrintStatementContext _localctx = new PrintStatementContext(Context, State);
-		EnterRule(_localctx, 96, RULE_printStatement);
+		EnterRule(_localctx, 108, RULE_printStatement);
 		try {
-			State = 654;
+			State = 714;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,54,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,61,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 648;
+				State = 708;
 				printSpacesStatement();
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 649;
+				State = 709;
 				printVarStatement();
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 650;
+				State = 710;
 				printSpaceStatement();
 				}
 				break;
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 651;
+				State = 711;
 				printStringLiteralStatement();
 				}
 				break;
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 652;
+				State = 712;
 				printSymbolTableStatement();
 				}
 				break;
 			case 6:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 653;
+				State = 713;
 				printLocalCacheStatement();
 				}
 				break;
@@ -3990,17 +4477,17 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public PrintSpacesStatementContext printSpacesStatement() {
 		PrintSpacesStatementContext _localctx = new PrintSpacesStatementContext(Context, State);
-		EnterRule(_localctx, 98, RULE_printSpacesStatement);
+		EnterRule(_localctx, 110, RULE_printSpacesStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 656;
+			State = 716;
 			Match(T__55);
-			State = 657;
+			State = 717;
 			Match(T__54);
-			State = 658;
-			Match(T__17);
-			State = 659;
+			State = 718;
+			Match(T__14);
+			State = 719;
 			realDataLocation();
 			}
 		}
@@ -4033,13 +4520,13 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public PrintVarStatementContext printVarStatement() {
 		PrintVarStatementContext _localctx = new PrintVarStatementContext(Context, State);
-		EnterRule(_localctx, 100, RULE_printVarStatement);
+		EnterRule(_localctx, 112, RULE_printVarStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 661;
+			State = 721;
 			Match(T__55);
-			State = 662;
+			State = 722;
 			Match(VARID);
 			}
 		}
@@ -4073,16 +4560,16 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public PrintSpaceStatementContext printSpaceStatement() {
 		PrintSpaceStatementContext _localctx = new PrintSpaceStatementContext(Context, State);
-		EnterRule(_localctx, 102, RULE_printSpaceStatement);
+		EnterRule(_localctx, 114, RULE_printSpaceStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 664;
+			State = 724;
 			Match(T__55);
-			State = 665;
+			State = 725;
 			Match(T__50);
-			State = 666;
+			State = 726;
 			_la = TokenStream.LA(1);
 			if ( !(_la==STRINGLITERAL || _la==VARID) ) {
 			ErrorHandler.RecoverInline(this);
@@ -4122,13 +4609,13 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public PrintStringLiteralStatementContext printStringLiteralStatement() {
 		PrintStringLiteralStatementContext _localctx = new PrintStringLiteralStatementContext(Context, State);
-		EnterRule(_localctx, 104, RULE_printStringLiteralStatement);
+		EnterRule(_localctx, 116, RULE_printStringLiteralStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 668;
+			State = 728;
 			Match(T__55);
-			State = 669;
+			State = 729;
 			Match(STRINGLITERAL);
 			}
 		}
@@ -4160,15 +4647,15 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public PrintSymbolTableStatementContext printSymbolTableStatement() {
 		PrintSymbolTableStatementContext _localctx = new PrintSymbolTableStatementContext(Context, State);
-		EnterRule(_localctx, 106, RULE_printSymbolTableStatement);
+		EnterRule(_localctx, 118, RULE_printSymbolTableStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 671;
+			State = 731;
 			Match(T__55);
-			State = 672;
+			State = 732;
 			Match(T__56);
-			State = 673;
+			State = 733;
 			Match(T__57);
 			}
 		}
@@ -4200,15 +4687,15 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public PrintLocalCacheStatementContext printLocalCacheStatement() {
 		PrintLocalCacheStatementContext _localctx = new PrintLocalCacheStatementContext(Context, State);
-		EnterRule(_localctx, 108, RULE_printLocalCacheStatement);
+		EnterRule(_localctx, 120, RULE_printLocalCacheStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 675;
+			State = 735;
 			Match(T__55);
-			State = 676;
+			State = 736;
 			Match(T__58);
-			State = 677;
+			State = 737;
 			Match(T__59);
 			}
 		}
@@ -4240,24 +4727,24 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public RealDataLocationContext realDataLocation() {
 		RealDataLocationContext _localctx = new RealDataLocationContext(Context, State);
-		EnterRule(_localctx, 110, RULE_realDataLocation);
+		EnterRule(_localctx, 122, RULE_realDataLocation);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 682;
+			State = 742;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__60:
 				{
-				State = 679;
+				State = 739;
 				Match(T__60);
 				}
 				break;
 			case T__58:
 				{
-				State = 680;
+				State = 740;
 				Match(T__58);
-				State = 681;
+				State = 741;
 				Match(T__59);
 				}
 				break;
@@ -4297,31 +4784,31 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public SpacesOutputLocationContext spacesOutputLocation() {
 		SpacesOutputLocationContext _localctx = new SpacesOutputLocationContext(Context, State);
-		EnterRule(_localctx, 112, RULE_spacesOutputLocation);
+		EnterRule(_localctx, 124, RULE_spacesOutputLocation);
 		try {
-			State = 688;
+			State = 748;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__28:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 684;
+				State = 744;
 				Match(T__28);
 				}
 				break;
 			case T__58:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 685;
+				State = 745;
 				Match(T__58);
-				State = 686;
+				State = 746;
 				Match(T__59);
 				}
 				break;
 			case T__61:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 687;
+				State = 747;
 				fileSpec();
 				}
 				break;
@@ -4359,19 +4846,19 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public FileSpecContext fileSpec() {
 		FileSpecContext _localctx = new FileSpecContext(Context, State);
-		EnterRule(_localctx, 114, RULE_fileSpec);
+		EnterRule(_localctx, 126, RULE_fileSpec);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 690;
+			State = 750;
 			Match(T__61);
-			State = 692;
+			State = 752;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==STRINGLITERAL || _la==VARID) {
 				{
-				State = 691;
+				State = 751;
 				_la = TokenStream.LA(1);
 				if ( !(_la==STRINGLITERAL || _la==VARID) ) {
 				ErrorHandler.RecoverInline(this);
@@ -4417,39 +4904,39 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public BlockOutputLocationContext blockOutputLocation() {
 		BlockOutputLocationContext _localctx = new BlockOutputLocationContext(Context, State);
-		EnterRule(_localctx, 116, RULE_blockOutputLocation);
+		EnterRule(_localctx, 128, RULE_blockOutputLocation);
 		int _la;
 		try {
-			State = 702;
+			State = 762;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__28:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 694;
+				State = 754;
 				Match(T__28);
 				}
 				break;
 			case T__58:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 695;
+				State = 755;
 				Match(T__58);
-				State = 696;
+				State = 756;
 				Match(T__59);
 				}
 				break;
 			case T__61:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 697;
+				State = 757;
 				Match(T__61);
-				State = 699;
+				State = 759;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==STRINGLITERAL) {
 					{
-					State = 698;
+					State = 758;
 					Match(STRINGLITERAL);
 					}
 				}
@@ -4460,7 +4947,7 @@ public partial class BlokScriptGrammarParser : Parser {
 			case VARID:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 701;
+				State = 761;
 				spaceSpec();
 				}
 				break;
@@ -4486,8 +4973,8 @@ public partial class BlokScriptGrammarParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public FilesSpecContext filesSpec() {
 			return GetRuleContext<FilesSpecContext>(0);
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec() {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(0);
 		}
 		public BlocksOutputLocationContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -4505,47 +4992,49 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public BlocksOutputLocationContext blocksOutputLocation() {
 		BlocksOutputLocationContext _localctx = new BlocksOutputLocationContext(Context, State);
-		EnterRule(_localctx, 118, RULE_blocksOutputLocation);
+		EnterRule(_localctx, 130, RULE_blocksOutputLocation);
 		try {
-			State = 710;
+			State = 770;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__28:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 704;
+				State = 764;
 				Match(T__28);
 				}
 				break;
 			case T__58:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 705;
+				State = 765;
 				Match(T__58);
-				State = 706;
+				State = 766;
 				Match(T__59);
 				}
 				break;
 			case T__61:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 707;
+				State = 767;
 				fileSpec();
 				}
 				break;
 			case T__62:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 708;
+				State = 768;
 				filesSpec();
 				}
 				break;
 			case T__50:
+			case STRINGLITERAL:
 			case VARID:
+			case INTLITERAL:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 709;
-				spaceSpec();
+				State = 769;
+				longOrShortSpaceSpec();
 				}
 				break;
 			default:
@@ -4586,31 +5075,31 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StoryOutputLocationContext storyOutputLocation() {
 		StoryOutputLocationContext _localctx = new StoryOutputLocationContext(Context, State);
-		EnterRule(_localctx, 120, RULE_storyOutputLocation);
+		EnterRule(_localctx, 132, RULE_storyOutputLocation);
 		try {
-			State = 717;
+			State = 777;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__28:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 712;
+				State = 772;
 				Match(T__28);
 				}
 				break;
 			case T__58:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 713;
+				State = 773;
 				Match(T__58);
-				State = 714;
+				State = 774;
 				Match(T__59);
 				}
 				break;
 			case T__61:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 715;
+				State = 775;
 				fileSpec();
 				}
 				break;
@@ -4618,7 +5107,7 @@ public partial class BlokScriptGrammarParser : Parser {
 			case VARID:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 716;
+				State = 776;
 				spaceSpec();
 				}
 				break;
@@ -4654,11 +5143,11 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public FilesSpecContext filesSpec() {
 		FilesSpecContext _localctx = new FilesSpecContext(Context, State);
-		EnterRule(_localctx, 122, RULE_filesSpec);
+		EnterRule(_localctx, 134, RULE_filesSpec);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 719;
+			State = 779;
 			Match(T__62);
 			}
 		}
@@ -4693,31 +5182,31 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public SpaceOutputLocationContext spaceOutputLocation() {
 		SpaceOutputLocationContext _localctx = new SpaceOutputLocationContext(Context, State);
-		EnterRule(_localctx, 124, RULE_spaceOutputLocation);
+		EnterRule(_localctx, 136, RULE_spaceOutputLocation);
 		try {
-			State = 725;
+			State = 785;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__28:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 721;
+				State = 781;
 				Match(T__28);
 				}
 				break;
 			case T__58:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 722;
+				State = 782;
 				Match(T__58);
-				State = 723;
+				State = 783;
 				Match(T__59);
 				}
 				break;
 			case T__61:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 724;
+				State = 784;
 				fileSpec();
 				}
 				break;
@@ -4756,26 +5245,26 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public VarGetFromContext varGetFrom() {
 		VarGetFromContext _localctx = new VarGetFromContext(Context, State);
-		EnterRule(_localctx, 126, RULE_varGetFrom);
+		EnterRule(_localctx, 138, RULE_varGetFrom);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 731;
+			State = 791;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__63:
 				{
-				State = 727;
+				State = 787;
 				Match(T__63);
-				State = 728;
+				State = 788;
 				Match(T__60);
 				}
 				break;
 			case T__5:
 				{
-				State = 729;
+				State = 789;
 				Match(T__5);
-				State = 730;
+				State = 790;
 				fileSpec();
 				}
 				break;
@@ -4799,8 +5288,8 @@ public partial class BlokScriptGrammarParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public BlockUpdateListContext blockUpdateList() {
 			return GetRuleContext<BlockUpdateListContext>(0);
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec() {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(0);
 		}
 		public CreateBlockStatementContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -4818,24 +5307,24 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public CreateBlockStatementContext createBlockStatement() {
 		CreateBlockStatementContext _localctx = new CreateBlockStatementContext(Context, State);
-		EnterRule(_localctx, 128, RULE_createBlockStatement);
+		EnterRule(_localctx, 140, RULE_createBlockStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 733;
+			State = 793;
 			Match(T__0);
-			State = 734;
+			State = 794;
 			Match(T__51);
-			State = 735;
+			State = 795;
 			Match(T__2);
-			State = 736;
+			State = 796;
 			blockUpdateList();
-			State = 737;
+			State = 797;
 			Match(T__3);
-			State = 738;
+			State = 798;
 			Match(T__5);
-			State = 739;
-			spaceSpec();
+			State = 799;
+			longOrShortSpaceSpec();
 			}
 		}
 		catch (RecognitionException re) {
@@ -4850,8 +5339,8 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class UpdateBlocksStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec() {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public BlockUpdateListContext blockUpdateList() {
 			return GetRuleContext<BlockUpdateListContext>(0);
@@ -4875,31 +5364,31 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public UpdateBlocksStatementContext updateBlocksStatement() {
 		UpdateBlocksStatementContext _localctx = new UpdateBlocksStatementContext(Context, State);
-		EnterRule(_localctx, 130, RULE_updateBlocksStatement);
+		EnterRule(_localctx, 142, RULE_updateBlocksStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 741;
+			State = 801;
 			Match(T__7);
-			State = 742;
+			State = 802;
 			Match(T__64);
-			State = 743;
+			State = 803;
 			Match(T__5);
-			State = 744;
-			spaceSpec();
-			State = 745;
+			State = 804;
+			longOrShortSpaceSpec();
+			State = 805;
 			Match(T__8);
-			State = 746;
+			State = 806;
 			blockUpdateList();
-			State = 749;
+			State = 809;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 747;
-				Match(T__15);
-				State = 748;
+				State = 807;
+				Match(T__16);
+				State = 808;
 				blockConstraintExprList();
 				}
 			}
@@ -4918,8 +5407,8 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class CopyBlocksStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec() {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public BlocksOutputLocationContext blocksOutputLocation() {
 			return GetRuleContext<BlocksOutputLocationContext>(0);
@@ -4943,38 +5432,38 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public CopyBlocksStatementContext copyBlocksStatement() {
 		CopyBlocksStatementContext _localctx = new CopyBlocksStatementContext(Context, State);
-		EnterRule(_localctx, 132, RULE_copyBlocksStatement);
+		EnterRule(_localctx, 144, RULE_copyBlocksStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 751;
-			Match(T__16);
-			State = 752;
+			State = 811;
+			Match(T__17);
+			State = 812;
 			Match(T__64);
-			State = 753;
+			State = 813;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 754;
-			spaceSpec();
-			State = 755;
+			State = 814;
+			longOrShortSpaceSpec();
+			State = 815;
 			Match(T__18);
-			State = 756;
+			State = 816;
 			blocksOutputLocation();
-			State = 759;
+			State = 819;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 757;
-				Match(T__15);
-				State = 758;
+				State = 817;
+				Match(T__16);
+				State = 818;
 				blockConstraintExprList();
 				}
 			}
@@ -4993,8 +5482,8 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class DeleteBlocksStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec() {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public BlockConstraintExprListContext blockConstraintExprList() {
 			return GetRuleContext<BlockConstraintExprListContext>(0);
@@ -5015,34 +5504,34 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DeleteBlocksStatementContext deleteBlocksStatement() {
 		DeleteBlocksStatementContext _localctx = new DeleteBlocksStatementContext(Context, State);
-		EnterRule(_localctx, 134, RULE_deleteBlocksStatement);
+		EnterRule(_localctx, 146, RULE_deleteBlocksStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 761;
+			State = 821;
 			Match(T__6);
-			State = 762;
+			State = 822;
 			Match(T__64);
-			State = 763;
+			State = 823;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 764;
-			spaceSpec();
-			State = 767;
+			State = 824;
+			longOrShortSpaceSpec();
+			State = 827;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 765;
-				Match(T__15);
-				State = 766;
+				State = 825;
+				Match(T__16);
+				State = 826;
 				blockConstraintExprList();
 				}
 			}
@@ -5083,19 +5572,19 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public BlockConstraintExprListContext blockConstraintExprList() {
 		BlockConstraintExprListContext _localctx = new BlockConstraintExprListContext(Context, State);
-		EnterRule(_localctx, 136, RULE_blockConstraintExprList);
+		EnterRule(_localctx, 148, RULE_blockConstraintExprList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 769;
+			State = 829;
 			blockConstraintExpr();
-			State = 772;
+			State = 832;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__29 || _la==T__30) {
 				{
-				State = 770;
+				State = 830;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__29 || _la==T__30) ) {
 				ErrorHandler.RecoverInline(this);
@@ -5104,7 +5593,7 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 771;
+				State = 831;
 				blockConstraintExprList();
 				}
 			}
@@ -5148,23 +5637,23 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public BlockConstraintExprContext blockConstraintExpr() {
 		BlockConstraintExprContext _localctx = new BlockConstraintExprContext(Context, State);
-		EnterRule(_localctx, 138, RULE_blockConstraintExpr);
+		EnterRule(_localctx, 150, RULE_blockConstraintExpr);
 		int _la;
 		try {
-			State = 795;
+			State = 855;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,71,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,78,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 774;
+				State = 834;
 				blockConstraint();
-				State = 777;
+				State = 837;
 				ErrorHandler.Sync(this);
-				switch ( Interpreter.AdaptivePredict(TokenStream,68,Context) ) {
+				switch ( Interpreter.AdaptivePredict(TokenStream,75,Context) ) {
 				case 1:
 					{
-					State = 775;
+					State = 835;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -5173,7 +5662,7 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 776;
+					State = 836;
 					blockConstraintExpr();
 					}
 					break;
@@ -5183,16 +5672,16 @@ public partial class BlokScriptGrammarParser : Parser {
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 779;
+				State = 839;
 				Match(T__2);
-				State = 780;
+				State = 840;
 				blockConstraint();
-				State = 783;
+				State = 843;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__29 || _la==T__30) {
 					{
-					State = 781;
+					State = 841;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -5201,28 +5690,28 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 782;
+					State = 842;
 					blockConstraintExpr();
 					}
 				}
 
-				State = 785;
+				State = 845;
 				Match(T__3);
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 787;
+				State = 847;
 				Match(T__2);
-				State = 788;
+				State = 848;
 				blockConstraintExpr();
-				State = 791;
+				State = 851;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__29 || _la==T__30) {
 					{
-					State = 789;
+					State = 849;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -5231,12 +5720,12 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 790;
+					State = 850;
 					blockConstraintExpr();
 					}
 				}
 
-				State = 793;
+				State = 853;
 				Match(T__3);
 				}
 				break;
@@ -5288,18 +5777,18 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public BlockConstraintContext blockConstraint() {
 		BlockConstraintContext _localctx = new BlockConstraintContext(Context, State);
-		EnterRule(_localctx, 140, RULE_blockConstraint);
+		EnterRule(_localctx, 152, RULE_blockConstraint);
 		int _la;
 		try {
-			State = 865;
+			State = 925;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,80,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,87,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 797;
+				State = 857;
 				Match(T__31);
-				State = 798;
+				State = 858;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__11 || _la==T__32) ) {
 				ErrorHandler.RecoverInline(this);
@@ -5308,41 +5797,41 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 799;
+				State = 859;
 				intExpr();
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 800;
+				State = 860;
 				Match(T__31);
-				State = 802;
+				State = 862;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 801;
+					State = 861;
 					Match(T__33);
 					}
 				}
 
-				State = 804;
+				State = 864;
 				Match(T__5);
-				State = 805;
+				State = 865;
 				Match(T__2);
-				State = 806;
+				State = 866;
 				intExprList();
-				State = 807;
+				State = 867;
 				Match(T__3);
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 809;
+				State = 869;
 				Match(T__10);
-				State = 810;
+				State = 870;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__11 || _la==T__32) ) {
 				ErrorHandler.RecoverInline(this);
@@ -5351,185 +5840,185 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 811;
+				State = 871;
 				stringExpr();
 				}
 				break;
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 812;
+				State = 872;
 				Match(T__10);
-				State = 814;
+				State = 874;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 813;
+					State = 873;
 					Match(T__33);
 					}
 				}
 
-				State = 816;
+				State = 876;
 				Match(T__5);
-				State = 817;
+				State = 877;
 				Match(T__2);
-				State = 818;
+				State = 878;
 				stringExprList();
-				State = 819;
+				State = 879;
 				Match(T__3);
 				}
 				break;
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 821;
+				State = 881;
 				Match(T__10);
-				State = 826;
+				State = 886;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__34:
 					{
-					State = 822;
+					State = 882;
 					Match(T__34);
 					}
 					break;
 				case T__35:
 					{
-					State = 823;
+					State = 883;
 					Match(T__35);
-					State = 824;
+					State = 884;
 					Match(T__33);
-					State = 825;
+					State = 885;
 					Match(T__36);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 829;
+				State = 889;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__37) {
 					{
-					State = 828;
+					State = 888;
 					Match(T__37);
 					}
 				}
 
-				State = 831;
+				State = 891;
 				regexExpr();
 				}
 				break;
 			case 6:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 832;
+				State = 892;
 				Match(T__10);
-				State = 834;
+				State = 894;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 833;
+					State = 893;
 					Match(T__33);
 					}
 				}
 
-				State = 836;
+				State = 896;
 				Match(T__5);
-				State = 837;
+				State = 897;
 				Match(T__2);
-				State = 838;
+				State = 898;
 				regexExprList();
-				State = 839;
+				State = 899;
 				Match(T__3);
 				}
 				break;
 			case 7:
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 841;
+				State = 901;
 				Match(T__10);
-				State = 843;
+				State = 903;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 842;
+					State = 902;
 					Match(T__33);
 					}
 				}
 
-				State = 845;
+				State = 905;
 				Match(T__38);
-				State = 846;
+				State = 906;
 				stringExpr();
 				}
 				break;
 			case 8:
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 847;
+				State = 907;
 				Match(T__10);
-				State = 852;
+				State = 912;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__39:
 					{
-					State = 848;
+					State = 908;
 					Match(T__39);
 					}
 					break;
 				case T__35:
 					{
-					State = 849;
+					State = 909;
 					Match(T__35);
-					State = 850;
+					State = 910;
 					Match(T__33);
-					State = 851;
+					State = 911;
 					Match(T__40);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 854;
+				State = 914;
 				Match(T__41);
-				State = 855;
+				State = 915;
 				stringExpr();
 				}
 				break;
 			case 9:
 				EnterOuterAlt(_localctx, 9);
 				{
-				State = 856;
+				State = 916;
 				Match(T__10);
-				State = 861;
+				State = 921;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__42:
 					{
-					State = 857;
+					State = 917;
 					Match(T__42);
 					}
 					break;
 				case T__35:
 					{
-					State = 858;
+					State = 918;
 					Match(T__35);
-					State = 859;
+					State = 919;
 					Match(T__33);
-					State = 860;
+					State = 920;
 					Match(T__43);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 863;
+				State = 923;
 				Match(T__41);
-				State = 864;
+				State = 924;
 				stringExpr();
 				}
 				break;
@@ -5569,21 +6058,21 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public BlockUpdateListContext blockUpdateList() {
 		BlockUpdateListContext _localctx = new BlockUpdateListContext(Context, State);
-		EnterRule(_localctx, 142, RULE_blockUpdateList);
+		EnterRule(_localctx, 154, RULE_blockUpdateList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 867;
+			State = 927;
 			blockUpdate();
-			State = 870;
+			State = 930;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__9) {
 				{
-				State = 868;
+				State = 928;
 				Match(T__9);
-				State = 869;
+				State = 929;
 				blockUpdateList();
 				}
 			}
@@ -5621,46 +6110,46 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public BlockUpdateContext blockUpdate() {
 		BlockUpdateContext _localctx = new BlockUpdateContext(Context, State);
-		EnterRule(_localctx, 144, RULE_blockUpdate);
+		EnterRule(_localctx, 156, RULE_blockUpdate);
 		int _la;
 		try {
-			State = 901;
+			State = 961;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,82,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,89,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 872;
+				State = 932;
 				Match(T__65);
-				State = 873;
+				State = 933;
 				Match(T__10);
-				State = 874;
+				State = 934;
 				Match(T__11);
-				State = 875;
+				State = 935;
 				stringExpr();
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 876;
+				State = 936;
 				Match(T__66);
-				State = 877;
+				State = 937;
 				Match(T__10);
-				State = 878;
+				State = 938;
 				Match(T__11);
-				State = 879;
+				State = 939;
 				stringExpr();
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 880;
+				State = 940;
 				Match(T__67);
-				State = 881;
+				State = 941;
 				Match(T__11);
-				State = 882;
+				State = 942;
 				_la = TokenStream.LA(1);
 				if ( !(((((_la - 69)) & ~0x3f) == 0 && ((1L << (_la - 69)) & 7L) != 0)) ) {
 				ErrorHandler.RecoverInline(this);
@@ -5674,61 +6163,61 @@ public partial class BlokScriptGrammarParser : Parser {
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 883;
+				State = 943;
 				Match(T__71);
-				State = 884;
+				State = 944;
 				Match(T__72);
-				State = 885;
+				State = 945;
 				stringExpr();
 				}
 				break;
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 886;
+				State = 946;
 				Match(T__73);
-				State = 887;
+				State = 947;
 				Match(T__72);
-				State = 888;
+				State = 948;
 				stringExpr();
 				}
 				break;
 			case 6:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 889;
+				State = 949;
 				Match(T__74);
-				State = 890;
+				State = 950;
 				Match(T__75);
-				State = 891;
+				State = 951;
 				Match(T__11);
-				State = 892;
+				State = 952;
 				stringExpr();
 				}
 				break;
 			case 7:
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 893;
+				State = 953;
 				Match(T__74);
-				State = 894;
+				State = 954;
 				Match(T__76);
-				State = 895;
+				State = 955;
 				Match(T__11);
-				State = 896;
+				State = 956;
 				stringExpr();
 				}
 				break;
 			case 8:
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 897;
+				State = 957;
 				Match(T__74);
-				State = 898;
+				State = 958;
 				Match(T__77);
-				State = 899;
+				State = 959;
 				Match(T__11);
-				State = 900;
+				State = 960;
 				stringExpr();
 				}
 				break;
@@ -5768,21 +6257,21 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public IntExprListContext intExprList() {
 		IntExprListContext _localctx = new IntExprListContext(Context, State);
-		EnterRule(_localctx, 146, RULE_intExprList);
+		EnterRule(_localctx, 158, RULE_intExprList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 903;
+			State = 963;
 			intExpr();
-			State = 906;
+			State = 966;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__9) {
 				{
-				State = 904;
+				State = 964;
 				Match(T__9);
-				State = 905;
+				State = 965;
 				intExprList();
 				}
 			}
@@ -5822,12 +6311,12 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public IntExprContext intExpr() {
 		IntExprContext _localctx = new IntExprContext(Context, State);
-		EnterRule(_localctx, 148, RULE_intExpr);
+		EnterRule(_localctx, 160, RULE_intExpr);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 908;
+			State = 968;
 			_la = TokenStream.LA(1);
 			if ( !(_la==VARID || _la==INTLITERAL) ) {
 			ErrorHandler.RecoverInline(this);
@@ -5836,12 +6325,12 @@ public partial class BlokScriptGrammarParser : Parser {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 911;
+			State = 971;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (((((_la - 79)) & ~0x3f) == 0 && ((1L << (_la - 79)) & 15L) != 0)) {
 				{
-				State = 909;
+				State = 969;
 				_la = TokenStream.LA(1);
 				if ( !(((((_la - 79)) & ~0x3f) == 0 && ((1L << (_la - 79)) & 15L) != 0)) ) {
 				ErrorHandler.RecoverInline(this);
@@ -5850,7 +6339,7 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 910;
+				State = 970;
 				intExpr();
 				}
 			}
@@ -5885,22 +6374,22 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public VerbosityStatementContext verbosityStatement() {
 		VerbosityStatementContext _localctx = new VerbosityStatementContext(Context, State);
-		EnterRule(_localctx, 150, RULE_verbosityStatement);
+		EnterRule(_localctx, 162, RULE_verbosityStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 914;
+			State = 974;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__82) {
 				{
-				State = 913;
+				State = 973;
 				Match(T__82);
 				}
 			}
 
-			State = 916;
+			State = 976;
 			_la = TokenStream.LA(1);
 			if ( !(((((_la - 84)) & ~0x3f) == 0 && ((1L << (_la - 84)) & 7L) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
@@ -5940,13 +6429,13 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public WaitStatementContext waitStatement() {
 		WaitStatementContext _localctx = new WaitStatementContext(Context, State);
-		EnterRule(_localctx, 152, RULE_waitStatement);
+		EnterRule(_localctx, 164, RULE_waitStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 918;
+			State = 978;
 			Match(T__86);
-			State = 919;
+			State = 979;
 			Match(INTLITERAL);
 			}
 		}
@@ -5987,29 +6476,29 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public CompareStatementContext compareStatement() {
 		CompareStatementContext _localctx = new CompareStatementContext(Context, State);
-		EnterRule(_localctx, 154, RULE_compareStatement);
+		EnterRule(_localctx, 166, RULE_compareStatement);
 		try {
-			State = 924;
+			State = 984;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,86,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,93,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 921;
+				State = 981;
 				compareSpacesStatement();
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 922;
+				State = 982;
 				compareBlocksStatement();
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 923;
+				State = 983;
 				compareAllBlocksStatement();
 				}
 				break;
@@ -6049,17 +6538,17 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public CompareSpacesStatementContext compareSpacesStatement() {
 		CompareSpacesStatementContext _localctx = new CompareSpacesStatementContext(Context, State);
-		EnterRule(_localctx, 156, RULE_compareSpacesStatement);
+		EnterRule(_localctx, 168, RULE_compareSpacesStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 926;
+			State = 986;
 			Match(T__87);
-			State = 927;
+			State = 987;
 			spaceSpec();
-			State = 928;
+			State = 988;
 			Match(T__29);
-			State = 929;
+			State = 989;
 			spaceSpec();
 			}
 		}
@@ -6097,17 +6586,17 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public CompareBlocksStatementContext compareBlocksStatement() {
 		CompareBlocksStatementContext _localctx = new CompareBlocksStatementContext(Context, State);
-		EnterRule(_localctx, 158, RULE_compareBlocksStatement);
+		EnterRule(_localctx, 170, RULE_compareBlocksStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 931;
+			State = 991;
 			Match(T__87);
-			State = 932;
+			State = 992;
 			blockSpec();
-			State = 933;
+			State = 993;
 			Match(T__29);
-			State = 934;
+			State = 994;
 			blockSpec();
 			}
 		}
@@ -6145,23 +6634,23 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public CompareAllBlocksStatementContext compareAllBlocksStatement() {
 		CompareAllBlocksStatementContext _localctx = new CompareAllBlocksStatementContext(Context, State);
-		EnterRule(_localctx, 160, RULE_compareAllBlocksStatement);
+		EnterRule(_localctx, 172, RULE_compareAllBlocksStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 936;
+			State = 996;
 			Match(T__87);
-			State = 937;
+			State = 997;
 			Match(T__88);
-			State = 938;
+			State = 998;
 			Match(T__64);
-			State = 939;
+			State = 999;
 			Match(T__5);
-			State = 940;
+			State = 1000;
 			spaceSpec();
-			State = 941;
+			State = 1001;
 			Match(T__29);
-			State = 942;
+			State = 1002;
 			spaceSpec();
 			}
 		}
@@ -6205,31 +6694,31 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StoriesInputLocationContext storiesInputLocation() {
 		StoriesInputLocationContext _localctx = new StoriesInputLocationContext(Context, State);
-		EnterRule(_localctx, 162, RULE_storiesInputLocation);
+		EnterRule(_localctx, 174, RULE_storiesInputLocation);
 		try {
-			State = 950;
+			State = 1010;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__58:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 944;
+				State = 1004;
 				Match(T__58);
-				State = 945;
+				State = 1005;
 				Match(T__59);
 				}
 				break;
 			case T__61:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 946;
+				State = 1006;
 				fileSpec();
 				}
 				break;
 			case T__62:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 947;
+				State = 1007;
 				filesSpec();
 				}
 				break;
@@ -6237,7 +6726,7 @@ public partial class BlokScriptGrammarParser : Parser {
 			case VARID:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 948;
+				State = 1008;
 				spaceSpec();
 				}
 				break;
@@ -6245,7 +6734,7 @@ public partial class BlokScriptGrammarParser : Parser {
 			case INTLITERAL:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 949;
+				State = 1009;
 				shortSpaceSpec();
 				}
 				break;
@@ -6293,38 +6782,38 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StoriesOutputLocationContext storiesOutputLocation() {
 		StoriesOutputLocationContext _localctx = new StoriesOutputLocationContext(Context, State);
-		EnterRule(_localctx, 164, RULE_storiesOutputLocation);
+		EnterRule(_localctx, 176, RULE_storiesOutputLocation);
 		try {
-			State = 959;
+			State = 1019;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__28:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 952;
+				State = 1012;
 				Match(T__28);
 				}
 				break;
 			case T__58:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 953;
+				State = 1013;
 				Match(T__58);
-				State = 954;
+				State = 1014;
 				Match(T__59);
 				}
 				break;
 			case T__61:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 955;
+				State = 1015;
 				fileSpec();
 				}
 				break;
 			case T__62:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 956;
+				State = 1016;
 				filesSpec();
 				}
 				break;
@@ -6332,7 +6821,7 @@ public partial class BlokScriptGrammarParser : Parser {
 			case VARID:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 957;
+				State = 1017;
 				spaceSpec();
 				}
 				break;
@@ -6340,7 +6829,7 @@ public partial class BlokScriptGrammarParser : Parser {
 			case INTLITERAL:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 958;
+				State = 1018;
 				shortSpaceSpec();
 				}
 				break;
@@ -6385,38 +6874,38 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public CopyStoriesStatementContext copyStoriesStatement() {
 		CopyStoriesStatementContext _localctx = new CopyStoriesStatementContext(Context, State);
-		EnterRule(_localctx, 166, RULE_copyStoriesStatement);
+		EnterRule(_localctx, 178, RULE_copyStoriesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 961;
-			Match(T__16);
-			State = 962;
+			State = 1021;
+			Match(T__17);
+			State = 1022;
 			Match(T__89);
-			State = 963;
+			State = 1023;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 964;
+			State = 1024;
 			storiesInputLocation();
-			State = 965;
+			State = 1025;
 			Match(T__18);
-			State = 966;
+			State = 1026;
 			storiesOutputLocation();
-			State = 969;
+			State = 1029;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 967;
-				Match(T__15);
-				State = 968;
+				State = 1027;
+				Match(T__16);
+				State = 1028;
 				storyConstraintExprList();
 				}
 			}
@@ -6435,8 +6924,8 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class PublishStoriesStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec() {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public StoryConstraintExprListContext storyConstraintExprList() {
 			return GetRuleContext<StoryConstraintExprListContext>(0);
@@ -6457,34 +6946,34 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public PublishStoriesStatementContext publishStoriesStatement() {
 		PublishStoriesStatementContext _localctx = new PublishStoriesStatementContext(Context, State);
-		EnterRule(_localctx, 168, RULE_publishStoriesStatement);
+		EnterRule(_localctx, 180, RULE_publishStoriesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 971;
+			State = 1031;
 			Match(T__90);
-			State = 972;
+			State = 1032;
 			Match(T__89);
-			State = 973;
+			State = 1033;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 974;
-			spaceSpec();
-			State = 977;
+			State = 1034;
+			longOrShortSpaceSpec();
+			State = 1037;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 975;
-				Match(T__15);
-				State = 976;
+				State = 1035;
+				Match(T__16);
+				State = 1036;
 				storyConstraintExprList();
 				}
 			}
@@ -6503,8 +6992,8 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class UnpublishStoriesStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec() {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public StoryConstraintExprListContext storyConstraintExprList() {
 			return GetRuleContext<StoryConstraintExprListContext>(0);
@@ -6525,34 +7014,34 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public UnpublishStoriesStatementContext unpublishStoriesStatement() {
 		UnpublishStoriesStatementContext _localctx = new UnpublishStoriesStatementContext(Context, State);
-		EnterRule(_localctx, 170, RULE_unpublishStoriesStatement);
+		EnterRule(_localctx, 182, RULE_unpublishStoriesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 979;
+			State = 1039;
 			Match(T__91);
-			State = 980;
+			State = 1040;
 			Match(T__89);
-			State = 981;
+			State = 1041;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 982;
-			spaceSpec();
-			State = 985;
+			State = 1042;
+			longOrShortSpaceSpec();
+			State = 1045;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 983;
-				Match(T__15);
-				State = 984;
+				State = 1043;
+				Match(T__16);
+				State = 1044;
 				storyConstraintExprList();
 				}
 			}
@@ -6571,11 +7060,8 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class DeleteStoriesStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ShortSpaceSpecContext shortSpaceSpec() {
-			return GetRuleContext<ShortSpaceSpecContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec() {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public StoryConstraintExprListContext storyConstraintExprList() {
 			return GetRuleContext<StoryConstraintExprListContext>(0);
@@ -6596,52 +7082,34 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DeleteStoriesStatementContext deleteStoriesStatement() {
 		DeleteStoriesStatementContext _localctx = new DeleteStoriesStatementContext(Context, State);
-		EnterRule(_localctx, 172, RULE_deleteStoriesStatement);
+		EnterRule(_localctx, 184, RULE_deleteStoriesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 987;
+			State = 1047;
 			Match(T__6);
-			State = 988;
+			State = 1048;
 			Match(T__89);
-			State = 989;
+			State = 1049;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 992;
-			ErrorHandler.Sync(this);
-			switch (TokenStream.LA(1)) {
-			case T__50:
-			case VARID:
-				{
-				State = 990;
-				spaceSpec();
-				}
-				break;
-			case STRINGLITERAL:
-			case INTLITERAL:
-				{
-				State = 991;
-				shortSpaceSpec();
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-			State = 996;
+			State = 1050;
+			longOrShortSpaceSpec();
+			State = 1053;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 994;
-				Match(T__15);
-				State = 995;
+				State = 1051;
+				Match(T__16);
+				State = 1052;
 				storyConstraintExprList();
 				}
 			}
@@ -6682,19 +7150,19 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StoryConstraintExprListContext storyConstraintExprList() {
 		StoryConstraintExprListContext _localctx = new StoryConstraintExprListContext(Context, State);
-		EnterRule(_localctx, 174, RULE_storyConstraintExprList);
+		EnterRule(_localctx, 186, RULE_storyConstraintExprList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 998;
+			State = 1055;
 			storyConstraintExpr();
-			State = 1001;
+			State = 1058;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__29 || _la==T__30) {
 				{
-				State = 999;
+				State = 1056;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__29 || _la==T__30) ) {
 				ErrorHandler.RecoverInline(this);
@@ -6703,7 +7171,7 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1000;
+				State = 1057;
 				storyConstraintExprList();
 				}
 			}
@@ -6747,23 +7215,23 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StoryConstraintExprContext storyConstraintExpr() {
 		StoryConstraintExprContext _localctx = new StoryConstraintExprContext(Context, State);
-		EnterRule(_localctx, 176, RULE_storyConstraintExpr);
+		EnterRule(_localctx, 188, RULE_storyConstraintExpr);
 		int _la;
 		try {
-			State = 1024;
+			State = 1081;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,98,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,104,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 1003;
+				State = 1060;
 				storyConstraint();
-				State = 1006;
+				State = 1063;
 				ErrorHandler.Sync(this);
-				switch ( Interpreter.AdaptivePredict(TokenStream,95,Context) ) {
+				switch ( Interpreter.AdaptivePredict(TokenStream,101,Context) ) {
 				case 1:
 					{
-					State = 1004;
+					State = 1061;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -6772,7 +7240,7 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 1005;
+					State = 1062;
 					storyConstraintExpr();
 					}
 					break;
@@ -6782,16 +7250,16 @@ public partial class BlokScriptGrammarParser : Parser {
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 1008;
+				State = 1065;
 				Match(T__2);
-				State = 1009;
+				State = 1066;
 				storyConstraint();
-				State = 1012;
+				State = 1069;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__29 || _la==T__30) {
 					{
-					State = 1010;
+					State = 1067;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -6800,28 +7268,28 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 1011;
+					State = 1068;
 					storyConstraintExpr();
 					}
 				}
 
-				State = 1014;
+				State = 1071;
 				Match(T__3);
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 1016;
+				State = 1073;
 				Match(T__2);
-				State = 1017;
+				State = 1074;
 				storyConstraintExpr();
-				State = 1020;
+				State = 1077;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__29 || _la==T__30) {
 					{
-					State = 1018;
+					State = 1075;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -6830,12 +7298,12 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 1019;
+					State = 1076;
 					storyConstraintExpr();
 					}
 				}
 
-				State = 1022;
+				State = 1079;
 				Match(T__3);
 				}
 				break;
@@ -6887,18 +7355,18 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StoryConstraintContext storyConstraint() {
 		StoryConstraintContext _localctx = new StoryConstraintContext(Context, State);
-		EnterRule(_localctx, 178, RULE_storyConstraint);
+		EnterRule(_localctx, 190, RULE_storyConstraint);
 		int _la;
 		try {
-			State = 1237;
+			State = 1294;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,136,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,142,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 1026;
+				State = 1083;
 				Match(T__31);
-				State = 1027;
+				State = 1084;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__11 || _la==T__32) ) {
 				ErrorHandler.RecoverInline(this);
@@ -6907,39 +7375,39 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1028;
+				State = 1085;
 				intExpr();
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 1029;
+				State = 1086;
 				Match(T__31);
-				State = 1031;
+				State = 1088;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 1030;
+					State = 1087;
 					Match(T__33);
 					}
 				}
 
-				State = 1033;
+				State = 1090;
 				Match(T__5);
-				State = 1034;
+				State = 1091;
 				Match(T__2);
-				State = 1035;
+				State = 1092;
 				intExprList();
-				State = 1036;
+				State = 1093;
 				Match(T__3);
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 1038;
+				State = 1095;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__27) ) {
 				ErrorHandler.RecoverInline(this);
@@ -6948,7 +7416,7 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1039;
+				State = 1096;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__11 || _la==T__32) ) {
 				ErrorHandler.RecoverInline(this);
@@ -6957,14 +7425,14 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1040;
+				State = 1097;
 				stringExpr();
 				}
 				break;
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 1041;
+				State = 1098;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__27) ) {
 				ErrorHandler.RecoverInline(this);
@@ -6973,30 +7441,30 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1043;
+				State = 1100;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 1042;
+					State = 1099;
 					Match(T__33);
 					}
 				}
 
-				State = 1045;
+				State = 1102;
 				Match(T__5);
-				State = 1046;
+				State = 1103;
 				Match(T__2);
-				State = 1047;
+				State = 1104;
 				stringExprList();
-				State = 1048;
+				State = 1105;
 				Match(T__3);
 				}
 				break;
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 1050;
+				State = 1107;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__27) ) {
 				ErrorHandler.RecoverInline(this);
@@ -7005,46 +7473,46 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1055;
+				State = 1112;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__34:
 					{
-					State = 1051;
+					State = 1108;
 					Match(T__34);
 					}
 					break;
 				case T__35:
 					{
-					State = 1052;
+					State = 1109;
 					Match(T__35);
-					State = 1053;
+					State = 1110;
 					Match(T__33);
-					State = 1054;
+					State = 1111;
 					Match(T__36);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1058;
+				State = 1115;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__37) {
 					{
-					State = 1057;
+					State = 1114;
 					Match(T__37);
 					}
 				}
 
-				State = 1060;
+				State = 1117;
 				regexExpr();
 				}
 				break;
 			case 6:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 1061;
+				State = 1118;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__27) ) {
 				ErrorHandler.RecoverInline(this);
@@ -7053,30 +7521,30 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1063;
+				State = 1120;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 1062;
+					State = 1119;
 					Match(T__33);
 					}
 				}
 
-				State = 1065;
+				State = 1122;
 				Match(T__5);
-				State = 1066;
+				State = 1123;
 				Match(T__2);
-				State = 1067;
+				State = 1124;
 				stringExprList();
-				State = 1068;
+				State = 1125;
 				Match(T__3);
 				}
 				break;
 			case 7:
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 1070;
+				State = 1127;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__27) ) {
 				ErrorHandler.RecoverInline(this);
@@ -7085,26 +7553,26 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1072;
+				State = 1129;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 1071;
+					State = 1128;
 					Match(T__33);
 					}
 				}
 
-				State = 1074;
+				State = 1131;
 				Match(T__38);
-				State = 1075;
+				State = 1132;
 				stringExpr();
 				}
 				break;
 			case 8:
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 1076;
+				State = 1133;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__27) ) {
 				ErrorHandler.RecoverInline(this);
@@ -7113,38 +7581,38 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1081;
+				State = 1138;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__39:
 					{
-					State = 1077;
+					State = 1134;
 					Match(T__39);
 					}
 					break;
 				case T__35:
 					{
-					State = 1078;
+					State = 1135;
 					Match(T__35);
-					State = 1079;
+					State = 1136;
 					Match(T__33);
-					State = 1080;
+					State = 1137;
 					Match(T__40);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1083;
+				State = 1140;
 				Match(T__41);
-				State = 1084;
+				State = 1141;
 				stringExpr();
 				}
 				break;
 			case 9:
 				EnterOuterAlt(_localctx, 9);
 				{
-				State = 1085;
+				State = 1142;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__27) ) {
 				ErrorHandler.RecoverInline(this);
@@ -7153,55 +7621,55 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1090;
+				State = 1147;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__42:
 					{
-					State = 1086;
+					State = 1143;
 					Match(T__42);
 					}
 					break;
 				case T__35:
 					{
-					State = 1087;
+					State = 1144;
 					Match(T__35);
-					State = 1088;
+					State = 1145;
 					Match(T__33);
-					State = 1089;
+					State = 1146;
 					Match(T__43);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1092;
+				State = 1149;
 				Match(T__41);
-				State = 1093;
+				State = 1150;
 				stringExpr();
 				}
 				break;
 			case 10:
 				EnterOuterAlt(_localctx, 10);
 				{
-				State = 1102;
+				State = 1159;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__72:
 				case T__92:
 					{
 					{
-					State = 1095;
+					State = 1152;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 					if (_la==T__92) {
 						{
-						State = 1094;
+						State = 1151;
 						Match(T__92);
 						}
 					}
 
-					State = 1097;
+					State = 1154;
 					Match(T__72);
 					}
 					}
@@ -7210,17 +7678,17 @@ public partial class BlokScriptGrammarParser : Parser {
 				case T__93:
 					{
 					{
-					State = 1099;
+					State = 1156;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 					if (_la==T__88) {
 						{
-						State = 1098;
+						State = 1155;
 						Match(T__88);
 						}
 					}
 
-					State = 1101;
+					State = 1158;
 					Match(T__93);
 					}
 					}
@@ -7228,7 +7696,7 @@ public partial class BlokScriptGrammarParser : Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1104;
+				State = 1161;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__11 || _la==T__32) ) {
 				ErrorHandler.RecoverInline(this);
@@ -7237,31 +7705,31 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1105;
+				State = 1162;
 				stringExpr();
 				}
 				break;
 			case 11:
 				EnterOuterAlt(_localctx, 11);
 				{
-				State = 1114;
+				State = 1171;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__72:
 				case T__92:
 					{
 					{
-					State = 1107;
+					State = 1164;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 					if (_la==T__92) {
 						{
-						State = 1106;
+						State = 1163;
 						Match(T__92);
 						}
 					}
 
-					State = 1109;
+					State = 1166;
 					Match(T__72);
 					}
 					}
@@ -7270,17 +7738,17 @@ public partial class BlokScriptGrammarParser : Parser {
 				case T__93:
 					{
 					{
-					State = 1111;
+					State = 1168;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 					if (_la==T__88) {
 						{
-						State = 1110;
+						State = 1167;
 						Match(T__88);
 						}
 					}
 
-					State = 1113;
+					State = 1170;
 					Match(T__93);
 					}
 					}
@@ -7288,321 +7756,321 @@ public partial class BlokScriptGrammarParser : Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1117;
+				State = 1174;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 1116;
+					State = 1173;
 					Match(T__33);
 					}
 				}
 
-				State = 1119;
+				State = 1176;
 				Match(T__5);
-				State = 1120;
+				State = 1177;
 				Match(T__2);
-				State = 1121;
+				State = 1178;
 				stringExprList();
-				State = 1122;
+				State = 1179;
 				Match(T__3);
 				}
 				break;
 			case 12:
 				EnterOuterAlt(_localctx, 12);
 				{
-				State = 1125;
+				State = 1182;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__92) {
 					{
-					State = 1124;
+					State = 1181;
 					Match(T__92);
 					}
 				}
 
-				State = 1127;
+				State = 1184;
 				Match(T__72);
-				State = 1132;
+				State = 1189;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__34:
 					{
-					State = 1128;
+					State = 1185;
 					Match(T__34);
 					}
 					break;
 				case T__35:
 					{
-					State = 1129;
+					State = 1186;
 					Match(T__35);
-					State = 1130;
+					State = 1187;
 					Match(T__33);
-					State = 1131;
+					State = 1188;
 					Match(T__36);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1135;
+				State = 1192;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__37) {
 					{
-					State = 1134;
+					State = 1191;
 					Match(T__37);
 					}
 				}
 
-				State = 1137;
+				State = 1194;
 				regexExpr();
 				}
 				break;
 			case 13:
 				EnterOuterAlt(_localctx, 13);
 				{
-				State = 1139;
+				State = 1196;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__92) {
 					{
-					State = 1138;
+					State = 1195;
 					Match(T__92);
 					}
 				}
 
-				State = 1141;
+				State = 1198;
 				Match(T__72);
-				State = 1146;
+				State = 1203;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__39:
 					{
-					State = 1142;
+					State = 1199;
 					Match(T__39);
 					}
 					break;
 				case T__35:
 					{
-					State = 1143;
+					State = 1200;
 					Match(T__35);
-					State = 1144;
+					State = 1201;
 					Match(T__33);
-					State = 1145;
+					State = 1202;
 					Match(T__40);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1148;
+				State = 1205;
 				Match(T__41);
-				State = 1149;
+				State = 1206;
 				stringExpr();
 				}
 				break;
 			case 14:
 				EnterOuterAlt(_localctx, 14);
 				{
-				State = 1151;
+				State = 1208;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__92) {
 					{
-					State = 1150;
+					State = 1207;
 					Match(T__92);
 					}
 				}
 
-				State = 1153;
+				State = 1210;
 				Match(T__72);
-				State = 1158;
+				State = 1215;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__42:
 					{
-					State = 1154;
+					State = 1211;
 					Match(T__42);
 					}
 					break;
 				case T__35:
 					{
-					State = 1155;
+					State = 1212;
 					Match(T__35);
-					State = 1156;
+					State = 1213;
 					Match(T__33);
-					State = 1157;
+					State = 1214;
 					Match(T__43);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1160;
+				State = 1217;
 				Match(T__41);
-				State = 1161;
+				State = 1218;
 				stringExpr();
 				}
 				break;
 			case 15:
 				EnterOuterAlt(_localctx, 15);
 				{
-				State = 1163;
+				State = 1220;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__88) {
 					{
-					State = 1162;
+					State = 1219;
 					Match(T__88);
 					}
 				}
 
-				State = 1165;
+				State = 1222;
 				Match(T__93);
-				State = 1170;
+				State = 1227;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__36:
 					{
-					State = 1166;
+					State = 1223;
 					Match(T__36);
 					}
 					break;
 				case T__94:
 					{
-					State = 1167;
+					State = 1224;
 					Match(T__94);
-					State = 1168;
+					State = 1225;
 					Match(T__33);
-					State = 1169;
+					State = 1226;
 					Match(T__36);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1173;
+				State = 1230;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__37) {
 					{
-					State = 1172;
+					State = 1229;
 					Match(T__37);
 					}
 				}
 
-				State = 1175;
+				State = 1232;
 				regexExpr();
 				}
 				break;
 			case 16:
 				EnterOuterAlt(_localctx, 16);
 				{
-				State = 1177;
+				State = 1234;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__88) {
 					{
-					State = 1176;
+					State = 1233;
 					Match(T__88);
 					}
 				}
 
-				State = 1179;
+				State = 1236;
 				Match(T__93);
-				State = 1184;
+				State = 1241;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__40:
 					{
-					State = 1180;
+					State = 1237;
 					Match(T__40);
 					}
 					break;
 				case T__94:
 					{
-					State = 1181;
+					State = 1238;
 					Match(T__94);
-					State = 1182;
+					State = 1239;
 					Match(T__33);
-					State = 1183;
+					State = 1240;
 					Match(T__40);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1186;
+				State = 1243;
 				Match(T__41);
-				State = 1187;
+				State = 1244;
 				stringExpr();
 				}
 				break;
 			case 17:
 				EnterOuterAlt(_localctx, 17);
 				{
-				State = 1189;
+				State = 1246;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__88) {
 					{
-					State = 1188;
+					State = 1245;
 					Match(T__88);
 					}
 				}
 
-				State = 1191;
+				State = 1248;
 				Match(T__93);
-				State = 1196;
+				State = 1253;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__43:
 					{
-					State = 1192;
+					State = 1249;
 					Match(T__43);
 					}
 					break;
 				case T__94:
 					{
-					State = 1193;
+					State = 1250;
 					Match(T__94);
-					State = 1194;
+					State = 1251;
 					Match(T__33);
-					State = 1195;
+					State = 1252;
 					Match(T__43);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1198;
+				State = 1255;
 				Match(T__41);
-				State = 1199;
+				State = 1256;
 				stringExpr();
 				}
 				break;
 			case 18:
 				EnterOuterAlt(_localctx, 18);
 				{
-				State = 1208;
+				State = 1265;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__72:
 				case T__92:
 					{
 					{
-					State = 1201;
+					State = 1258;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 					if (_la==T__92) {
 						{
-						State = 1200;
+						State = 1257;
 						Match(T__92);
 						}
 					}
 
-					State = 1203;
+					State = 1260;
 					Match(T__72);
 					}
 					}
@@ -7611,17 +8079,17 @@ public partial class BlokScriptGrammarParser : Parser {
 				case T__93:
 					{
 					{
-					State = 1205;
+					State = 1262;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 					if (_la==T__88) {
 						{
-						State = 1204;
+						State = 1261;
 						Match(T__88);
 						}
 					}
 
-					State = 1207;
+					State = 1264;
 					Match(T__93);
 					}
 					}
@@ -7629,47 +8097,47 @@ public partial class BlokScriptGrammarParser : Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1211;
+				State = 1268;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 1210;
+					State = 1267;
 					Match(T__33);
 					}
 				}
 
-				State = 1213;
+				State = 1270;
 				Match(T__5);
-				State = 1214;
+				State = 1271;
 				Match(T__2);
-				State = 1215;
+				State = 1272;
 				regexExprList();
-				State = 1216;
+				State = 1273;
 				Match(T__3);
 				}
 				break;
 			case 19:
 				EnterOuterAlt(_localctx, 19);
 				{
-				State = 1226;
+				State = 1283;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__72:
 				case T__92:
 					{
 					{
-					State = 1219;
+					State = 1276;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 					if (_la==T__92) {
 						{
-						State = 1218;
+						State = 1275;
 						Match(T__92);
 						}
 					}
 
-					State = 1221;
+					State = 1278;
 					Match(T__72);
 					}
 					}
@@ -7678,17 +8146,17 @@ public partial class BlokScriptGrammarParser : Parser {
 				case T__93:
 					{
 					{
-					State = 1223;
+					State = 1280;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 					if (_la==T__88) {
 						{
-						State = 1222;
+						State = 1279;
 						Match(T__88);
 						}
 					}
 
-					State = 1225;
+					State = 1282;
 					Match(T__93);
 					}
 					}
@@ -7696,37 +8164,37 @@ public partial class BlokScriptGrammarParser : Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1229;
+				State = 1286;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 1228;
+					State = 1285;
 					Match(T__33);
 					}
 				}
 
-				State = 1231;
+				State = 1288;
 				Match(T__38);
-				State = 1232;
+				State = 1289;
 				stringExpr();
 				}
 				break;
 			case 20:
 				EnterOuterAlt(_localctx, 20);
 				{
-				State = 1233;
+				State = 1290;
 				Match(T__95);
-				State = 1234;
+				State = 1291;
 				Match(T__93);
 				}
 				break;
 			case 21:
 				EnterOuterAlt(_localctx, 21);
 				{
-				State = 1235;
+				State = 1292;
 				Match(T__92);
-				State = 1236;
+				State = 1293;
 				Match(T__93);
 				}
 				break;
@@ -7763,12 +8231,12 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public RegexExprContext regexExpr() {
 		RegexExprContext _localctx = new RegexExprContext(Context, State);
-		EnterRule(_localctx, 180, RULE_regexExpr);
+		EnterRule(_localctx, 192, RULE_regexExpr);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 1239;
+			State = 1296;
 			_la = TokenStream.LA(1);
 			if ( !(((((_la - 103)) & ~0x3f) == 0 && ((1L << (_la - 103)) & 11L) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
@@ -7813,21 +8281,21 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public RegexExprListContext regexExprList() {
 		RegexExprListContext _localctx = new RegexExprListContext(Context, State);
-		EnterRule(_localctx, 182, RULE_regexExprList);
+		EnterRule(_localctx, 194, RULE_regexExprList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 1241;
+			State = 1298;
 			regexExpr();
-			State = 1244;
+			State = 1301;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__9) {
 				{
-				State = 1242;
+				State = 1299;
 				Match(T__9);
-				State = 1243;
+				State = 1300;
 				regexExprList();
 				}
 			}
@@ -7846,11 +8314,11 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class CopyDatasourcesStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext[] spaceSpec() {
-			return GetRuleContexts<SpaceSpecContext>();
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext[] longOrShortSpaceSpec() {
+			return GetRuleContexts<LongOrShortSpaceSpecContext>();
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec(int i) {
-			return GetRuleContext<SpaceSpecContext>(i);
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec(int i) {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(i);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public DatasourceConstraintExprListContext datasourceConstraintExprList() {
 			return GetRuleContext<DatasourceConstraintExprListContext>(0);
@@ -7871,38 +8339,38 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public CopyDatasourcesStatementContext copyDatasourcesStatement() {
 		CopyDatasourcesStatementContext _localctx = new CopyDatasourcesStatementContext(Context, State);
-		EnterRule(_localctx, 184, RULE_copyDatasourcesStatement);
+		EnterRule(_localctx, 196, RULE_copyDatasourcesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 1246;
-			Match(T__16);
-			State = 1247;
+			State = 1303;
+			Match(T__17);
+			State = 1304;
 			Match(T__96);
-			State = 1248;
+			State = 1305;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 1249;
-			spaceSpec();
-			State = 1250;
+			State = 1306;
+			longOrShortSpaceSpec();
+			State = 1307;
 			Match(T__18);
-			State = 1251;
-			spaceSpec();
-			State = 1254;
+			State = 1308;
+			longOrShortSpaceSpec();
+			State = 1311;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 1252;
-				Match(T__15);
-				State = 1253;
+				State = 1309;
+				Match(T__16);
+				State = 1310;
 				datasourceConstraintExprList();
 				}
 			}
@@ -7921,11 +8389,11 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class UpdateDatasourcesStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext[] spaceSpec() {
-			return GetRuleContexts<SpaceSpecContext>();
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec() {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(0);
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec(int i) {
-			return GetRuleContext<SpaceSpecContext>(i);
+		[System.Diagnostics.DebuggerNonUserCode] public DatasourceUpdateListContext datasourceUpdateList() {
+			return GetRuleContext<DatasourceUpdateListContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public DatasourceConstraintExprListContext datasourceConstraintExprList() {
 			return GetRuleContext<DatasourceConstraintExprListContext>(0);
@@ -7946,38 +8414,38 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public UpdateDatasourcesStatementContext updateDatasourcesStatement() {
 		UpdateDatasourcesStatementContext _localctx = new UpdateDatasourcesStatementContext(Context, State);
-		EnterRule(_localctx, 186, RULE_updateDatasourcesStatement);
+		EnterRule(_localctx, 198, RULE_updateDatasourcesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 1256;
+			State = 1313;
 			Match(T__7);
-			State = 1257;
+			State = 1314;
 			Match(T__96);
-			State = 1258;
+			State = 1315;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 1259;
-			spaceSpec();
-			State = 1260;
-			Match(T__18);
-			State = 1261;
-			spaceSpec();
-			State = 1264;
+			State = 1316;
+			longOrShortSpaceSpec();
+			State = 1317;
+			Match(T__8);
+			State = 1318;
+			datasourceUpdateList();
+			State = 1321;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 1262;
-				Match(T__15);
-				State = 1263;
+				State = 1319;
+				Match(T__16);
+				State = 1320;
 				datasourceConstraintExprList();
 				}
 			}
@@ -7996,8 +8464,8 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class DeleteDatasourcesStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec() {
-			return GetRuleContext<SpaceSpecContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec() {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public DatasourceConstraintExprListContext datasourceConstraintExprList() {
 			return GetRuleContext<DatasourceConstraintExprListContext>(0);
@@ -8018,34 +8486,34 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DeleteDatasourcesStatementContext deleteDatasourcesStatement() {
 		DeleteDatasourcesStatementContext _localctx = new DeleteDatasourcesStatementContext(Context, State);
-		EnterRule(_localctx, 188, RULE_deleteDatasourcesStatement);
+		EnterRule(_localctx, 200, RULE_deleteDatasourcesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 1266;
+			State = 1323;
 			Match(T__6);
-			State = 1267;
+			State = 1324;
 			Match(T__96);
-			State = 1268;
+			State = 1325;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 1269;
-			spaceSpec();
-			State = 1272;
+			State = 1326;
+			longOrShortSpaceSpec();
+			State = 1329;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 1270;
-				Match(T__15);
-				State = 1271;
+				State = 1327;
+				Match(T__16);
+				State = 1328;
 				datasourceConstraintExprList();
 				}
 			}
@@ -8064,11 +8532,11 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	public partial class SyncDatasourcesStatementContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext[] spaceSpec() {
-			return GetRuleContexts<SpaceSpecContext>();
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext[] longOrShortSpaceSpec() {
+			return GetRuleContexts<LongOrShortSpaceSpecContext>();
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public SpaceSpecContext spaceSpec(int i) {
-			return GetRuleContext<SpaceSpecContext>(i);
+		[System.Diagnostics.DebuggerNonUserCode] public LongOrShortSpaceSpecContext longOrShortSpaceSpec(int i) {
+			return GetRuleContext<LongOrShortSpaceSpecContext>(i);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public DatasourceConstraintExprListContext datasourceConstraintExprList() {
 			return GetRuleContext<DatasourceConstraintExprListContext>(0);
@@ -8089,38 +8557,38 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public SyncDatasourcesStatementContext syncDatasourcesStatement() {
 		SyncDatasourcesStatementContext _localctx = new SyncDatasourcesStatementContext(Context, State);
-		EnterRule(_localctx, 190, RULE_syncDatasourcesStatement);
+		EnterRule(_localctx, 202, RULE_syncDatasourcesStatement);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 1274;
-			Match(T__16);
-			State = 1275;
+			State = 1331;
+			Match(T__17);
+			State = 1332;
 			Match(T__96);
-			State = 1276;
+			State = 1333;
 			_la = TokenStream.LA(1);
-			if ( !(_la==T__5 || _la==T__17) ) {
+			if ( !(_la==T__5 || _la==T__14) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 1277;
-			spaceSpec();
-			State = 1278;
+			State = 1334;
+			longOrShortSpaceSpec();
+			State = 1335;
 			Match(T__18);
-			State = 1279;
-			spaceSpec();
-			State = 1282;
+			State = 1336;
+			longOrShortSpaceSpec();
+			State = 1339;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__15) {
+			if (_la==T__16) {
 				{
-				State = 1280;
-				Match(T__15);
-				State = 1281;
+				State = 1337;
+				Match(T__16);
+				State = 1338;
 				datasourceConstraintExprList();
 				}
 			}
@@ -8161,19 +8629,19 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceConstraintExprListContext datasourceConstraintExprList() {
 		DatasourceConstraintExprListContext _localctx = new DatasourceConstraintExprListContext(Context, State);
-		EnterRule(_localctx, 192, RULE_datasourceConstraintExprList);
+		EnterRule(_localctx, 204, RULE_datasourceConstraintExprList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 1284;
+			State = 1341;
 			datasourceConstraintExpr();
-			State = 1287;
+			State = 1344;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__29 || _la==T__30) {
 				{
-				State = 1285;
+				State = 1342;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__29 || _la==T__30) ) {
 				ErrorHandler.RecoverInline(this);
@@ -8182,7 +8650,7 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1286;
+				State = 1343;
 				datasourceConstraintExprList();
 				}
 			}
@@ -8226,23 +8694,23 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceConstraintExprContext datasourceConstraintExpr() {
 		DatasourceConstraintExprContext _localctx = new DatasourceConstraintExprContext(Context, State);
-		EnterRule(_localctx, 194, RULE_datasourceConstraintExpr);
+		EnterRule(_localctx, 206, RULE_datasourceConstraintExpr);
 		int _la;
 		try {
-			State = 1310;
+			State = 1367;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,146,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,152,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 1289;
+				State = 1346;
 				datasourceConstraint();
-				State = 1292;
+				State = 1349;
 				ErrorHandler.Sync(this);
-				switch ( Interpreter.AdaptivePredict(TokenStream,143,Context) ) {
+				switch ( Interpreter.AdaptivePredict(TokenStream,149,Context) ) {
 				case 1:
 					{
-					State = 1290;
+					State = 1347;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -8251,7 +8719,7 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 1291;
+					State = 1348;
 					datasourceConstraintExpr();
 					}
 					break;
@@ -8261,16 +8729,16 @@ public partial class BlokScriptGrammarParser : Parser {
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 1294;
+				State = 1351;
 				Match(T__2);
-				State = 1295;
+				State = 1352;
 				datasourceConstraint();
-				State = 1298;
+				State = 1355;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__29 || _la==T__30) {
 					{
-					State = 1296;
+					State = 1353;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -8279,28 +8747,28 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 1297;
+					State = 1354;
 					datasourceConstraintExpr();
 					}
 				}
 
-				State = 1300;
+				State = 1357;
 				Match(T__3);
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 1302;
+				State = 1359;
 				Match(T__2);
-				State = 1303;
+				State = 1360;
 				datasourceConstraintExpr();
-				State = 1306;
+				State = 1363;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__29 || _la==T__30) {
 					{
-					State = 1304;
+					State = 1361;
 					_la = TokenStream.LA(1);
 					if ( !(_la==T__29 || _la==T__30) ) {
 					ErrorHandler.RecoverInline(this);
@@ -8309,12 +8777,12 @@ public partial class BlokScriptGrammarParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 1305;
+					State = 1362;
 					datasourceConstraintExpr();
 					}
 				}
 
-				State = 1308;
+				State = 1365;
 				Match(T__3);
 				}
 				break;
@@ -8366,18 +8834,18 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public DatasourceConstraintContext datasourceConstraint() {
 		DatasourceConstraintContext _localctx = new DatasourceConstraintContext(Context, State);
-		EnterRule(_localctx, 196, RULE_datasourceConstraint);
+		EnterRule(_localctx, 208, RULE_datasourceConstraint);
 		int _la;
 		try {
-			State = 1380;
+			State = 1437;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,155,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,161,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 1312;
+				State = 1369;
 				Match(T__31);
-				State = 1313;
+				State = 1370;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__11 || _la==T__32) ) {
 				ErrorHandler.RecoverInline(this);
@@ -8386,39 +8854,39 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1314;
+				State = 1371;
 				intExpr();
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 1315;
+				State = 1372;
 				Match(T__31);
-				State = 1317;
+				State = 1374;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 1316;
+					State = 1373;
 					Match(T__33);
 					}
 				}
 
-				State = 1319;
+				State = 1376;
 				Match(T__5);
-				State = 1320;
+				State = 1377;
 				Match(T__2);
-				State = 1321;
+				State = 1378;
 				intExprList();
-				State = 1322;
+				State = 1379;
 				Match(T__3);
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 1324;
+				State = 1381;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__12) ) {
 				ErrorHandler.RecoverInline(this);
@@ -8427,7 +8895,7 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1325;
+				State = 1382;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__11 || _la==T__32) ) {
 				ErrorHandler.RecoverInline(this);
@@ -8436,14 +8904,14 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1326;
+				State = 1383;
 				stringExpr();
 				}
 				break;
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 1327;
+				State = 1384;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__12) ) {
 				ErrorHandler.RecoverInline(this);
@@ -8452,30 +8920,30 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1329;
+				State = 1386;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 1328;
+					State = 1385;
 					Match(T__33);
 					}
 				}
 
-				State = 1331;
+				State = 1388;
 				Match(T__5);
-				State = 1332;
+				State = 1389;
 				Match(T__2);
-				State = 1333;
+				State = 1390;
 				stringExprList();
-				State = 1334;
+				State = 1391;
 				Match(T__3);
 				}
 				break;
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 1336;
+				State = 1393;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__12) ) {
 				ErrorHandler.RecoverInline(this);
@@ -8484,46 +8952,46 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1341;
+				State = 1398;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__34:
 					{
-					State = 1337;
+					State = 1394;
 					Match(T__34);
 					}
 					break;
 				case T__35:
 					{
-					State = 1338;
+					State = 1395;
 					Match(T__35);
-					State = 1339;
+					State = 1396;
 					Match(T__33);
-					State = 1340;
+					State = 1397;
 					Match(T__36);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1344;
+				State = 1401;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__37) {
 					{
-					State = 1343;
+					State = 1400;
 					Match(T__37);
 					}
 				}
 
-				State = 1346;
+				State = 1403;
 				regexExpr();
 				}
 				break;
 			case 6:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 1347;
+				State = 1404;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__12) ) {
 				ErrorHandler.RecoverInline(this);
@@ -8532,30 +9000,30 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1349;
+				State = 1406;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 1348;
+					State = 1405;
 					Match(T__33);
 					}
 				}
 
-				State = 1351;
+				State = 1408;
 				Match(T__5);
-				State = 1352;
+				State = 1409;
 				Match(T__2);
-				State = 1353;
+				State = 1410;
 				regexExprList();
-				State = 1354;
+				State = 1411;
 				Match(T__3);
 				}
 				break;
 			case 7:
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 1356;
+				State = 1413;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__12) ) {
 				ErrorHandler.RecoverInline(this);
@@ -8564,26 +9032,26 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1358;
+				State = 1415;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==T__33) {
 					{
-					State = 1357;
+					State = 1414;
 					Match(T__33);
 					}
 				}
 
-				State = 1360;
+				State = 1417;
 				Match(T__38);
-				State = 1361;
+				State = 1418;
 				stringExpr();
 				}
 				break;
 			case 8:
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 1362;
+				State = 1419;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__12) ) {
 				ErrorHandler.RecoverInline(this);
@@ -8592,38 +9060,38 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1367;
+				State = 1424;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__39:
 					{
-					State = 1363;
+					State = 1420;
 					Match(T__39);
 					}
 					break;
 				case T__35:
 					{
-					State = 1364;
+					State = 1421;
 					Match(T__35);
-					State = 1365;
+					State = 1422;
 					Match(T__33);
-					State = 1366;
+					State = 1423;
 					Match(T__40);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1369;
+				State = 1426;
 				Match(T__41);
-				State = 1370;
+				State = 1427;
 				stringExpr();
 				}
 				break;
 			case 9:
 				EnterOuterAlt(_localctx, 9);
 				{
-				State = 1371;
+				State = 1428;
 				_la = TokenStream.LA(1);
 				if ( !(_la==T__10 || _la==T__12) ) {
 				ErrorHandler.RecoverInline(this);
@@ -8632,32 +9100,32 @@ public partial class BlokScriptGrammarParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 1376;
+				State = 1433;
 				ErrorHandler.Sync(this);
 				switch (TokenStream.LA(1)) {
 				case T__42:
 					{
-					State = 1372;
+					State = 1429;
 					Match(T__42);
 					}
 					break;
 				case T__35:
 					{
-					State = 1373;
+					State = 1430;
 					Match(T__35);
-					State = 1374;
+					State = 1431;
 					Match(T__33);
-					State = 1375;
+					State = 1432;
 					Match(T__43);
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				State = 1378;
+				State = 1435;
 				Match(T__41);
 				{
-				State = 1379;
+				State = 1436;
 				stringExpr();
 				}
 				}
@@ -8698,21 +9166,21 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StringExprListContext stringExprList() {
 		StringExprListContext _localctx = new StringExprListContext(Context, State);
-		EnterRule(_localctx, 198, RULE_stringExprList);
+		EnterRule(_localctx, 210, RULE_stringExprList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 1382;
+			State = 1439;
 			stringExpr();
-			State = 1385;
+			State = 1442;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__9) {
 				{
-				State = 1383;
+				State = 1440;
 				Match(T__9);
-				State = 1384;
+				State = 1441;
 				stringExprList();
 				}
 			}
@@ -8752,12 +9220,12 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public StringExprContext stringExpr() {
 		StringExprContext _localctx = new StringExprContext(Context, State);
-		EnterRule(_localctx, 200, RULE_stringExpr);
+		EnterRule(_localctx, 212, RULE_stringExpr);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 1387;
+			State = 1444;
 			_la = TokenStream.LA(1);
 			if ( !(_la==STRINGLITERAL || _la==VARID) ) {
 			ErrorHandler.RecoverInline(this);
@@ -8766,14 +9234,14 @@ public partial class BlokScriptGrammarParser : Parser {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 1390;
+			State = 1447;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__78) {
 				{
-				State = 1388;
+				State = 1445;
 				Match(T__78);
-				State = 1389;
+				State = 1446;
 				stringExpr();
 				}
 			}
@@ -8811,21 +9279,21 @@ public partial class BlokScriptGrammarParser : Parser {
 	[RuleVersion(0)]
 	public ForEachStatementContext forEachStatement() {
 		ForEachStatementContext _localctx = new ForEachStatementContext(Context, State);
-		EnterRule(_localctx, 202, RULE_forEachStatement);
+		EnterRule(_localctx, 214, RULE_forEachStatement);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 1392;
+			State = 1449;
 			Match(T__97);
-			State = 1393;
+			State = 1450;
 			Match(T__2);
-			State = 1394;
+			State = 1451;
 			Match(T__3);
-			State = 1395;
+			State = 1452;
 			Match(T__98);
-			State = 1396;
+			State = 1453;
 			statementList();
-			State = 1397;
+			State = 1454;
 			Match(T__99);
 			}
 		}
@@ -8841,7 +9309,7 @@ public partial class BlokScriptGrammarParser : Parser {
 	}
 
 	private static int[] _serializedATN = {
-		4,1,108,1400,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
+		4,1,108,1457,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
 		7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,14,
 		2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,21,
 		2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,7,27,2,28,7,28,
@@ -8855,500 +9323,525 @@ public partial class BlokScriptGrammarParser : Parser {
 		2,78,7,78,2,79,7,79,2,80,7,80,2,81,7,81,2,82,7,82,2,83,7,83,2,84,7,84,
 		2,85,7,85,2,86,7,86,2,87,7,87,2,88,7,88,2,89,7,89,2,90,7,90,2,91,7,91,
 		2,92,7,92,2,93,7,93,2,94,7,94,2,95,7,95,2,96,7,96,2,97,7,97,2,98,7,98,
-		2,99,7,99,2,100,7,100,2,101,7,101,1,0,1,0,1,1,1,1,1,1,4,1,210,8,1,11,1,
-		12,1,211,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,
-		2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,239,8,2,1,3,1,3,1,3,1,3,1,3,
-		1,3,1,3,3,3,248,8,3,1,3,1,3,1,3,1,4,1,4,1,4,1,4,3,4,257,8,4,1,5,1,5,1,
-		5,1,5,3,5,263,8,5,1,5,1,5,1,5,1,6,1,6,1,6,3,6,271,8,6,1,7,1,7,1,7,1,7,
-		1,7,1,7,3,7,279,8,7,1,8,1,8,1,8,1,8,1,8,3,8,286,8,8,1,8,1,8,1,8,1,9,1,
-		9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,3,9,300,8,9,1,10,1,10,1,10,1,10,1,10,1,10,
-		1,10,3,10,309,8,10,1,11,1,11,1,11,1,11,1,11,1,11,1,11,1,11,1,11,3,11,320,
-		8,11,1,11,3,11,323,8,11,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,3,
-		12,334,8,12,1,13,1,13,1,13,3,13,339,8,13,1,14,1,14,1,14,1,15,1,15,1,15,
-		3,15,347,8,15,1,16,1,16,1,16,1,16,1,16,1,16,3,16,355,8,16,1,17,1,17,1,
-		17,1,17,3,17,361,8,17,1,18,3,18,364,8,18,1,18,1,18,1,18,1,19,1,19,1,19,
-		1,19,1,19,3,19,374,8,19,1,20,1,20,1,20,3,20,379,8,20,1,21,1,21,1,21,3,
-		21,384,8,21,1,21,1,21,1,21,1,21,3,21,390,8,21,1,21,1,21,1,21,1,21,1,21,
-		1,21,3,21,398,8,21,1,21,1,21,3,21,402,8,21,1,22,1,22,1,22,1,22,1,22,3,
-		22,409,8,22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,3,22,421,
-		8,22,1,22,1,22,1,22,1,22,3,22,427,8,22,1,22,1,22,1,22,1,22,1,22,1,22,1,
-		22,3,22,436,8,22,1,22,3,22,439,8,22,1,22,1,22,1,22,3,22,444,8,22,1,22,
-		1,22,1,22,1,22,1,22,1,22,1,22,3,22,453,8,22,1,22,1,22,1,22,1,22,1,22,1,
-		22,1,22,3,22,462,8,22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,3,22,471,8,22,
-		1,22,1,22,3,22,475,8,22,1,23,1,23,1,23,1,23,1,23,3,23,482,8,23,1,24,1,
-		24,1,25,1,25,1,25,1,25,1,25,1,26,1,26,1,26,1,26,1,26,1,27,1,27,1,27,1,
-		27,1,27,1,28,1,28,1,28,1,28,1,28,1,28,1,28,1,29,1,29,1,29,1,29,1,29,1,
-		29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,3,29,526,
-		8,29,3,29,528,8,29,1,30,1,30,1,30,1,30,3,30,534,8,30,1,31,1,31,1,31,1,
-		31,3,31,540,8,31,1,32,1,32,1,32,1,32,3,32,546,8,32,1,33,1,33,1,33,1,33,
-		3,33,552,8,33,1,34,1,34,1,34,1,34,3,34,558,8,34,1,35,1,35,1,35,1,35,1,
-		35,3,35,565,8,35,1,36,1,36,1,36,3,36,570,8,36,1,36,3,36,573,8,36,1,37,
-		1,37,1,38,1,38,1,38,1,38,1,38,3,38,582,8,38,1,38,1,38,3,38,586,8,38,1,
-		39,1,39,1,39,1,39,3,39,592,8,39,1,39,3,39,595,8,39,1,40,1,40,1,40,1,40,
-		1,40,3,40,602,8,40,1,40,1,40,1,40,3,40,607,8,40,1,41,1,41,1,41,1,41,1,
-		41,3,41,614,8,41,1,42,1,42,1,42,1,42,1,43,1,43,1,43,1,43,1,43,1,43,3,43,
-		626,8,43,1,44,1,44,1,44,1,44,1,45,1,45,1,45,1,45,1,46,1,46,1,46,1,46,1,
-		47,1,47,1,47,1,47,3,47,644,8,47,1,47,1,47,1,47,1,48,1,48,1,48,1,48,1,48,
-		1,48,3,48,655,8,48,1,49,1,49,1,49,1,49,1,49,1,50,1,50,1,50,1,51,1,51,1,
-		51,1,51,1,52,1,52,1,52,1,53,1,53,1,53,1,53,1,54,1,54,1,54,1,54,1,55,1,
-		55,1,55,3,55,683,8,55,1,56,1,56,1,56,1,56,3,56,689,8,56,1,57,1,57,3,57,
-		693,8,57,1,58,1,58,1,58,1,58,1,58,3,58,700,8,58,1,58,3,58,703,8,58,1,59,
-		1,59,1,59,1,59,1,59,1,59,3,59,711,8,59,1,60,1,60,1,60,1,60,1,60,3,60,718,
-		8,60,1,61,1,61,1,62,1,62,1,62,1,62,3,62,726,8,62,1,63,1,63,1,63,1,63,3,
-		63,732,8,63,1,64,1,64,1,64,1,64,1,64,1,64,1,64,1,64,1,65,1,65,1,65,1,65,
-		1,65,1,65,1,65,1,65,3,65,750,8,65,1,66,1,66,1,66,1,66,1,66,1,66,1,66,1,
-		66,3,66,760,8,66,1,67,1,67,1,67,1,67,1,67,1,67,3,67,768,8,67,1,68,1,68,
-		1,68,3,68,773,8,68,1,69,1,69,1,69,3,69,778,8,69,1,69,1,69,1,69,1,69,3,
-		69,784,8,69,1,69,1,69,1,69,1,69,1,69,1,69,3,69,792,8,69,1,69,1,69,3,69,
-		796,8,69,1,70,1,70,1,70,1,70,1,70,3,70,803,8,70,1,70,1,70,1,70,1,70,1,
-		70,1,70,1,70,1,70,1,70,1,70,3,70,815,8,70,1,70,1,70,1,70,1,70,1,70,1,70,
-		1,70,1,70,1,70,1,70,3,70,827,8,70,1,70,3,70,830,8,70,1,70,1,70,1,70,3,
-		70,835,8,70,1,70,1,70,1,70,1,70,1,70,1,70,1,70,3,70,844,8,70,1,70,1,70,
-		1,70,1,70,1,70,1,70,1,70,3,70,853,8,70,1,70,1,70,1,70,1,70,1,70,1,70,1,
-		70,3,70,862,8,70,1,70,1,70,3,70,866,8,70,1,71,1,71,1,71,3,71,871,8,71,
-		1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,
-		1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,
-		1,72,3,72,902,8,72,1,73,1,73,1,73,3,73,907,8,73,1,74,1,74,1,74,3,74,912,
-		8,74,1,75,3,75,915,8,75,1,75,1,75,1,76,1,76,1,76,1,77,1,77,1,77,3,77,925,
-		8,77,1,78,1,78,1,78,1,78,1,78,1,79,1,79,1,79,1,79,1,79,1,80,1,80,1,80,
-		1,80,1,80,1,80,1,80,1,80,1,81,1,81,1,81,1,81,1,81,1,81,3,81,951,8,81,1,
-		82,1,82,1,82,1,82,1,82,1,82,1,82,3,82,960,8,82,1,83,1,83,1,83,1,83,1,83,
-		1,83,1,83,1,83,3,83,970,8,83,1,84,1,84,1,84,1,84,1,84,1,84,3,84,978,8,
-		84,1,85,1,85,1,85,1,85,1,85,1,85,3,85,986,8,85,1,86,1,86,1,86,1,86,1,86,
-		3,86,993,8,86,1,86,1,86,3,86,997,8,86,1,87,1,87,1,87,3,87,1002,8,87,1,
-		88,1,88,1,88,3,88,1007,8,88,1,88,1,88,1,88,1,88,3,88,1013,8,88,1,88,1,
-		88,1,88,1,88,1,88,1,88,3,88,1021,8,88,1,88,1,88,3,88,1025,8,88,1,89,1,
-		89,1,89,1,89,1,89,3,89,1032,8,89,1,89,1,89,1,89,1,89,1,89,1,89,1,89,1,
-		89,1,89,1,89,3,89,1044,8,89,1,89,1,89,1,89,1,89,1,89,1,89,1,89,1,89,1,
-		89,1,89,3,89,1056,8,89,1,89,3,89,1059,8,89,1,89,1,89,1,89,3,89,1064,8,
-		89,1,89,1,89,1,89,1,89,1,89,1,89,1,89,3,89,1073,8,89,1,89,1,89,1,89,1,
-		89,1,89,1,89,1,89,3,89,1082,8,89,1,89,1,89,1,89,1,89,1,89,1,89,1,89,3,
-		89,1091,8,89,1,89,1,89,1,89,3,89,1096,8,89,1,89,1,89,3,89,1100,8,89,1,
-		89,3,89,1103,8,89,1,89,1,89,1,89,3,89,1108,8,89,1,89,1,89,3,89,1112,8,
-		89,1,89,3,89,1115,8,89,1,89,3,89,1118,8,89,1,89,1,89,1,89,1,89,1,89,1,
-		89,3,89,1126,8,89,1,89,1,89,1,89,1,89,1,89,3,89,1133,8,89,1,89,3,89,1136,
-		8,89,1,89,1,89,3,89,1140,8,89,1,89,1,89,1,89,1,89,1,89,3,89,1147,8,89,
-		1,89,1,89,1,89,3,89,1152,8,89,1,89,1,89,1,89,1,89,1,89,3,89,1159,8,89,
-		1,89,1,89,1,89,3,89,1164,8,89,1,89,1,89,1,89,1,89,1,89,3,89,1171,8,89,
-		1,89,3,89,1174,8,89,1,89,1,89,3,89,1178,8,89,1,89,1,89,1,89,1,89,1,89,
-		3,89,1185,8,89,1,89,1,89,1,89,3,89,1190,8,89,1,89,1,89,1,89,1,89,1,89,
-		3,89,1197,8,89,1,89,1,89,1,89,3,89,1202,8,89,1,89,1,89,3,89,1206,8,89,
-		1,89,3,89,1209,8,89,1,89,3,89,1212,8,89,1,89,1,89,1,89,1,89,1,89,1,89,
-		3,89,1220,8,89,1,89,1,89,3,89,1224,8,89,1,89,3,89,1227,8,89,1,89,3,89,
-		1230,8,89,1,89,1,89,1,89,1,89,1,89,1,89,3,89,1238,8,89,1,90,1,90,1,91,
-		1,91,1,91,3,91,1245,8,91,1,92,1,92,1,92,1,92,1,92,1,92,1,92,1,92,3,92,
-		1255,8,92,1,93,1,93,1,93,1,93,1,93,1,93,1,93,1,93,3,93,1265,8,93,1,94,
-		1,94,1,94,1,94,1,94,1,94,3,94,1273,8,94,1,95,1,95,1,95,1,95,1,95,1,95,
-		1,95,1,95,3,95,1283,8,95,1,96,1,96,1,96,3,96,1288,8,96,1,97,1,97,1,97,
-		3,97,1293,8,97,1,97,1,97,1,97,1,97,3,97,1299,8,97,1,97,1,97,1,97,1,97,
-		1,97,1,97,3,97,1307,8,97,1,97,1,97,3,97,1311,8,97,1,98,1,98,1,98,1,98,
-		1,98,3,98,1318,8,98,1,98,1,98,1,98,1,98,1,98,1,98,1,98,1,98,1,98,1,98,
-		3,98,1330,8,98,1,98,1,98,1,98,1,98,1,98,1,98,1,98,1,98,1,98,1,98,3,98,
-		1342,8,98,1,98,3,98,1345,8,98,1,98,1,98,1,98,3,98,1350,8,98,1,98,1,98,
-		1,98,1,98,1,98,1,98,1,98,3,98,1359,8,98,1,98,1,98,1,98,1,98,1,98,1,98,
-		1,98,3,98,1368,8,98,1,98,1,98,1,98,1,98,1,98,1,98,1,98,3,98,1377,8,98,
-		1,98,1,98,3,98,1381,8,98,1,99,1,99,1,99,3,99,1386,8,99,1,100,1,100,1,100,
-		3,100,1391,8,100,1,101,1,101,1,101,1,101,1,101,1,101,1,101,1,101,0,0,102,
-		0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,
-		50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,
-		98,100,102,104,106,108,110,112,114,116,118,120,122,124,126,128,130,132,
-		134,136,138,140,142,144,146,148,150,152,154,156,158,160,162,164,166,168,
-		170,172,174,176,178,180,182,184,186,188,190,192,194,196,198,200,202,0,
-		17,1,0,5,6,2,0,6,6,18,18,3,0,1,1,8,8,22,23,1,0,26,27,1,0,30,31,2,0,12,
-		12,33,33,2,0,11,11,24,24,1,0,103,105,2,0,103,103,105,105,1,0,103,104,1,
-		0,69,71,1,0,104,105,1,0,79,82,1,0,84,86,2,0,11,11,28,28,2,0,103,104,106,
-		106,2,0,11,11,13,13,1572,0,204,1,0,0,0,2,209,1,0,0,0,4,238,1,0,0,0,6,240,
-		1,0,0,0,8,252,1,0,0,0,10,258,1,0,0,0,12,267,1,0,0,0,14,278,1,0,0,0,16,
-		280,1,0,0,0,18,290,1,0,0,0,20,301,1,0,0,0,22,310,1,0,0,0,24,324,1,0,0,
-		0,26,335,1,0,0,0,28,340,1,0,0,0,30,343,1,0,0,0,32,354,1,0,0,0,34,360,1,
-		0,0,0,36,363,1,0,0,0,38,373,1,0,0,0,40,375,1,0,0,0,42,401,1,0,0,0,44,474,
-		1,0,0,0,46,481,1,0,0,0,48,483,1,0,0,0,50,485,1,0,0,0,52,490,1,0,0,0,54,
-		495,1,0,0,0,56,500,1,0,0,0,58,527,1,0,0,0,60,529,1,0,0,0,62,535,1,0,0,
-		0,64,541,1,0,0,0,66,547,1,0,0,0,68,553,1,0,0,0,70,559,1,0,0,0,72,572,1,
-		0,0,0,74,574,1,0,0,0,76,585,1,0,0,0,78,594,1,0,0,0,80,606,1,0,0,0,82,613,
-		1,0,0,0,84,615,1,0,0,0,86,625,1,0,0,0,88,627,1,0,0,0,90,631,1,0,0,0,92,
-		635,1,0,0,0,94,639,1,0,0,0,96,654,1,0,0,0,98,656,1,0,0,0,100,661,1,0,0,
-		0,102,664,1,0,0,0,104,668,1,0,0,0,106,671,1,0,0,0,108,675,1,0,0,0,110,
-		682,1,0,0,0,112,688,1,0,0,0,114,690,1,0,0,0,116,702,1,0,0,0,118,710,1,
-		0,0,0,120,717,1,0,0,0,122,719,1,0,0,0,124,725,1,0,0,0,126,731,1,0,0,0,
-		128,733,1,0,0,0,130,741,1,0,0,0,132,751,1,0,0,0,134,761,1,0,0,0,136,769,
-		1,0,0,0,138,795,1,0,0,0,140,865,1,0,0,0,142,867,1,0,0,0,144,901,1,0,0,
-		0,146,903,1,0,0,0,148,908,1,0,0,0,150,914,1,0,0,0,152,918,1,0,0,0,154,
-		924,1,0,0,0,156,926,1,0,0,0,158,931,1,0,0,0,160,936,1,0,0,0,162,950,1,
-		0,0,0,164,959,1,0,0,0,166,961,1,0,0,0,168,971,1,0,0,0,170,979,1,0,0,0,
-		172,987,1,0,0,0,174,998,1,0,0,0,176,1024,1,0,0,0,178,1237,1,0,0,0,180,
-		1239,1,0,0,0,182,1241,1,0,0,0,184,1246,1,0,0,0,186,1256,1,0,0,0,188,1266,
-		1,0,0,0,190,1274,1,0,0,0,192,1284,1,0,0,0,194,1310,1,0,0,0,196,1380,1,
-		0,0,0,198,1382,1,0,0,0,200,1387,1,0,0,0,202,1392,1,0,0,0,204,205,3,2,1,
-		0,205,1,1,0,0,0,206,207,3,4,2,0,207,208,5,101,0,0,208,210,1,0,0,0,209,
-		206,1,0,0,0,210,211,1,0,0,0,211,209,1,0,0,0,211,212,1,0,0,0,212,3,1,0,
-		0,0,213,239,3,46,23,0,214,239,3,58,29,0,215,239,3,86,43,0,216,239,3,96,
-		48,0,217,239,3,150,75,0,218,239,3,152,76,0,219,239,3,154,77,0,220,239,
-		3,16,8,0,221,239,3,18,9,0,222,239,3,20,10,0,223,239,3,22,11,0,224,239,
-		3,24,12,0,225,239,3,132,66,0,226,239,3,94,47,0,227,239,3,132,66,0,228,
-		239,3,166,83,0,229,239,3,168,84,0,230,239,3,170,85,0,231,239,3,172,86,
-		0,232,239,3,184,92,0,233,239,3,134,67,0,234,239,3,188,94,0,235,239,3,6,
-		3,0,236,239,3,10,5,0,237,239,3,8,4,0,238,213,1,0,0,0,238,214,1,0,0,0,238,
-		215,1,0,0,0,238,216,1,0,0,0,238,217,1,0,0,0,238,218,1,0,0,0,238,219,1,
-		0,0,0,238,220,1,0,0,0,238,221,1,0,0,0,238,222,1,0,0,0,238,223,1,0,0,0,
-		238,224,1,0,0,0,238,225,1,0,0,0,238,226,1,0,0,0,238,227,1,0,0,0,238,228,
-		1,0,0,0,238,229,1,0,0,0,238,230,1,0,0,0,238,231,1,0,0,0,238,232,1,0,0,
-		0,238,233,1,0,0,0,238,234,1,0,0,0,238,235,1,0,0,0,238,236,1,0,0,0,238,
-		237,1,0,0,0,239,5,1,0,0,0,240,241,5,1,0,0,241,247,5,2,0,0,242,248,3,200,
-		100,0,243,244,5,3,0,0,244,245,3,12,6,0,245,246,5,4,0,0,246,248,1,0,0,0,
-		247,242,1,0,0,0,247,243,1,0,0,0,248,249,1,0,0,0,249,250,7,0,0,0,250,251,
-		3,72,36,0,251,7,1,0,0,0,252,253,5,7,0,0,253,256,5,2,0,0,254,257,3,84,42,
-		0,255,257,3,82,41,0,256,254,1,0,0,0,256,255,1,0,0,0,257,9,1,0,0,0,258,
-		259,5,8,0,0,259,262,5,2,0,0,260,263,3,84,42,0,261,263,3,82,41,0,262,260,
-		1,0,0,0,262,261,1,0,0,0,263,264,1,0,0,0,264,265,5,9,0,0,265,266,3,12,6,
-		0,266,11,1,0,0,0,267,270,3,14,7,0,268,269,5,10,0,0,269,271,3,12,6,0,270,
-		268,1,0,0,0,270,271,1,0,0,0,271,13,1,0,0,0,272,273,5,11,0,0,273,274,5,
-		12,0,0,274,279,3,200,100,0,275,276,5,13,0,0,276,277,5,12,0,0,277,279,3,
-		200,100,0,278,272,1,0,0,0,278,275,1,0,0,0,279,15,1,0,0,0,280,281,5,1,0,
-		0,281,282,5,2,0,0,282,285,5,14,0,0,283,286,3,200,100,0,284,286,3,30,15,
-		0,285,283,1,0,0,0,285,284,1,0,0,0,286,287,1,0,0,0,287,288,7,0,0,0,288,
-		289,3,82,41,0,289,17,1,0,0,0,290,291,5,8,0,0,291,292,5,2,0,0,292,293,5,
-		15,0,0,293,294,5,6,0,0,294,295,3,82,41,0,295,296,5,9,0,0,296,299,3,30,
-		15,0,297,298,5,16,0,0,298,300,3,40,20,0,299,297,1,0,0,0,299,300,1,0,0,
-		0,300,19,1,0,0,0,301,302,5,7,0,0,302,303,5,2,0,0,303,304,5,15,0,0,304,
-		305,5,6,0,0,305,308,3,82,41,0,306,307,5,16,0,0,307,309,3,40,20,0,308,306,
-		1,0,0,0,308,309,1,0,0,0,309,21,1,0,0,0,310,311,5,17,0,0,311,312,5,2,0,
-		0,312,313,5,15,0,0,313,314,7,1,0,0,314,315,3,34,17,0,315,316,5,19,0,0,
-		316,319,3,38,19,0,317,318,5,16,0,0,318,320,3,40,20,0,319,317,1,0,0,0,319,
-		320,1,0,0,0,320,322,1,0,0,0,321,323,3,26,13,0,322,321,1,0,0,0,322,323,
-		1,0,0,0,323,23,1,0,0,0,324,325,5,20,0,0,325,326,5,2,0,0,326,327,5,15,0,
-		0,327,328,7,1,0,0,328,329,3,34,17,0,329,330,5,19,0,0,330,333,3,34,17,0,
-		331,332,5,16,0,0,332,334,3,40,20,0,333,331,1,0,0,0,333,334,1,0,0,0,334,
-		25,1,0,0,0,335,338,3,28,14,0,336,337,5,10,0,0,337,339,3,26,13,0,338,336,
-		1,0,0,0,338,339,1,0,0,0,339,27,1,0,0,0,340,341,5,21,0,0,341,342,7,2,0,
-		0,342,29,1,0,0,0,343,346,3,32,16,0,344,345,5,10,0,0,345,347,3,30,15,0,
-		346,344,1,0,0,0,346,347,1,0,0,0,347,31,1,0,0,0,348,349,5,11,0,0,349,350,
-		5,12,0,0,350,355,3,200,100,0,351,352,5,24,0,0,352,353,5,12,0,0,353,355,
-		3,200,100,0,354,348,1,0,0,0,354,351,1,0,0,0,355,33,1,0,0,0,356,361,3,82,
-		41,0,357,361,3,36,18,0,358,361,3,114,57,0,359,361,5,25,0,0,360,356,1,0,
-		0,0,360,357,1,0,0,0,360,358,1,0,0,0,360,359,1,0,0,0,361,35,1,0,0,0,362,
-		364,7,3,0,0,363,362,1,0,0,0,363,364,1,0,0,0,364,365,1,0,0,0,365,366,5,
-		28,0,0,366,367,3,200,100,0,367,37,1,0,0,0,368,374,3,82,41,0,369,374,3,
-		36,18,0,370,374,3,114,57,0,371,374,5,25,0,0,372,374,5,29,0,0,373,368,1,
-		0,0,0,373,369,1,0,0,0,373,370,1,0,0,0,373,371,1,0,0,0,373,372,1,0,0,0,
-		374,39,1,0,0,0,375,378,3,42,21,0,376,377,7,4,0,0,377,379,3,40,20,0,378,
-		376,1,0,0,0,378,379,1,0,0,0,379,41,1,0,0,0,380,383,3,44,22,0,381,382,7,
-		4,0,0,382,384,3,42,21,0,383,381,1,0,0,0,383,384,1,0,0,0,384,402,1,0,0,
-		0,385,386,5,3,0,0,386,389,3,44,22,0,387,388,7,4,0,0,388,390,3,42,21,0,
-		389,387,1,0,0,0,389,390,1,0,0,0,390,391,1,0,0,0,391,392,5,4,0,0,392,402,
-		1,0,0,0,393,394,5,3,0,0,394,397,3,42,21,0,395,396,7,4,0,0,396,398,3,42,
-		21,0,397,395,1,0,0,0,397,398,1,0,0,0,398,399,1,0,0,0,399,400,5,4,0,0,400,
-		402,1,0,0,0,401,380,1,0,0,0,401,385,1,0,0,0,401,393,1,0,0,0,402,43,1,0,
-		0,0,403,404,5,32,0,0,404,405,7,5,0,0,405,475,3,148,74,0,406,408,5,32,0,
-		0,407,409,5,34,0,0,408,407,1,0,0,0,408,409,1,0,0,0,409,410,1,0,0,0,410,
-		411,5,6,0,0,411,412,5,3,0,0,412,413,3,146,73,0,413,414,5,4,0,0,414,475,
-		1,0,0,0,415,416,7,6,0,0,416,417,7,5,0,0,417,475,3,200,100,0,418,420,7,
-		6,0,0,419,421,5,34,0,0,420,419,1,0,0,0,420,421,1,0,0,0,421,422,1,0,0,0,
-		422,423,5,6,0,0,423,426,5,3,0,0,424,427,3,198,99,0,425,427,3,182,91,0,
-		426,424,1,0,0,0,426,425,1,0,0,0,427,428,1,0,0,0,428,429,5,4,0,0,429,475,
-		1,0,0,0,430,435,7,6,0,0,431,436,5,35,0,0,432,433,5,36,0,0,433,434,5,34,
-		0,0,434,436,5,37,0,0,435,431,1,0,0,0,435,432,1,0,0,0,436,438,1,0,0,0,437,
-		439,5,38,0,0,438,437,1,0,0,0,438,439,1,0,0,0,439,440,1,0,0,0,440,475,3,
-		180,90,0,441,443,7,6,0,0,442,444,5,34,0,0,443,442,1,0,0,0,443,444,1,0,
-		0,0,444,445,1,0,0,0,445,446,5,6,0,0,446,447,5,3,0,0,447,448,3,198,99,0,
-		448,449,5,4,0,0,449,475,1,0,0,0,450,452,7,6,0,0,451,453,5,34,0,0,452,451,
-		1,0,0,0,452,453,1,0,0,0,453,454,1,0,0,0,454,455,5,39,0,0,455,475,3,200,
-		100,0,456,461,7,6,0,0,457,462,5,40,0,0,458,459,5,36,0,0,459,460,5,34,0,
-		0,460,462,5,41,0,0,461,457,1,0,0,0,461,458,1,0,0,0,462,463,1,0,0,0,463,
-		464,5,42,0,0,464,475,3,200,100,0,465,470,7,6,0,0,466,471,5,43,0,0,467,
-		468,5,36,0,0,468,469,5,34,0,0,469,471,5,44,0,0,470,466,1,0,0,0,470,467,
-		1,0,0,0,471,472,1,0,0,0,472,473,5,42,0,0,473,475,3,200,100,0,474,403,1,
-		0,0,0,474,406,1,0,0,0,474,415,1,0,0,0,474,418,1,0,0,0,474,430,1,0,0,0,
-		474,441,1,0,0,0,474,450,1,0,0,0,474,456,1,0,0,0,474,465,1,0,0,0,475,45,
-		1,0,0,0,476,482,3,48,24,0,477,482,3,50,25,0,478,482,3,52,26,0,479,482,
-		3,54,27,0,480,482,3,56,28,0,481,476,1,0,0,0,481,477,1,0,0,0,481,478,1,
-		0,0,0,481,479,1,0,0,0,481,480,1,0,0,0,482,47,1,0,0,0,483,484,5,45,0,0,
-		484,49,1,0,0,0,485,486,5,45,0,0,486,487,5,42,0,0,487,488,5,46,0,0,488,
-		489,5,47,0,0,489,51,1,0,0,0,490,491,5,45,0,0,491,492,5,42,0,0,492,493,
-		5,46,0,0,493,494,5,48,0,0,494,53,1,0,0,0,495,496,5,45,0,0,496,497,5,42,
-		0,0,497,498,5,46,0,0,498,499,5,49,0,0,499,55,1,0,0,0,500,501,5,45,0,0,
-		501,502,5,42,0,0,502,503,5,46,0,0,503,504,5,47,0,0,504,505,5,30,0,0,505,
-		506,5,48,0,0,506,57,1,0,0,0,507,528,3,60,30,0,508,528,3,62,31,0,509,528,
-		3,64,32,0,510,528,3,66,33,0,511,528,3,68,34,0,512,528,3,70,35,0,513,514,
-		5,50,0,0,514,515,5,104,0,0,515,525,5,12,0,0,516,526,5,104,0,0,517,526,
-		3,72,36,0,518,526,3,76,38,0,519,526,3,200,100,0,520,526,3,180,90,0,521,
-		526,3,78,39,0,522,526,3,148,74,0,523,526,3,80,40,0,524,526,3,82,41,0,525,
-		516,1,0,0,0,525,517,1,0,0,0,525,518,1,0,0,0,525,519,1,0,0,0,525,520,1,
-		0,0,0,525,521,1,0,0,0,525,522,1,0,0,0,525,523,1,0,0,0,525,524,1,0,0,0,
-		526,528,1,0,0,0,527,507,1,0,0,0,527,508,1,0,0,0,527,509,1,0,0,0,527,510,
-		1,0,0,0,527,511,1,0,0,0,527,512,1,0,0,0,527,513,1,0,0,0,528,59,1,0,0,0,
-		529,530,5,51,0,0,530,533,5,104,0,0,531,532,5,12,0,0,532,534,3,72,36,0,
-		533,531,1,0,0,0,533,534,1,0,0,0,534,61,1,0,0,0,535,536,5,52,0,0,536,539,
-		5,104,0,0,537,538,5,12,0,0,538,540,3,76,38,0,539,537,1,0,0,0,539,540,1,
-		0,0,0,540,63,1,0,0,0,541,542,5,53,0,0,542,545,5,104,0,0,543,544,5,12,0,
-		0,544,546,3,200,100,0,545,543,1,0,0,0,545,546,1,0,0,0,546,65,1,0,0,0,547,
-		548,5,38,0,0,548,551,5,104,0,0,549,550,5,12,0,0,550,552,3,180,90,0,551,
-		549,1,0,0,0,551,552,1,0,0,0,552,67,1,0,0,0,553,554,5,54,0,0,554,557,5,
-		104,0,0,555,556,5,12,0,0,556,558,3,78,39,0,557,555,1,0,0,0,557,558,1,0,
-		0,0,558,69,1,0,0,0,559,560,5,2,0,0,560,561,5,14,0,0,561,564,5,104,0,0,
-		562,563,5,12,0,0,563,565,3,80,40,0,564,562,1,0,0,0,564,565,1,0,0,0,565,
-		71,1,0,0,0,566,567,5,51,0,0,567,569,7,7,0,0,568,570,3,126,63,0,569,568,
-		1,0,0,0,569,570,1,0,0,0,570,573,1,0,0,0,571,573,5,104,0,0,572,566,1,0,
-		0,0,572,571,1,0,0,0,573,73,1,0,0,0,574,575,7,8,0,0,575,75,1,0,0,0,576,
-		577,5,52,0,0,577,578,5,103,0,0,578,581,5,6,0,0,579,582,3,72,36,0,580,582,
-		3,114,57,0,581,579,1,0,0,0,581,580,1,0,0,0,582,586,1,0,0,0,583,584,5,52,
-		0,0,584,586,5,104,0,0,585,576,1,0,0,0,585,583,1,0,0,0,586,77,1,0,0,0,587,
-		588,7,7,0,0,588,591,7,1,0,0,589,592,3,72,36,0,590,592,3,114,57,0,591,589,
-		1,0,0,0,591,590,1,0,0,0,592,595,1,0,0,0,593,595,5,104,0,0,594,587,1,0,
-		0,0,594,593,1,0,0,0,595,79,1,0,0,0,596,597,5,2,0,0,597,601,5,14,0,0,598,
-		602,3,148,74,0,599,602,3,200,100,0,600,602,5,104,0,0,601,598,1,0,0,0,601,
-		599,1,0,0,0,601,600,1,0,0,0,602,603,1,0,0,0,603,604,7,1,0,0,604,607,3,
-		82,41,0,605,607,5,104,0,0,606,596,1,0,0,0,606,605,1,0,0,0,607,81,1,0,0,
-		0,608,609,5,2,0,0,609,610,7,7,0,0,610,611,5,6,0,0,611,614,3,72,36,0,612,
-		614,5,104,0,0,613,608,1,0,0,0,613,612,1,0,0,0,614,83,1,0,0,0,615,616,7,
-		7,0,0,616,617,5,6,0,0,617,618,3,72,36,0,618,85,1,0,0,0,619,620,5,104,0,
-		0,620,621,5,12,0,0,621,626,5,104,0,0,622,626,3,88,44,0,623,626,3,92,46,
-		0,624,626,3,90,45,0,625,619,1,0,0,0,625,622,1,0,0,0,625,623,1,0,0,0,625,
-		624,1,0,0,0,626,87,1,0,0,0,627,628,5,104,0,0,628,629,5,12,0,0,629,630,
-		3,72,36,0,630,89,1,0,0,0,631,632,5,104,0,0,632,633,5,12,0,0,633,634,3,
-		76,38,0,634,91,1,0,0,0,635,636,5,104,0,0,636,637,5,12,0,0,637,638,5,103,
-		0,0,638,93,1,0,0,0,639,640,5,17,0,0,640,643,5,55,0,0,641,642,5,18,0,0,
-		642,644,3,110,55,0,643,641,1,0,0,0,643,644,1,0,0,0,644,645,1,0,0,0,645,
-		646,5,19,0,0,646,647,3,112,56,0,647,95,1,0,0,0,648,655,3,98,49,0,649,655,
-		3,100,50,0,650,655,3,102,51,0,651,655,3,104,52,0,652,655,3,106,53,0,653,
-		655,3,108,54,0,654,648,1,0,0,0,654,649,1,0,0,0,654,650,1,0,0,0,654,651,
-		1,0,0,0,654,652,1,0,0,0,654,653,1,0,0,0,655,97,1,0,0,0,656,657,5,56,0,
-		0,657,658,5,55,0,0,658,659,5,18,0,0,659,660,3,110,55,0,660,99,1,0,0,0,
-		661,662,5,56,0,0,662,663,5,104,0,0,663,101,1,0,0,0,664,665,5,56,0,0,665,
-		666,5,51,0,0,666,667,7,9,0,0,667,103,1,0,0,0,668,669,5,56,0,0,669,670,
-		5,103,0,0,670,105,1,0,0,0,671,672,5,56,0,0,672,673,5,57,0,0,673,674,5,
-		58,0,0,674,107,1,0,0,0,675,676,5,56,0,0,676,677,5,59,0,0,677,678,5,60,
-		0,0,678,109,1,0,0,0,679,683,5,61,0,0,680,681,5,59,0,0,681,683,5,60,0,0,
-		682,679,1,0,0,0,682,680,1,0,0,0,683,111,1,0,0,0,684,689,5,29,0,0,685,686,
-		5,59,0,0,686,689,5,60,0,0,687,689,3,114,57,0,688,684,1,0,0,0,688,685,1,
-		0,0,0,688,687,1,0,0,0,689,113,1,0,0,0,690,692,5,62,0,0,691,693,7,9,0,0,
-		692,691,1,0,0,0,692,693,1,0,0,0,693,115,1,0,0,0,694,703,5,29,0,0,695,696,
-		5,59,0,0,696,703,5,60,0,0,697,699,5,62,0,0,698,700,5,103,0,0,699,698,1,
-		0,0,0,699,700,1,0,0,0,700,703,1,0,0,0,701,703,3,72,36,0,702,694,1,0,0,
-		0,702,695,1,0,0,0,702,697,1,0,0,0,702,701,1,0,0,0,703,117,1,0,0,0,704,
-		711,5,29,0,0,705,706,5,59,0,0,706,711,5,60,0,0,707,711,3,114,57,0,708,
-		711,3,122,61,0,709,711,3,72,36,0,710,704,1,0,0,0,710,705,1,0,0,0,710,707,
-		1,0,0,0,710,708,1,0,0,0,710,709,1,0,0,0,711,119,1,0,0,0,712,718,5,29,0,
-		0,713,714,5,59,0,0,714,718,5,60,0,0,715,718,3,114,57,0,716,718,3,72,36,
-		0,717,712,1,0,0,0,717,713,1,0,0,0,717,715,1,0,0,0,717,716,1,0,0,0,718,
-		121,1,0,0,0,719,720,5,63,0,0,720,123,1,0,0,0,721,726,5,29,0,0,722,723,
-		5,59,0,0,723,726,5,60,0,0,724,726,3,114,57,0,725,721,1,0,0,0,725,722,1,
-		0,0,0,725,724,1,0,0,0,726,125,1,0,0,0,727,728,5,64,0,0,728,732,5,61,0,
-		0,729,730,5,6,0,0,730,732,3,114,57,0,731,727,1,0,0,0,731,729,1,0,0,0,732,
-		127,1,0,0,0,733,734,5,1,0,0,734,735,5,52,0,0,735,736,5,3,0,0,736,737,3,
-		142,71,0,737,738,5,4,0,0,738,739,5,6,0,0,739,740,3,72,36,0,740,129,1,0,
-		0,0,741,742,5,8,0,0,742,743,5,65,0,0,743,744,5,6,0,0,744,745,3,72,36,0,
-		745,746,5,9,0,0,746,749,3,142,71,0,747,748,5,16,0,0,748,750,3,136,68,0,
-		749,747,1,0,0,0,749,750,1,0,0,0,750,131,1,0,0,0,751,752,5,17,0,0,752,753,
-		5,65,0,0,753,754,7,1,0,0,754,755,3,72,36,0,755,756,5,19,0,0,756,759,3,
-		118,59,0,757,758,5,16,0,0,758,760,3,136,68,0,759,757,1,0,0,0,759,760,1,
-		0,0,0,760,133,1,0,0,0,761,762,5,7,0,0,762,763,5,65,0,0,763,764,7,1,0,0,
-		764,767,3,72,36,0,765,766,5,16,0,0,766,768,3,136,68,0,767,765,1,0,0,0,
-		767,768,1,0,0,0,768,135,1,0,0,0,769,772,3,138,69,0,770,771,7,4,0,0,771,
-		773,3,136,68,0,772,770,1,0,0,0,772,773,1,0,0,0,773,137,1,0,0,0,774,777,
-		3,140,70,0,775,776,7,4,0,0,776,778,3,138,69,0,777,775,1,0,0,0,777,778,
-		1,0,0,0,778,796,1,0,0,0,779,780,5,3,0,0,780,783,3,140,70,0,781,782,7,4,
-		0,0,782,784,3,138,69,0,783,781,1,0,0,0,783,784,1,0,0,0,784,785,1,0,0,0,
-		785,786,5,4,0,0,786,796,1,0,0,0,787,788,5,3,0,0,788,791,3,138,69,0,789,
-		790,7,4,0,0,790,792,3,138,69,0,791,789,1,0,0,0,791,792,1,0,0,0,792,793,
-		1,0,0,0,793,794,5,4,0,0,794,796,1,0,0,0,795,774,1,0,0,0,795,779,1,0,0,
-		0,795,787,1,0,0,0,796,139,1,0,0,0,797,798,5,32,0,0,798,799,7,5,0,0,799,
-		866,3,148,74,0,800,802,5,32,0,0,801,803,5,34,0,0,802,801,1,0,0,0,802,803,
-		1,0,0,0,803,804,1,0,0,0,804,805,5,6,0,0,805,806,5,3,0,0,806,807,3,146,
-		73,0,807,808,5,4,0,0,808,866,1,0,0,0,809,810,5,11,0,0,810,811,7,5,0,0,
-		811,866,3,200,100,0,812,814,5,11,0,0,813,815,5,34,0,0,814,813,1,0,0,0,
-		814,815,1,0,0,0,815,816,1,0,0,0,816,817,5,6,0,0,817,818,5,3,0,0,818,819,
-		3,198,99,0,819,820,5,4,0,0,820,866,1,0,0,0,821,826,5,11,0,0,822,827,5,
-		35,0,0,823,824,5,36,0,0,824,825,5,34,0,0,825,827,5,37,0,0,826,822,1,0,
-		0,0,826,823,1,0,0,0,827,829,1,0,0,0,828,830,5,38,0,0,829,828,1,0,0,0,829,
-		830,1,0,0,0,830,831,1,0,0,0,831,866,3,180,90,0,832,834,5,11,0,0,833,835,
-		5,34,0,0,834,833,1,0,0,0,834,835,1,0,0,0,835,836,1,0,0,0,836,837,5,6,0,
-		0,837,838,5,3,0,0,838,839,3,182,91,0,839,840,5,4,0,0,840,866,1,0,0,0,841,
-		843,5,11,0,0,842,844,5,34,0,0,843,842,1,0,0,0,843,844,1,0,0,0,844,845,
-		1,0,0,0,845,846,5,39,0,0,846,866,3,200,100,0,847,852,5,11,0,0,848,853,
-		5,40,0,0,849,850,5,36,0,0,850,851,5,34,0,0,851,853,5,41,0,0,852,848,1,
-		0,0,0,852,849,1,0,0,0,853,854,1,0,0,0,854,855,5,42,0,0,855,866,3,200,100,
-		0,856,861,5,11,0,0,857,862,5,43,0,0,858,859,5,36,0,0,859,860,5,34,0,0,
-		860,862,5,44,0,0,861,857,1,0,0,0,861,858,1,0,0,0,862,863,1,0,0,0,863,864,
-		5,42,0,0,864,866,3,200,100,0,865,797,1,0,0,0,865,800,1,0,0,0,865,809,1,
-		0,0,0,865,812,1,0,0,0,865,821,1,0,0,0,865,832,1,0,0,0,865,841,1,0,0,0,
-		865,847,1,0,0,0,865,856,1,0,0,0,866,141,1,0,0,0,867,870,3,144,72,0,868,
-		869,5,10,0,0,869,871,3,142,71,0,870,868,1,0,0,0,870,871,1,0,0,0,871,143,
-		1,0,0,0,872,873,5,66,0,0,873,874,5,11,0,0,874,875,5,12,0,0,875,902,3,200,
-		100,0,876,877,5,67,0,0,877,878,5,11,0,0,878,879,5,12,0,0,879,902,3,200,
-		100,0,880,881,5,68,0,0,881,882,5,12,0,0,882,902,7,10,0,0,883,884,5,72,
-		0,0,884,885,5,73,0,0,885,902,3,200,100,0,886,887,5,74,0,0,887,888,5,73,
-		0,0,888,902,3,200,100,0,889,890,5,75,0,0,890,891,5,76,0,0,891,892,5,12,
-		0,0,892,902,3,200,100,0,893,894,5,75,0,0,894,895,5,77,0,0,895,896,5,12,
-		0,0,896,902,3,200,100,0,897,898,5,75,0,0,898,899,5,78,0,0,899,900,5,12,
-		0,0,900,902,3,200,100,0,901,872,1,0,0,0,901,876,1,0,0,0,901,880,1,0,0,
-		0,901,883,1,0,0,0,901,886,1,0,0,0,901,889,1,0,0,0,901,893,1,0,0,0,901,
-		897,1,0,0,0,902,145,1,0,0,0,903,906,3,148,74,0,904,905,5,10,0,0,905,907,
-		3,146,73,0,906,904,1,0,0,0,906,907,1,0,0,0,907,147,1,0,0,0,908,911,7,11,
-		0,0,909,910,7,12,0,0,910,912,3,148,74,0,911,909,1,0,0,0,911,912,1,0,0,
-		0,912,149,1,0,0,0,913,915,5,83,0,0,914,913,1,0,0,0,914,915,1,0,0,0,915,
-		916,1,0,0,0,916,917,7,13,0,0,917,151,1,0,0,0,918,919,5,87,0,0,919,920,
-		5,105,0,0,920,153,1,0,0,0,921,925,3,156,78,0,922,925,3,158,79,0,923,925,
-		3,160,80,0,924,921,1,0,0,0,924,922,1,0,0,0,924,923,1,0,0,0,925,155,1,0,
-		0,0,926,927,5,88,0,0,927,928,3,72,36,0,928,929,5,30,0,0,929,930,3,72,36,
-		0,930,157,1,0,0,0,931,932,5,88,0,0,932,933,3,76,38,0,933,934,5,30,0,0,
-		934,935,3,76,38,0,935,159,1,0,0,0,936,937,5,88,0,0,937,938,5,89,0,0,938,
-		939,5,65,0,0,939,940,5,6,0,0,940,941,3,72,36,0,941,942,5,30,0,0,942,943,
-		3,72,36,0,943,161,1,0,0,0,944,945,5,59,0,0,945,951,5,60,0,0,946,951,3,
-		114,57,0,947,951,3,122,61,0,948,951,3,72,36,0,949,951,3,74,37,0,950,944,
-		1,0,0,0,950,946,1,0,0,0,950,947,1,0,0,0,950,948,1,0,0,0,950,949,1,0,0,
-		0,951,163,1,0,0,0,952,960,5,29,0,0,953,954,5,59,0,0,954,960,5,60,0,0,955,
-		960,3,114,57,0,956,960,3,122,61,0,957,960,3,72,36,0,958,960,3,74,37,0,
-		959,952,1,0,0,0,959,953,1,0,0,0,959,955,1,0,0,0,959,956,1,0,0,0,959,957,
-		1,0,0,0,959,958,1,0,0,0,960,165,1,0,0,0,961,962,5,17,0,0,962,963,5,90,
-		0,0,963,964,7,1,0,0,964,965,3,162,81,0,965,966,5,19,0,0,966,969,3,164,
-		82,0,967,968,5,16,0,0,968,970,3,174,87,0,969,967,1,0,0,0,969,970,1,0,0,
-		0,970,167,1,0,0,0,971,972,5,91,0,0,972,973,5,90,0,0,973,974,7,1,0,0,974,
-		977,3,72,36,0,975,976,5,16,0,0,976,978,3,174,87,0,977,975,1,0,0,0,977,
-		978,1,0,0,0,978,169,1,0,0,0,979,980,5,92,0,0,980,981,5,90,0,0,981,982,
-		7,1,0,0,982,985,3,72,36,0,983,984,5,16,0,0,984,986,3,174,87,0,985,983,
-		1,0,0,0,985,986,1,0,0,0,986,171,1,0,0,0,987,988,5,7,0,0,988,989,5,90,0,
-		0,989,992,7,1,0,0,990,993,3,72,36,0,991,993,3,74,37,0,992,990,1,0,0,0,
-		992,991,1,0,0,0,993,996,1,0,0,0,994,995,5,16,0,0,995,997,3,174,87,0,996,
-		994,1,0,0,0,996,997,1,0,0,0,997,173,1,0,0,0,998,1001,3,176,88,0,999,1000,
-		7,4,0,0,1000,1002,3,174,87,0,1001,999,1,0,0,0,1001,1002,1,0,0,0,1002,175,
-		1,0,0,0,1003,1006,3,178,89,0,1004,1005,7,4,0,0,1005,1007,3,176,88,0,1006,
-		1004,1,0,0,0,1006,1007,1,0,0,0,1007,1025,1,0,0,0,1008,1009,5,3,0,0,1009,
-		1012,3,178,89,0,1010,1011,7,4,0,0,1011,1013,3,176,88,0,1012,1010,1,0,0,
-		0,1012,1013,1,0,0,0,1013,1014,1,0,0,0,1014,1015,5,4,0,0,1015,1025,1,0,
-		0,0,1016,1017,5,3,0,0,1017,1020,3,176,88,0,1018,1019,7,4,0,0,1019,1021,
-		3,176,88,0,1020,1018,1,0,0,0,1020,1021,1,0,0,0,1021,1022,1,0,0,0,1022,
-		1023,5,4,0,0,1023,1025,1,0,0,0,1024,1003,1,0,0,0,1024,1008,1,0,0,0,1024,
-		1016,1,0,0,0,1025,177,1,0,0,0,1026,1027,5,32,0,0,1027,1028,7,5,0,0,1028,
-		1238,3,148,74,0,1029,1031,5,32,0,0,1030,1032,5,34,0,0,1031,1030,1,0,0,
-		0,1031,1032,1,0,0,0,1032,1033,1,0,0,0,1033,1034,5,6,0,0,1034,1035,5,3,
-		0,0,1035,1036,3,146,73,0,1036,1037,5,4,0,0,1037,1238,1,0,0,0,1038,1039,
-		7,14,0,0,1039,1040,7,5,0,0,1040,1238,3,200,100,0,1041,1043,7,14,0,0,1042,
-		1044,5,34,0,0,1043,1042,1,0,0,0,1043,1044,1,0,0,0,1044,1045,1,0,0,0,1045,
-		1046,5,6,0,0,1046,1047,5,3,0,0,1047,1048,3,198,99,0,1048,1049,5,4,0,0,
-		1049,1238,1,0,0,0,1050,1055,7,14,0,0,1051,1056,5,35,0,0,1052,1053,5,36,
-		0,0,1053,1054,5,34,0,0,1054,1056,5,37,0,0,1055,1051,1,0,0,0,1055,1052,
-		1,0,0,0,1056,1058,1,0,0,0,1057,1059,5,38,0,0,1058,1057,1,0,0,0,1058,1059,
-		1,0,0,0,1059,1060,1,0,0,0,1060,1238,3,180,90,0,1061,1063,7,14,0,0,1062,
-		1064,5,34,0,0,1063,1062,1,0,0,0,1063,1064,1,0,0,0,1064,1065,1,0,0,0,1065,
-		1066,5,6,0,0,1066,1067,5,3,0,0,1067,1068,3,198,99,0,1068,1069,5,4,0,0,
-		1069,1238,1,0,0,0,1070,1072,7,14,0,0,1071,1073,5,34,0,0,1072,1071,1,0,
-		0,0,1072,1073,1,0,0,0,1073,1074,1,0,0,0,1074,1075,5,39,0,0,1075,1238,3,
-		200,100,0,1076,1081,7,14,0,0,1077,1082,5,40,0,0,1078,1079,5,36,0,0,1079,
-		1080,5,34,0,0,1080,1082,5,41,0,0,1081,1077,1,0,0,0,1081,1078,1,0,0,0,1082,
-		1083,1,0,0,0,1083,1084,5,42,0,0,1084,1238,3,200,100,0,1085,1090,7,14,0,
-		0,1086,1091,5,43,0,0,1087,1088,5,36,0,0,1088,1089,5,34,0,0,1089,1091,5,
-		44,0,0,1090,1086,1,0,0,0,1090,1087,1,0,0,0,1091,1092,1,0,0,0,1092,1093,
-		5,42,0,0,1093,1238,3,200,100,0,1094,1096,5,93,0,0,1095,1094,1,0,0,0,1095,
-		1096,1,0,0,0,1096,1097,1,0,0,0,1097,1103,5,73,0,0,1098,1100,5,89,0,0,1099,
-		1098,1,0,0,0,1099,1100,1,0,0,0,1100,1101,1,0,0,0,1101,1103,5,94,0,0,1102,
-		1095,1,0,0,0,1102,1099,1,0,0,0,1103,1104,1,0,0,0,1104,1105,7,5,0,0,1105,
-		1238,3,200,100,0,1106,1108,5,93,0,0,1107,1106,1,0,0,0,1107,1108,1,0,0,
-		0,1108,1109,1,0,0,0,1109,1115,5,73,0,0,1110,1112,5,89,0,0,1111,1110,1,
-		0,0,0,1111,1112,1,0,0,0,1112,1113,1,0,0,0,1113,1115,5,94,0,0,1114,1107,
-		1,0,0,0,1114,1111,1,0,0,0,1115,1117,1,0,0,0,1116,1118,5,34,0,0,1117,1116,
-		1,0,0,0,1117,1118,1,0,0,0,1118,1119,1,0,0,0,1119,1120,5,6,0,0,1120,1121,
-		5,3,0,0,1121,1122,3,198,99,0,1122,1123,5,4,0,0,1123,1238,1,0,0,0,1124,
-		1126,5,93,0,0,1125,1124,1,0,0,0,1125,1126,1,0,0,0,1126,1127,1,0,0,0,1127,
-		1132,5,73,0,0,1128,1133,5,35,0,0,1129,1130,5,36,0,0,1130,1131,5,34,0,0,
-		1131,1133,5,37,0,0,1132,1128,1,0,0,0,1132,1129,1,0,0,0,1133,1135,1,0,0,
-		0,1134,1136,5,38,0,0,1135,1134,1,0,0,0,1135,1136,1,0,0,0,1136,1137,1,0,
-		0,0,1137,1238,3,180,90,0,1138,1140,5,93,0,0,1139,1138,1,0,0,0,1139,1140,
-		1,0,0,0,1140,1141,1,0,0,0,1141,1146,5,73,0,0,1142,1147,5,40,0,0,1143,1144,
-		5,36,0,0,1144,1145,5,34,0,0,1145,1147,5,41,0,0,1146,1142,1,0,0,0,1146,
-		1143,1,0,0,0,1147,1148,1,0,0,0,1148,1149,5,42,0,0,1149,1238,3,200,100,
-		0,1150,1152,5,93,0,0,1151,1150,1,0,0,0,1151,1152,1,0,0,0,1152,1153,1,0,
-		0,0,1153,1158,5,73,0,0,1154,1159,5,43,0,0,1155,1156,5,36,0,0,1156,1157,
-		5,34,0,0,1157,1159,5,44,0,0,1158,1154,1,0,0,0,1158,1155,1,0,0,0,1159,1160,
-		1,0,0,0,1160,1161,5,42,0,0,1161,1238,3,200,100,0,1162,1164,5,89,0,0,1163,
-		1162,1,0,0,0,1163,1164,1,0,0,0,1164,1165,1,0,0,0,1165,1170,5,94,0,0,1166,
-		1171,5,37,0,0,1167,1168,5,95,0,0,1168,1169,5,34,0,0,1169,1171,5,37,0,0,
-		1170,1166,1,0,0,0,1170,1167,1,0,0,0,1171,1173,1,0,0,0,1172,1174,5,38,0,
-		0,1173,1172,1,0,0,0,1173,1174,1,0,0,0,1174,1175,1,0,0,0,1175,1238,3,180,
-		90,0,1176,1178,5,89,0,0,1177,1176,1,0,0,0,1177,1178,1,0,0,0,1178,1179,
-		1,0,0,0,1179,1184,5,94,0,0,1180,1185,5,41,0,0,1181,1182,5,95,0,0,1182,
-		1183,5,34,0,0,1183,1185,5,41,0,0,1184,1180,1,0,0,0,1184,1181,1,0,0,0,1185,
-		1186,1,0,0,0,1186,1187,5,42,0,0,1187,1238,3,200,100,0,1188,1190,5,89,0,
-		0,1189,1188,1,0,0,0,1189,1190,1,0,0,0,1190,1191,1,0,0,0,1191,1196,5,94,
-		0,0,1192,1197,5,44,0,0,1193,1194,5,95,0,0,1194,1195,5,34,0,0,1195,1197,
-		5,44,0,0,1196,1192,1,0,0,0,1196,1193,1,0,0,0,1197,1198,1,0,0,0,1198,1199,
-		5,42,0,0,1199,1238,3,200,100,0,1200,1202,5,93,0,0,1201,1200,1,0,0,0,1201,
-		1202,1,0,0,0,1202,1203,1,0,0,0,1203,1209,5,73,0,0,1204,1206,5,89,0,0,1205,
-		1204,1,0,0,0,1205,1206,1,0,0,0,1206,1207,1,0,0,0,1207,1209,5,94,0,0,1208,
-		1201,1,0,0,0,1208,1205,1,0,0,0,1209,1211,1,0,0,0,1210,1212,5,34,0,0,1211,
-		1210,1,0,0,0,1211,1212,1,0,0,0,1212,1213,1,0,0,0,1213,1214,5,6,0,0,1214,
-		1215,5,3,0,0,1215,1216,3,182,91,0,1216,1217,5,4,0,0,1217,1238,1,0,0,0,
-		1218,1220,5,93,0,0,1219,1218,1,0,0,0,1219,1220,1,0,0,0,1220,1221,1,0,0,
-		0,1221,1227,5,73,0,0,1222,1224,5,89,0,0,1223,1222,1,0,0,0,1223,1224,1,
-		0,0,0,1224,1225,1,0,0,0,1225,1227,5,94,0,0,1226,1219,1,0,0,0,1226,1223,
-		1,0,0,0,1227,1229,1,0,0,0,1228,1230,5,34,0,0,1229,1228,1,0,0,0,1229,1230,
-		1,0,0,0,1230,1231,1,0,0,0,1231,1232,5,39,0,0,1232,1238,3,200,100,0,1233,
-		1234,5,96,0,0,1234,1238,5,94,0,0,1235,1236,5,93,0,0,1236,1238,5,94,0,0,
-		1237,1026,1,0,0,0,1237,1029,1,0,0,0,1237,1038,1,0,0,0,1237,1041,1,0,0,
-		0,1237,1050,1,0,0,0,1237,1061,1,0,0,0,1237,1070,1,0,0,0,1237,1076,1,0,
-		0,0,1237,1085,1,0,0,0,1237,1102,1,0,0,0,1237,1114,1,0,0,0,1237,1125,1,
-		0,0,0,1237,1139,1,0,0,0,1237,1151,1,0,0,0,1237,1163,1,0,0,0,1237,1177,
-		1,0,0,0,1237,1189,1,0,0,0,1237,1208,1,0,0,0,1237,1226,1,0,0,0,1237,1233,
-		1,0,0,0,1237,1235,1,0,0,0,1238,179,1,0,0,0,1239,1240,7,15,0,0,1240,181,
-		1,0,0,0,1241,1244,3,180,90,0,1242,1243,5,10,0,0,1243,1245,3,182,91,0,1244,
-		1242,1,0,0,0,1244,1245,1,0,0,0,1245,183,1,0,0,0,1246,1247,5,17,0,0,1247,
-		1248,5,97,0,0,1248,1249,7,1,0,0,1249,1250,3,72,36,0,1250,1251,5,19,0,0,
-		1251,1254,3,72,36,0,1252,1253,5,16,0,0,1253,1255,3,192,96,0,1254,1252,
-		1,0,0,0,1254,1255,1,0,0,0,1255,185,1,0,0,0,1256,1257,5,8,0,0,1257,1258,
-		5,97,0,0,1258,1259,7,1,0,0,1259,1260,3,72,36,0,1260,1261,5,19,0,0,1261,
-		1264,3,72,36,0,1262,1263,5,16,0,0,1263,1265,3,192,96,0,1264,1262,1,0,0,
-		0,1264,1265,1,0,0,0,1265,187,1,0,0,0,1266,1267,5,7,0,0,1267,1268,5,97,
-		0,0,1268,1269,7,1,0,0,1269,1272,3,72,36,0,1270,1271,5,16,0,0,1271,1273,
-		3,192,96,0,1272,1270,1,0,0,0,1272,1273,1,0,0,0,1273,189,1,0,0,0,1274,1275,
-		5,17,0,0,1275,1276,5,97,0,0,1276,1277,7,1,0,0,1277,1278,3,72,36,0,1278,
-		1279,5,19,0,0,1279,1282,3,72,36,0,1280,1281,5,16,0,0,1281,1283,3,192,96,
-		0,1282,1280,1,0,0,0,1282,1283,1,0,0,0,1283,191,1,0,0,0,1284,1287,3,194,
-		97,0,1285,1286,7,4,0,0,1286,1288,3,192,96,0,1287,1285,1,0,0,0,1287,1288,
-		1,0,0,0,1288,193,1,0,0,0,1289,1292,3,196,98,0,1290,1291,7,4,0,0,1291,1293,
-		3,194,97,0,1292,1290,1,0,0,0,1292,1293,1,0,0,0,1293,1311,1,0,0,0,1294,
-		1295,5,3,0,0,1295,1298,3,196,98,0,1296,1297,7,4,0,0,1297,1299,3,194,97,
-		0,1298,1296,1,0,0,0,1298,1299,1,0,0,0,1299,1300,1,0,0,0,1300,1301,5,4,
-		0,0,1301,1311,1,0,0,0,1302,1303,5,3,0,0,1303,1306,3,194,97,0,1304,1305,
-		7,4,0,0,1305,1307,3,194,97,0,1306,1304,1,0,0,0,1306,1307,1,0,0,0,1307,
-		1308,1,0,0,0,1308,1309,5,4,0,0,1309,1311,1,0,0,0,1310,1289,1,0,0,0,1310,
-		1294,1,0,0,0,1310,1302,1,0,0,0,1311,195,1,0,0,0,1312,1313,5,32,0,0,1313,
-		1314,7,5,0,0,1314,1381,3,148,74,0,1315,1317,5,32,0,0,1316,1318,5,34,0,
-		0,1317,1316,1,0,0,0,1317,1318,1,0,0,0,1318,1319,1,0,0,0,1319,1320,5,6,
-		0,0,1320,1321,5,3,0,0,1321,1322,3,146,73,0,1322,1323,5,4,0,0,1323,1381,
-		1,0,0,0,1324,1325,7,16,0,0,1325,1326,7,5,0,0,1326,1381,3,200,100,0,1327,
-		1329,7,16,0,0,1328,1330,5,34,0,0,1329,1328,1,0,0,0,1329,1330,1,0,0,0,1330,
-		1331,1,0,0,0,1331,1332,5,6,0,0,1332,1333,5,3,0,0,1333,1334,3,198,99,0,
-		1334,1335,5,4,0,0,1335,1381,1,0,0,0,1336,1341,7,16,0,0,1337,1342,5,35,
-		0,0,1338,1339,5,36,0,0,1339,1340,5,34,0,0,1340,1342,5,37,0,0,1341,1337,
-		1,0,0,0,1341,1338,1,0,0,0,1342,1344,1,0,0,0,1343,1345,5,38,0,0,1344,1343,
-		1,0,0,0,1344,1345,1,0,0,0,1345,1346,1,0,0,0,1346,1381,3,180,90,0,1347,
-		1349,7,16,0,0,1348,1350,5,34,0,0,1349,1348,1,0,0,0,1349,1350,1,0,0,0,1350,
-		1351,1,0,0,0,1351,1352,5,6,0,0,1352,1353,5,3,0,0,1353,1354,3,182,91,0,
-		1354,1355,5,4,0,0,1355,1381,1,0,0,0,1356,1358,7,16,0,0,1357,1359,5,34,
-		0,0,1358,1357,1,0,0,0,1358,1359,1,0,0,0,1359,1360,1,0,0,0,1360,1361,5,
-		39,0,0,1361,1381,3,200,100,0,1362,1367,7,16,0,0,1363,1368,5,40,0,0,1364,
-		1365,5,36,0,0,1365,1366,5,34,0,0,1366,1368,5,41,0,0,1367,1363,1,0,0,0,
-		1367,1364,1,0,0,0,1368,1369,1,0,0,0,1369,1370,5,42,0,0,1370,1381,3,200,
-		100,0,1371,1376,7,16,0,0,1372,1377,5,43,0,0,1373,1374,5,36,0,0,1374,1375,
-		5,34,0,0,1375,1377,5,44,0,0,1376,1372,1,0,0,0,1376,1373,1,0,0,0,1377,1378,
-		1,0,0,0,1378,1379,5,42,0,0,1379,1381,3,200,100,0,1380,1312,1,0,0,0,1380,
-		1315,1,0,0,0,1380,1324,1,0,0,0,1380,1327,1,0,0,0,1380,1336,1,0,0,0,1380,
-		1347,1,0,0,0,1380,1356,1,0,0,0,1380,1362,1,0,0,0,1380,1371,1,0,0,0,1381,
-		197,1,0,0,0,1382,1385,3,200,100,0,1383,1384,5,10,0,0,1384,1386,3,198,99,
-		0,1385,1383,1,0,0,0,1385,1386,1,0,0,0,1386,199,1,0,0,0,1387,1390,7,9,0,
-		0,1388,1389,5,79,0,0,1389,1391,3,200,100,0,1390,1388,1,0,0,0,1390,1391,
-		1,0,0,0,1391,201,1,0,0,0,1392,1393,5,98,0,0,1393,1394,5,3,0,0,1394,1395,
-		5,4,0,0,1395,1396,5,99,0,0,1396,1397,3,2,1,0,1397,1398,5,100,0,0,1398,
-		203,1,0,0,0,158,211,238,247,256,262,270,278,285,299,308,319,322,333,338,
-		346,354,360,363,373,378,383,389,397,401,408,420,426,435,438,443,452,461,
-		470,474,481,525,527,533,539,545,551,557,564,569,572,581,585,591,594,601,
-		606,613,625,643,654,682,688,692,699,702,710,717,725,731,749,759,767,772,
-		777,783,791,795,802,814,826,829,834,843,852,861,865,870,901,906,911,914,
-		924,950,959,969,977,985,992,996,1001,1006,1012,1020,1024,1031,1043,1055,
-		1058,1063,1072,1081,1090,1095,1099,1102,1107,1111,1114,1117,1125,1132,
-		1135,1139,1146,1151,1158,1163,1170,1173,1177,1184,1189,1196,1201,1205,
-		1208,1211,1219,1223,1226,1229,1237,1244,1254,1264,1272,1282,1287,1292,
-		1298,1306,1310,1317,1329,1341,1344,1349,1358,1367,1376,1380,1385,1390
+		2,99,7,99,2,100,7,100,2,101,7,101,2,102,7,102,2,103,7,103,2,104,7,104,
+		2,105,7,105,2,106,7,106,2,107,7,107,1,0,1,0,1,1,1,1,1,1,4,1,222,8,1,11,
+		1,12,1,223,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,
+		1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,254,8,2,1,3,1,
+		3,1,3,1,3,1,3,1,3,1,3,3,3,263,8,3,1,3,1,3,1,3,3,3,268,8,3,1,4,1,4,1,4,
+		1,4,3,4,274,8,4,1,5,1,5,1,5,1,5,3,5,280,8,5,1,5,1,5,1,5,1,6,1,6,1,6,3,
+		6,288,8,6,1,7,1,7,1,7,1,7,1,7,1,7,3,7,296,8,7,1,8,1,8,1,8,1,8,1,8,3,8,
+		303,8,8,1,8,1,8,1,8,3,8,308,8,8,1,9,1,9,1,9,1,9,1,9,1,10,1,10,1,10,1,10,
+		1,10,1,10,1,10,1,11,1,11,1,11,1,11,1,11,1,11,1,12,1,12,1,12,1,12,1,13,
+		1,13,1,13,3,13,335,8,13,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,3,
+		14,346,8,14,1,15,1,15,1,15,1,15,1,15,1,15,3,15,354,8,15,1,15,1,15,3,15,
+		358,8,15,1,16,1,16,1,16,1,16,1,16,1,16,1,16,1,16,1,16,3,16,369,8,16,1,
+		16,3,16,372,8,16,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,3,17,383,
+		8,17,1,18,1,18,1,18,3,18,388,8,18,1,19,1,19,1,19,1,20,1,20,1,20,3,20,396,
+		8,20,1,21,1,21,1,21,1,21,1,21,1,21,3,21,404,8,21,1,22,1,22,1,22,1,22,1,
+		22,3,22,411,8,22,1,23,3,23,414,8,23,1,23,1,23,1,23,1,24,1,24,1,24,1,24,
+		1,24,1,24,3,24,425,8,24,1,25,1,25,1,25,3,25,430,8,25,1,26,1,26,1,26,3,
+		26,435,8,26,1,26,1,26,1,26,1,26,3,26,441,8,26,1,26,1,26,1,26,1,26,1,26,
+		1,26,3,26,449,8,26,1,26,1,26,3,26,453,8,26,1,27,1,27,1,27,1,27,1,27,3,
+		27,460,8,27,1,27,1,27,1,27,1,27,1,27,1,27,1,27,1,27,1,27,1,27,3,27,472,
+		8,27,1,27,1,27,1,27,1,27,3,27,478,8,27,1,27,1,27,1,27,1,27,1,27,1,27,1,
+		27,3,27,487,8,27,1,27,3,27,490,8,27,1,27,1,27,1,27,3,27,495,8,27,1,27,
+		1,27,1,27,1,27,1,27,1,27,1,27,3,27,504,8,27,1,27,1,27,1,27,1,27,1,27,1,
+		27,1,27,3,27,513,8,27,1,27,1,27,1,27,1,27,1,27,1,27,1,27,3,27,522,8,27,
+		1,27,1,27,3,27,526,8,27,1,28,1,28,1,28,1,28,1,28,3,28,533,8,28,1,29,1,
+		29,1,30,1,30,1,30,1,30,1,30,1,31,1,31,1,31,1,31,1,31,1,32,1,32,1,32,1,
+		32,1,32,1,33,1,33,1,33,1,33,1,33,1,33,1,33,1,34,1,34,1,34,1,34,1,34,1,
+		34,1,34,1,34,1,34,1,34,1,34,1,34,1,34,1,34,1,34,1,34,1,34,1,34,3,34,577,
+		8,34,3,34,579,8,34,1,35,1,35,1,35,1,35,3,35,585,8,35,1,36,1,36,1,36,1,
+		36,3,36,591,8,36,1,37,1,37,1,37,1,37,3,37,597,8,37,1,38,1,38,1,38,1,38,
+		3,38,603,8,38,1,39,1,39,1,39,1,39,3,39,609,8,39,1,40,1,40,1,40,1,40,1,
+		40,3,40,616,8,40,1,41,1,41,1,41,3,41,621,8,41,1,41,3,41,624,8,41,1,42,
+		1,42,1,43,1,43,3,43,630,8,43,1,44,1,44,1,44,1,44,1,44,3,44,637,8,44,1,
+		44,1,44,3,44,641,8,44,1,45,1,45,1,45,1,45,3,45,647,8,45,1,45,3,45,650,
+		8,45,1,46,1,46,1,46,1,46,1,46,3,46,657,8,46,1,46,1,46,1,46,3,46,662,8,
+		46,1,47,1,47,1,47,1,47,1,47,3,47,669,8,47,1,47,3,47,672,8,47,1,48,1,48,
+		1,48,1,48,3,48,678,8,48,1,49,1,49,1,49,1,49,1,49,1,49,3,49,686,8,49,1,
+		50,1,50,1,50,1,50,1,51,1,51,1,51,1,51,1,52,1,52,1,52,1,52,1,53,1,53,1,
+		53,1,53,3,53,704,8,53,1,53,1,53,1,53,1,54,1,54,1,54,1,54,1,54,1,54,3,54,
+		715,8,54,1,55,1,55,1,55,1,55,1,55,1,56,1,56,1,56,1,57,1,57,1,57,1,57,1,
+		58,1,58,1,58,1,59,1,59,1,59,1,59,1,60,1,60,1,60,1,60,1,61,1,61,1,61,3,
+		61,743,8,61,1,62,1,62,1,62,1,62,3,62,749,8,62,1,63,1,63,3,63,753,8,63,
+		1,64,1,64,1,64,1,64,1,64,3,64,760,8,64,1,64,3,64,763,8,64,1,65,1,65,1,
+		65,1,65,1,65,1,65,3,65,771,8,65,1,66,1,66,1,66,1,66,1,66,3,66,778,8,66,
+		1,67,1,67,1,68,1,68,1,68,1,68,3,68,786,8,68,1,69,1,69,1,69,1,69,3,69,792,
+		8,69,1,70,1,70,1,70,1,70,1,70,1,70,1,70,1,70,1,71,1,71,1,71,1,71,1,71,
+		1,71,1,71,1,71,3,71,810,8,71,1,72,1,72,1,72,1,72,1,72,1,72,1,72,1,72,3,
+		72,820,8,72,1,73,1,73,1,73,1,73,1,73,1,73,3,73,828,8,73,1,74,1,74,1,74,
+		3,74,833,8,74,1,75,1,75,1,75,3,75,838,8,75,1,75,1,75,1,75,1,75,3,75,844,
+		8,75,1,75,1,75,1,75,1,75,1,75,1,75,3,75,852,8,75,1,75,1,75,3,75,856,8,
+		75,1,76,1,76,1,76,1,76,1,76,3,76,863,8,76,1,76,1,76,1,76,1,76,1,76,1,76,
+		1,76,1,76,1,76,1,76,3,76,875,8,76,1,76,1,76,1,76,1,76,1,76,1,76,1,76,1,
+		76,1,76,1,76,3,76,887,8,76,1,76,3,76,890,8,76,1,76,1,76,1,76,3,76,895,
+		8,76,1,76,1,76,1,76,1,76,1,76,1,76,1,76,3,76,904,8,76,1,76,1,76,1,76,1,
+		76,1,76,1,76,1,76,3,76,913,8,76,1,76,1,76,1,76,1,76,1,76,1,76,1,76,3,76,
+		922,8,76,1,76,1,76,3,76,926,8,76,1,77,1,77,1,77,3,77,931,8,77,1,78,1,78,
+		1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,
+		1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,1,78,3,78,
+		962,8,78,1,79,1,79,1,79,3,79,967,8,79,1,80,1,80,1,80,3,80,972,8,80,1,81,
+		3,81,975,8,81,1,81,1,81,1,82,1,82,1,82,1,83,1,83,1,83,3,83,985,8,83,1,
+		84,1,84,1,84,1,84,1,84,1,85,1,85,1,85,1,85,1,85,1,86,1,86,1,86,1,86,1,
+		86,1,86,1,86,1,86,1,87,1,87,1,87,1,87,1,87,1,87,3,87,1011,8,87,1,88,1,
+		88,1,88,1,88,1,88,1,88,1,88,3,88,1020,8,88,1,89,1,89,1,89,1,89,1,89,1,
+		89,1,89,1,89,3,89,1030,8,89,1,90,1,90,1,90,1,90,1,90,1,90,3,90,1038,8,
+		90,1,91,1,91,1,91,1,91,1,91,1,91,3,91,1046,8,91,1,92,1,92,1,92,1,92,1,
+		92,1,92,3,92,1054,8,92,1,93,1,93,1,93,3,93,1059,8,93,1,94,1,94,1,94,3,
+		94,1064,8,94,1,94,1,94,1,94,1,94,3,94,1070,8,94,1,94,1,94,1,94,1,94,1,
+		94,1,94,3,94,1078,8,94,1,94,1,94,3,94,1082,8,94,1,95,1,95,1,95,1,95,1,
+		95,3,95,1089,8,95,1,95,1,95,1,95,1,95,1,95,1,95,1,95,1,95,1,95,1,95,3,
+		95,1101,8,95,1,95,1,95,1,95,1,95,1,95,1,95,1,95,1,95,1,95,1,95,3,95,1113,
+		8,95,1,95,3,95,1116,8,95,1,95,1,95,1,95,3,95,1121,8,95,1,95,1,95,1,95,
+		1,95,1,95,1,95,1,95,3,95,1130,8,95,1,95,1,95,1,95,1,95,1,95,1,95,1,95,
+		3,95,1139,8,95,1,95,1,95,1,95,1,95,1,95,1,95,1,95,3,95,1148,8,95,1,95,
+		1,95,1,95,3,95,1153,8,95,1,95,1,95,3,95,1157,8,95,1,95,3,95,1160,8,95,
+		1,95,1,95,1,95,3,95,1165,8,95,1,95,1,95,3,95,1169,8,95,1,95,3,95,1172,
+		8,95,1,95,3,95,1175,8,95,1,95,1,95,1,95,1,95,1,95,1,95,3,95,1183,8,95,
+		1,95,1,95,1,95,1,95,1,95,3,95,1190,8,95,1,95,3,95,1193,8,95,1,95,1,95,
+		3,95,1197,8,95,1,95,1,95,1,95,1,95,1,95,3,95,1204,8,95,1,95,1,95,1,95,
+		3,95,1209,8,95,1,95,1,95,1,95,1,95,1,95,3,95,1216,8,95,1,95,1,95,1,95,
+		3,95,1221,8,95,1,95,1,95,1,95,1,95,1,95,3,95,1228,8,95,1,95,3,95,1231,
+		8,95,1,95,1,95,3,95,1235,8,95,1,95,1,95,1,95,1,95,1,95,3,95,1242,8,95,
+		1,95,1,95,1,95,3,95,1247,8,95,1,95,1,95,1,95,1,95,1,95,3,95,1254,8,95,
+		1,95,1,95,1,95,3,95,1259,8,95,1,95,1,95,3,95,1263,8,95,1,95,3,95,1266,
+		8,95,1,95,3,95,1269,8,95,1,95,1,95,1,95,1,95,1,95,1,95,3,95,1277,8,95,
+		1,95,1,95,3,95,1281,8,95,1,95,3,95,1284,8,95,1,95,3,95,1287,8,95,1,95,
+		1,95,1,95,1,95,1,95,1,95,3,95,1295,8,95,1,96,1,96,1,97,1,97,1,97,3,97,
+		1302,8,97,1,98,1,98,1,98,1,98,1,98,1,98,1,98,1,98,3,98,1312,8,98,1,99,
+		1,99,1,99,1,99,1,99,1,99,1,99,1,99,3,99,1322,8,99,1,100,1,100,1,100,1,
+		100,1,100,1,100,3,100,1330,8,100,1,101,1,101,1,101,1,101,1,101,1,101,1,
+		101,1,101,3,101,1340,8,101,1,102,1,102,1,102,3,102,1345,8,102,1,103,1,
+		103,1,103,3,103,1350,8,103,1,103,1,103,1,103,1,103,3,103,1356,8,103,1,
+		103,1,103,1,103,1,103,1,103,1,103,3,103,1364,8,103,1,103,1,103,3,103,1368,
+		8,103,1,104,1,104,1,104,1,104,1,104,3,104,1375,8,104,1,104,1,104,1,104,
+		1,104,1,104,1,104,1,104,1,104,1,104,1,104,3,104,1387,8,104,1,104,1,104,
+		1,104,1,104,1,104,1,104,1,104,1,104,1,104,1,104,3,104,1399,8,104,1,104,
+		3,104,1402,8,104,1,104,1,104,1,104,3,104,1407,8,104,1,104,1,104,1,104,
+		1,104,1,104,1,104,1,104,3,104,1416,8,104,1,104,1,104,1,104,1,104,1,104,
+		1,104,1,104,3,104,1425,8,104,1,104,1,104,1,104,1,104,1,104,1,104,1,104,
+		3,104,1434,8,104,1,104,1,104,3,104,1438,8,104,1,105,1,105,1,105,3,105,
+		1443,8,105,1,106,1,106,1,106,3,106,1448,8,106,1,107,1,107,1,107,1,107,
+		1,107,1,107,1,107,1,107,0,0,108,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,
+		30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,
+		78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110,112,114,116,118,
+		120,122,124,126,128,130,132,134,136,138,140,142,144,146,148,150,152,154,
+		156,158,160,162,164,166,168,170,172,174,176,178,180,182,184,186,188,190,
+		192,194,196,198,200,202,204,206,208,210,212,214,0,17,1,0,5,6,2,0,6,6,15,
+		15,3,0,1,1,8,8,22,23,1,0,26,27,1,0,30,31,2,0,12,12,33,33,2,0,11,11,24,
+		24,1,0,103,105,2,0,103,103,105,105,1,0,103,104,1,0,69,71,1,0,104,105,1,
+		0,79,82,1,0,84,86,2,0,11,11,28,28,2,0,103,104,106,106,2,0,11,11,13,13,
+		1635,0,216,1,0,0,0,2,221,1,0,0,0,4,253,1,0,0,0,6,255,1,0,0,0,8,269,1,0,
+		0,0,10,275,1,0,0,0,12,284,1,0,0,0,14,295,1,0,0,0,16,297,1,0,0,0,18,309,
+		1,0,0,0,20,314,1,0,0,0,22,321,1,0,0,0,24,327,1,0,0,0,26,334,1,0,0,0,28,
+		336,1,0,0,0,30,347,1,0,0,0,32,359,1,0,0,0,34,373,1,0,0,0,36,384,1,0,0,
+		0,38,389,1,0,0,0,40,392,1,0,0,0,42,403,1,0,0,0,44,410,1,0,0,0,46,413,1,
+		0,0,0,48,424,1,0,0,0,50,426,1,0,0,0,52,452,1,0,0,0,54,525,1,0,0,0,56,532,
+		1,0,0,0,58,534,1,0,0,0,60,536,1,0,0,0,62,541,1,0,0,0,64,546,1,0,0,0,66,
+		551,1,0,0,0,68,578,1,0,0,0,70,580,1,0,0,0,72,586,1,0,0,0,74,592,1,0,0,
+		0,76,598,1,0,0,0,78,604,1,0,0,0,80,610,1,0,0,0,82,623,1,0,0,0,84,625,1,
+		0,0,0,86,629,1,0,0,0,88,640,1,0,0,0,90,649,1,0,0,0,92,661,1,0,0,0,94,671,
+		1,0,0,0,96,673,1,0,0,0,98,685,1,0,0,0,100,687,1,0,0,0,102,691,1,0,0,0,
+		104,695,1,0,0,0,106,699,1,0,0,0,108,714,1,0,0,0,110,716,1,0,0,0,112,721,
+		1,0,0,0,114,724,1,0,0,0,116,728,1,0,0,0,118,731,1,0,0,0,120,735,1,0,0,
+		0,122,742,1,0,0,0,124,748,1,0,0,0,126,750,1,0,0,0,128,762,1,0,0,0,130,
+		770,1,0,0,0,132,777,1,0,0,0,134,779,1,0,0,0,136,785,1,0,0,0,138,791,1,
+		0,0,0,140,793,1,0,0,0,142,801,1,0,0,0,144,811,1,0,0,0,146,821,1,0,0,0,
+		148,829,1,0,0,0,150,855,1,0,0,0,152,925,1,0,0,0,154,927,1,0,0,0,156,961,
+		1,0,0,0,158,963,1,0,0,0,160,968,1,0,0,0,162,974,1,0,0,0,164,978,1,0,0,
+		0,166,984,1,0,0,0,168,986,1,0,0,0,170,991,1,0,0,0,172,996,1,0,0,0,174,
+		1010,1,0,0,0,176,1019,1,0,0,0,178,1021,1,0,0,0,180,1031,1,0,0,0,182,1039,
+		1,0,0,0,184,1047,1,0,0,0,186,1055,1,0,0,0,188,1081,1,0,0,0,190,1294,1,
+		0,0,0,192,1296,1,0,0,0,194,1298,1,0,0,0,196,1303,1,0,0,0,198,1313,1,0,
+		0,0,200,1323,1,0,0,0,202,1331,1,0,0,0,204,1341,1,0,0,0,206,1367,1,0,0,
+		0,208,1437,1,0,0,0,210,1439,1,0,0,0,212,1444,1,0,0,0,214,1449,1,0,0,0,
+		216,217,3,2,1,0,217,1,1,0,0,0,218,219,3,4,2,0,219,220,5,101,0,0,220,222,
+		1,0,0,0,221,218,1,0,0,0,222,223,1,0,0,0,223,221,1,0,0,0,223,224,1,0,0,
+		0,224,3,1,0,0,0,225,254,3,56,28,0,226,254,3,68,34,0,227,254,3,98,49,0,
+		228,254,3,108,54,0,229,254,3,162,81,0,230,254,3,164,82,0,231,254,3,166,
+		83,0,232,254,3,144,72,0,233,254,3,106,53,0,234,254,3,144,72,0,235,254,
+		3,178,89,0,236,254,3,180,90,0,237,254,3,182,91,0,238,254,3,184,92,0,239,
+		254,3,196,98,0,240,254,3,146,73,0,241,254,3,200,100,0,242,254,3,6,3,0,
+		243,254,3,10,5,0,244,254,3,8,4,0,245,254,3,16,8,0,246,254,3,18,9,0,247,
+		254,3,20,10,0,248,254,3,28,14,0,249,254,3,30,15,0,250,254,3,32,16,0,251,
+		254,3,34,17,0,252,254,3,198,99,0,253,225,1,0,0,0,253,226,1,0,0,0,253,227,
+		1,0,0,0,253,228,1,0,0,0,253,229,1,0,0,0,253,230,1,0,0,0,253,231,1,0,0,
+		0,253,232,1,0,0,0,253,233,1,0,0,0,253,234,1,0,0,0,253,235,1,0,0,0,253,
+		236,1,0,0,0,253,237,1,0,0,0,253,238,1,0,0,0,253,239,1,0,0,0,253,240,1,
+		0,0,0,253,241,1,0,0,0,253,242,1,0,0,0,253,243,1,0,0,0,253,244,1,0,0,0,
+		253,245,1,0,0,0,253,246,1,0,0,0,253,247,1,0,0,0,253,248,1,0,0,0,253,249,
+		1,0,0,0,253,250,1,0,0,0,253,251,1,0,0,0,253,252,1,0,0,0,254,5,1,0,0,0,
+		255,256,5,1,0,0,256,262,5,2,0,0,257,263,3,212,106,0,258,259,5,3,0,0,259,
+		260,3,12,6,0,260,261,5,4,0,0,261,263,1,0,0,0,262,257,1,0,0,0,262,258,1,
+		0,0,0,263,264,1,0,0,0,264,267,7,0,0,0,265,268,3,82,41,0,266,268,3,84,42,
+		0,267,265,1,0,0,0,267,266,1,0,0,0,268,7,1,0,0,0,269,270,5,7,0,0,270,273,
+		5,2,0,0,271,274,3,96,48,0,272,274,3,94,47,0,273,271,1,0,0,0,273,272,1,
+		0,0,0,274,9,1,0,0,0,275,276,5,8,0,0,276,279,5,2,0,0,277,280,3,96,48,0,
+		278,280,3,94,47,0,279,277,1,0,0,0,279,278,1,0,0,0,280,281,1,0,0,0,281,
+		282,5,9,0,0,282,283,3,12,6,0,283,11,1,0,0,0,284,287,3,14,7,0,285,286,5,
+		10,0,0,286,288,3,12,6,0,287,285,1,0,0,0,287,288,1,0,0,0,288,13,1,0,0,0,
+		289,290,5,11,0,0,290,291,5,12,0,0,291,296,3,212,106,0,292,293,5,13,0,0,
+		293,294,5,12,0,0,294,296,3,212,106,0,295,289,1,0,0,0,295,292,1,0,0,0,296,
+		15,1,0,0,0,297,298,5,1,0,0,298,299,5,2,0,0,299,302,5,14,0,0,300,303,3,
+		212,106,0,301,303,3,40,20,0,302,300,1,0,0,0,302,301,1,0,0,0,303,304,1,
+		0,0,0,304,307,7,0,0,0,305,308,3,94,47,0,306,308,3,96,48,0,307,305,1,0,
+		0,0,307,306,1,0,0,0,308,17,1,0,0,0,309,310,5,7,0,0,310,311,5,2,0,0,311,
+		312,5,14,0,0,312,313,3,24,12,0,313,19,1,0,0,0,314,315,5,8,0,0,315,316,
+		5,2,0,0,316,317,5,14,0,0,317,318,3,24,12,0,318,319,5,9,0,0,319,320,3,40,
+		20,0,320,21,1,0,0,0,321,322,5,2,0,0,322,323,5,14,0,0,323,324,3,26,13,0,
+		324,325,7,1,0,0,325,326,3,94,47,0,326,23,1,0,0,0,327,328,3,26,13,0,328,
+		329,7,1,0,0,329,330,3,94,47,0,330,25,1,0,0,0,331,335,3,160,80,0,332,335,
+		3,212,106,0,333,335,5,104,0,0,334,331,1,0,0,0,334,332,1,0,0,0,334,333,
+		1,0,0,0,335,27,1,0,0,0,336,337,5,8,0,0,337,338,5,2,0,0,338,339,5,16,0,
+		0,339,340,5,6,0,0,340,341,3,94,47,0,341,342,5,9,0,0,342,345,3,40,20,0,
+		343,344,5,17,0,0,344,346,3,50,25,0,345,343,1,0,0,0,345,346,1,0,0,0,346,
+		29,1,0,0,0,347,348,5,7,0,0,348,349,5,2,0,0,349,350,5,16,0,0,350,353,7,
+		1,0,0,351,354,3,94,47,0,352,354,3,96,48,0,353,351,1,0,0,0,353,352,1,0,
+		0,0,354,357,1,0,0,0,355,356,5,17,0,0,356,358,3,50,25,0,357,355,1,0,0,0,
+		357,358,1,0,0,0,358,31,1,0,0,0,359,360,5,18,0,0,360,361,5,2,0,0,361,362,
+		5,16,0,0,362,363,7,1,0,0,363,364,3,44,22,0,364,365,5,19,0,0,365,368,3,
+		48,24,0,366,367,5,17,0,0,367,369,3,50,25,0,368,366,1,0,0,0,368,369,1,0,
+		0,0,369,371,1,0,0,0,370,372,3,36,18,0,371,370,1,0,0,0,371,372,1,0,0,0,
+		372,33,1,0,0,0,373,374,5,20,0,0,374,375,5,2,0,0,375,376,5,16,0,0,376,377,
+		7,1,0,0,377,378,3,44,22,0,378,379,5,19,0,0,379,382,3,44,22,0,380,381,5,
+		17,0,0,381,383,3,50,25,0,382,380,1,0,0,0,382,383,1,0,0,0,383,35,1,0,0,
+		0,384,387,3,38,19,0,385,386,5,10,0,0,386,388,3,36,18,0,387,385,1,0,0,0,
+		387,388,1,0,0,0,388,37,1,0,0,0,389,390,5,21,0,0,390,391,7,2,0,0,391,39,
+		1,0,0,0,392,395,3,42,21,0,393,394,5,10,0,0,394,396,3,40,20,0,395,393,1,
+		0,0,0,395,396,1,0,0,0,396,41,1,0,0,0,397,398,5,11,0,0,398,399,5,12,0,0,
+		399,404,3,212,106,0,400,401,5,24,0,0,401,402,5,12,0,0,402,404,3,212,106,
+		0,403,397,1,0,0,0,403,400,1,0,0,0,404,43,1,0,0,0,405,411,3,94,47,0,406,
+		411,3,96,48,0,407,411,3,46,23,0,408,411,3,126,63,0,409,411,5,25,0,0,410,
+		405,1,0,0,0,410,406,1,0,0,0,410,407,1,0,0,0,410,408,1,0,0,0,410,409,1,
+		0,0,0,411,45,1,0,0,0,412,414,7,3,0,0,413,412,1,0,0,0,413,414,1,0,0,0,414,
+		415,1,0,0,0,415,416,5,28,0,0,416,417,3,212,106,0,417,47,1,0,0,0,418,425,
+		3,94,47,0,419,425,3,96,48,0,420,425,3,46,23,0,421,425,3,126,63,0,422,425,
+		5,25,0,0,423,425,5,29,0,0,424,418,1,0,0,0,424,419,1,0,0,0,424,420,1,0,
+		0,0,424,421,1,0,0,0,424,422,1,0,0,0,424,423,1,0,0,0,425,49,1,0,0,0,426,
+		429,3,52,26,0,427,428,7,4,0,0,428,430,3,50,25,0,429,427,1,0,0,0,429,430,
+		1,0,0,0,430,51,1,0,0,0,431,434,3,54,27,0,432,433,7,4,0,0,433,435,3,52,
+		26,0,434,432,1,0,0,0,434,435,1,0,0,0,435,453,1,0,0,0,436,437,5,3,0,0,437,
+		440,3,54,27,0,438,439,7,4,0,0,439,441,3,52,26,0,440,438,1,0,0,0,440,441,
+		1,0,0,0,441,442,1,0,0,0,442,443,5,4,0,0,443,453,1,0,0,0,444,445,5,3,0,
+		0,445,448,3,52,26,0,446,447,7,4,0,0,447,449,3,52,26,0,448,446,1,0,0,0,
+		448,449,1,0,0,0,449,450,1,0,0,0,450,451,5,4,0,0,451,453,1,0,0,0,452,431,
+		1,0,0,0,452,436,1,0,0,0,452,444,1,0,0,0,453,53,1,0,0,0,454,455,5,32,0,
+		0,455,456,7,5,0,0,456,526,3,160,80,0,457,459,5,32,0,0,458,460,5,34,0,0,
+		459,458,1,0,0,0,459,460,1,0,0,0,460,461,1,0,0,0,461,462,5,6,0,0,462,463,
+		5,3,0,0,463,464,3,158,79,0,464,465,5,4,0,0,465,526,1,0,0,0,466,467,7,6,
+		0,0,467,468,7,5,0,0,468,526,3,212,106,0,469,471,7,6,0,0,470,472,5,34,0,
+		0,471,470,1,0,0,0,471,472,1,0,0,0,472,473,1,0,0,0,473,474,5,6,0,0,474,
+		477,5,3,0,0,475,478,3,210,105,0,476,478,3,194,97,0,477,475,1,0,0,0,477,
+		476,1,0,0,0,478,479,1,0,0,0,479,480,5,4,0,0,480,526,1,0,0,0,481,486,7,
+		6,0,0,482,487,5,35,0,0,483,484,5,36,0,0,484,485,5,34,0,0,485,487,5,37,
+		0,0,486,482,1,0,0,0,486,483,1,0,0,0,487,489,1,0,0,0,488,490,5,38,0,0,489,
+		488,1,0,0,0,489,490,1,0,0,0,490,491,1,0,0,0,491,526,3,192,96,0,492,494,
+		7,6,0,0,493,495,5,34,0,0,494,493,1,0,0,0,494,495,1,0,0,0,495,496,1,0,0,
+		0,496,497,5,6,0,0,497,498,5,3,0,0,498,499,3,210,105,0,499,500,5,4,0,0,
+		500,526,1,0,0,0,501,503,7,6,0,0,502,504,5,34,0,0,503,502,1,0,0,0,503,504,
+		1,0,0,0,504,505,1,0,0,0,505,506,5,39,0,0,506,526,3,212,106,0,507,512,7,
+		6,0,0,508,513,5,40,0,0,509,510,5,36,0,0,510,511,5,34,0,0,511,513,5,41,
+		0,0,512,508,1,0,0,0,512,509,1,0,0,0,513,514,1,0,0,0,514,515,5,42,0,0,515,
+		526,3,212,106,0,516,521,7,6,0,0,517,522,5,43,0,0,518,519,5,36,0,0,519,
+		520,5,34,0,0,520,522,5,44,0,0,521,517,1,0,0,0,521,518,1,0,0,0,522,523,
+		1,0,0,0,523,524,5,42,0,0,524,526,3,212,106,0,525,454,1,0,0,0,525,457,1,
+		0,0,0,525,466,1,0,0,0,525,469,1,0,0,0,525,481,1,0,0,0,525,492,1,0,0,0,
+		525,501,1,0,0,0,525,507,1,0,0,0,525,516,1,0,0,0,526,55,1,0,0,0,527,533,
+		3,58,29,0,528,533,3,60,30,0,529,533,3,62,31,0,530,533,3,64,32,0,531,533,
+		3,66,33,0,532,527,1,0,0,0,532,528,1,0,0,0,532,529,1,0,0,0,532,530,1,0,
+		0,0,532,531,1,0,0,0,533,57,1,0,0,0,534,535,5,45,0,0,535,59,1,0,0,0,536,
+		537,5,45,0,0,537,538,5,42,0,0,538,539,5,46,0,0,539,540,5,47,0,0,540,61,
+		1,0,0,0,541,542,5,45,0,0,542,543,5,42,0,0,543,544,5,46,0,0,544,545,5,48,
+		0,0,545,63,1,0,0,0,546,547,5,45,0,0,547,548,5,42,0,0,548,549,5,46,0,0,
+		549,550,5,49,0,0,550,65,1,0,0,0,551,552,5,45,0,0,552,553,5,42,0,0,553,
+		554,5,46,0,0,554,555,5,47,0,0,555,556,5,30,0,0,556,557,5,48,0,0,557,67,
+		1,0,0,0,558,579,3,70,35,0,559,579,3,72,36,0,560,579,3,74,37,0,561,579,
+		3,76,38,0,562,579,3,78,39,0,563,579,3,80,40,0,564,565,5,50,0,0,565,566,
+		5,104,0,0,566,576,5,12,0,0,567,577,5,104,0,0,568,577,3,82,41,0,569,577,
+		3,88,44,0,570,577,3,212,106,0,571,577,3,192,96,0,572,577,3,90,45,0,573,
+		577,3,160,80,0,574,577,3,92,46,0,575,577,3,94,47,0,576,567,1,0,0,0,576,
+		568,1,0,0,0,576,569,1,0,0,0,576,570,1,0,0,0,576,571,1,0,0,0,576,572,1,
+		0,0,0,576,573,1,0,0,0,576,574,1,0,0,0,576,575,1,0,0,0,577,579,1,0,0,0,
+		578,558,1,0,0,0,578,559,1,0,0,0,578,560,1,0,0,0,578,561,1,0,0,0,578,562,
+		1,0,0,0,578,563,1,0,0,0,578,564,1,0,0,0,579,69,1,0,0,0,580,581,5,51,0,
+		0,581,584,5,104,0,0,582,583,5,12,0,0,583,585,3,82,41,0,584,582,1,0,0,0,
+		584,585,1,0,0,0,585,71,1,0,0,0,586,587,5,52,0,0,587,590,5,104,0,0,588,
+		589,5,12,0,0,589,591,3,88,44,0,590,588,1,0,0,0,590,591,1,0,0,0,591,73,
+		1,0,0,0,592,593,5,53,0,0,593,596,5,104,0,0,594,595,5,12,0,0,595,597,3,
+		212,106,0,596,594,1,0,0,0,596,597,1,0,0,0,597,75,1,0,0,0,598,599,5,38,
+		0,0,599,602,5,104,0,0,600,601,5,12,0,0,601,603,3,192,96,0,602,600,1,0,
+		0,0,602,603,1,0,0,0,603,77,1,0,0,0,604,605,5,54,0,0,605,608,5,104,0,0,
+		606,607,5,12,0,0,607,609,3,90,45,0,608,606,1,0,0,0,608,609,1,0,0,0,609,
+		79,1,0,0,0,610,611,5,2,0,0,611,612,5,14,0,0,612,615,5,104,0,0,613,614,
+		5,12,0,0,614,616,3,92,46,0,615,613,1,0,0,0,615,616,1,0,0,0,616,81,1,0,
+		0,0,617,618,5,51,0,0,618,620,7,7,0,0,619,621,3,138,69,0,620,619,1,0,0,
+		0,620,621,1,0,0,0,621,624,1,0,0,0,622,624,5,104,0,0,623,617,1,0,0,0,623,
+		622,1,0,0,0,624,83,1,0,0,0,625,626,7,8,0,0,626,85,1,0,0,0,627,630,3,82,
+		41,0,628,630,3,84,42,0,629,627,1,0,0,0,629,628,1,0,0,0,630,87,1,0,0,0,
+		631,632,5,52,0,0,632,633,5,103,0,0,633,636,5,6,0,0,634,637,3,82,41,0,635,
+		637,3,126,63,0,636,634,1,0,0,0,636,635,1,0,0,0,637,641,1,0,0,0,638,639,
+		5,52,0,0,639,641,5,104,0,0,640,631,1,0,0,0,640,638,1,0,0,0,641,89,1,0,
+		0,0,642,643,7,7,0,0,643,646,7,1,0,0,644,647,3,82,41,0,645,647,3,126,63,
+		0,646,644,1,0,0,0,646,645,1,0,0,0,647,650,1,0,0,0,648,650,5,104,0,0,649,
+		642,1,0,0,0,649,648,1,0,0,0,650,91,1,0,0,0,651,652,5,2,0,0,652,656,5,14,
+		0,0,653,657,3,160,80,0,654,657,3,212,106,0,655,657,5,104,0,0,656,653,1,
+		0,0,0,656,654,1,0,0,0,656,655,1,0,0,0,657,658,1,0,0,0,658,659,7,1,0,0,
+		659,662,3,94,47,0,660,662,5,104,0,0,661,651,1,0,0,0,661,660,1,0,0,0,662,
+		93,1,0,0,0,663,664,5,2,0,0,664,665,7,7,0,0,665,668,7,1,0,0,666,669,3,82,
+		41,0,667,669,3,84,42,0,668,666,1,0,0,0,668,667,1,0,0,0,669,672,1,0,0,0,
+		670,672,5,104,0,0,671,663,1,0,0,0,671,670,1,0,0,0,672,95,1,0,0,0,673,674,
+		7,7,0,0,674,677,5,6,0,0,675,678,3,82,41,0,676,678,3,84,42,0,677,675,1,
+		0,0,0,677,676,1,0,0,0,678,97,1,0,0,0,679,680,5,104,0,0,680,681,5,12,0,
+		0,681,686,5,104,0,0,682,686,3,100,50,0,683,686,3,104,52,0,684,686,3,102,
+		51,0,685,679,1,0,0,0,685,682,1,0,0,0,685,683,1,0,0,0,685,684,1,0,0,0,686,
+		99,1,0,0,0,687,688,5,104,0,0,688,689,5,12,0,0,689,690,3,82,41,0,690,101,
+		1,0,0,0,691,692,5,104,0,0,692,693,5,12,0,0,693,694,3,88,44,0,694,103,1,
+		0,0,0,695,696,5,104,0,0,696,697,5,12,0,0,697,698,5,103,0,0,698,105,1,0,
+		0,0,699,700,5,18,0,0,700,703,5,55,0,0,701,702,5,15,0,0,702,704,3,122,61,
+		0,703,701,1,0,0,0,703,704,1,0,0,0,704,705,1,0,0,0,705,706,5,19,0,0,706,
+		707,3,124,62,0,707,107,1,0,0,0,708,715,3,110,55,0,709,715,3,112,56,0,710,
+		715,3,114,57,0,711,715,3,116,58,0,712,715,3,118,59,0,713,715,3,120,60,
+		0,714,708,1,0,0,0,714,709,1,0,0,0,714,710,1,0,0,0,714,711,1,0,0,0,714,
+		712,1,0,0,0,714,713,1,0,0,0,715,109,1,0,0,0,716,717,5,56,0,0,717,718,5,
+		55,0,0,718,719,5,15,0,0,719,720,3,122,61,0,720,111,1,0,0,0,721,722,5,56,
+		0,0,722,723,5,104,0,0,723,113,1,0,0,0,724,725,5,56,0,0,725,726,5,51,0,
+		0,726,727,7,9,0,0,727,115,1,0,0,0,728,729,5,56,0,0,729,730,5,103,0,0,730,
+		117,1,0,0,0,731,732,5,56,0,0,732,733,5,57,0,0,733,734,5,58,0,0,734,119,
+		1,0,0,0,735,736,5,56,0,0,736,737,5,59,0,0,737,738,5,60,0,0,738,121,1,0,
+		0,0,739,743,5,61,0,0,740,741,5,59,0,0,741,743,5,60,0,0,742,739,1,0,0,0,
+		742,740,1,0,0,0,743,123,1,0,0,0,744,749,5,29,0,0,745,746,5,59,0,0,746,
+		749,5,60,0,0,747,749,3,126,63,0,748,744,1,0,0,0,748,745,1,0,0,0,748,747,
+		1,0,0,0,749,125,1,0,0,0,750,752,5,62,0,0,751,753,7,9,0,0,752,751,1,0,0,
+		0,752,753,1,0,0,0,753,127,1,0,0,0,754,763,5,29,0,0,755,756,5,59,0,0,756,
+		763,5,60,0,0,757,759,5,62,0,0,758,760,5,103,0,0,759,758,1,0,0,0,759,760,
+		1,0,0,0,760,763,1,0,0,0,761,763,3,82,41,0,762,754,1,0,0,0,762,755,1,0,
+		0,0,762,757,1,0,0,0,762,761,1,0,0,0,763,129,1,0,0,0,764,771,5,29,0,0,765,
+		766,5,59,0,0,766,771,5,60,0,0,767,771,3,126,63,0,768,771,3,134,67,0,769,
+		771,3,86,43,0,770,764,1,0,0,0,770,765,1,0,0,0,770,767,1,0,0,0,770,768,
+		1,0,0,0,770,769,1,0,0,0,771,131,1,0,0,0,772,778,5,29,0,0,773,774,5,59,
+		0,0,774,778,5,60,0,0,775,778,3,126,63,0,776,778,3,82,41,0,777,772,1,0,
+		0,0,777,773,1,0,0,0,777,775,1,0,0,0,777,776,1,0,0,0,778,133,1,0,0,0,779,
+		780,5,63,0,0,780,135,1,0,0,0,781,786,5,29,0,0,782,783,5,59,0,0,783,786,
+		5,60,0,0,784,786,3,126,63,0,785,781,1,0,0,0,785,782,1,0,0,0,785,784,1,
+		0,0,0,786,137,1,0,0,0,787,788,5,64,0,0,788,792,5,61,0,0,789,790,5,6,0,
+		0,790,792,3,126,63,0,791,787,1,0,0,0,791,789,1,0,0,0,792,139,1,0,0,0,793,
+		794,5,1,0,0,794,795,5,52,0,0,795,796,5,3,0,0,796,797,3,154,77,0,797,798,
+		5,4,0,0,798,799,5,6,0,0,799,800,3,86,43,0,800,141,1,0,0,0,801,802,5,8,
+		0,0,802,803,5,65,0,0,803,804,5,6,0,0,804,805,3,86,43,0,805,806,5,9,0,0,
+		806,809,3,154,77,0,807,808,5,17,0,0,808,810,3,148,74,0,809,807,1,0,0,0,
+		809,810,1,0,0,0,810,143,1,0,0,0,811,812,5,18,0,0,812,813,5,65,0,0,813,
+		814,7,1,0,0,814,815,3,86,43,0,815,816,5,19,0,0,816,819,3,130,65,0,817,
+		818,5,17,0,0,818,820,3,148,74,0,819,817,1,0,0,0,819,820,1,0,0,0,820,145,
+		1,0,0,0,821,822,5,7,0,0,822,823,5,65,0,0,823,824,7,1,0,0,824,827,3,86,
+		43,0,825,826,5,17,0,0,826,828,3,148,74,0,827,825,1,0,0,0,827,828,1,0,0,
+		0,828,147,1,0,0,0,829,832,3,150,75,0,830,831,7,4,0,0,831,833,3,148,74,
+		0,832,830,1,0,0,0,832,833,1,0,0,0,833,149,1,0,0,0,834,837,3,152,76,0,835,
+		836,7,4,0,0,836,838,3,150,75,0,837,835,1,0,0,0,837,838,1,0,0,0,838,856,
+		1,0,0,0,839,840,5,3,0,0,840,843,3,152,76,0,841,842,7,4,0,0,842,844,3,150,
+		75,0,843,841,1,0,0,0,843,844,1,0,0,0,844,845,1,0,0,0,845,846,5,4,0,0,846,
+		856,1,0,0,0,847,848,5,3,0,0,848,851,3,150,75,0,849,850,7,4,0,0,850,852,
+		3,150,75,0,851,849,1,0,0,0,851,852,1,0,0,0,852,853,1,0,0,0,853,854,5,4,
+		0,0,854,856,1,0,0,0,855,834,1,0,0,0,855,839,1,0,0,0,855,847,1,0,0,0,856,
+		151,1,0,0,0,857,858,5,32,0,0,858,859,7,5,0,0,859,926,3,160,80,0,860,862,
+		5,32,0,0,861,863,5,34,0,0,862,861,1,0,0,0,862,863,1,0,0,0,863,864,1,0,
+		0,0,864,865,5,6,0,0,865,866,5,3,0,0,866,867,3,158,79,0,867,868,5,4,0,0,
+		868,926,1,0,0,0,869,870,5,11,0,0,870,871,7,5,0,0,871,926,3,212,106,0,872,
+		874,5,11,0,0,873,875,5,34,0,0,874,873,1,0,0,0,874,875,1,0,0,0,875,876,
+		1,0,0,0,876,877,5,6,0,0,877,878,5,3,0,0,878,879,3,210,105,0,879,880,5,
+		4,0,0,880,926,1,0,0,0,881,886,5,11,0,0,882,887,5,35,0,0,883,884,5,36,0,
+		0,884,885,5,34,0,0,885,887,5,37,0,0,886,882,1,0,0,0,886,883,1,0,0,0,887,
+		889,1,0,0,0,888,890,5,38,0,0,889,888,1,0,0,0,889,890,1,0,0,0,890,891,1,
+		0,0,0,891,926,3,192,96,0,892,894,5,11,0,0,893,895,5,34,0,0,894,893,1,0,
+		0,0,894,895,1,0,0,0,895,896,1,0,0,0,896,897,5,6,0,0,897,898,5,3,0,0,898,
+		899,3,194,97,0,899,900,5,4,0,0,900,926,1,0,0,0,901,903,5,11,0,0,902,904,
+		5,34,0,0,903,902,1,0,0,0,903,904,1,0,0,0,904,905,1,0,0,0,905,906,5,39,
+		0,0,906,926,3,212,106,0,907,912,5,11,0,0,908,913,5,40,0,0,909,910,5,36,
+		0,0,910,911,5,34,0,0,911,913,5,41,0,0,912,908,1,0,0,0,912,909,1,0,0,0,
+		913,914,1,0,0,0,914,915,5,42,0,0,915,926,3,212,106,0,916,921,5,11,0,0,
+		917,922,5,43,0,0,918,919,5,36,0,0,919,920,5,34,0,0,920,922,5,44,0,0,921,
+		917,1,0,0,0,921,918,1,0,0,0,922,923,1,0,0,0,923,924,5,42,0,0,924,926,3,
+		212,106,0,925,857,1,0,0,0,925,860,1,0,0,0,925,869,1,0,0,0,925,872,1,0,
+		0,0,925,881,1,0,0,0,925,892,1,0,0,0,925,901,1,0,0,0,925,907,1,0,0,0,925,
+		916,1,0,0,0,926,153,1,0,0,0,927,930,3,156,78,0,928,929,5,10,0,0,929,931,
+		3,154,77,0,930,928,1,0,0,0,930,931,1,0,0,0,931,155,1,0,0,0,932,933,5,66,
+		0,0,933,934,5,11,0,0,934,935,5,12,0,0,935,962,3,212,106,0,936,937,5,67,
+		0,0,937,938,5,11,0,0,938,939,5,12,0,0,939,962,3,212,106,0,940,941,5,68,
+		0,0,941,942,5,12,0,0,942,962,7,10,0,0,943,944,5,72,0,0,944,945,5,73,0,
+		0,945,962,3,212,106,0,946,947,5,74,0,0,947,948,5,73,0,0,948,962,3,212,
+		106,0,949,950,5,75,0,0,950,951,5,76,0,0,951,952,5,12,0,0,952,962,3,212,
+		106,0,953,954,5,75,0,0,954,955,5,77,0,0,955,956,5,12,0,0,956,962,3,212,
+		106,0,957,958,5,75,0,0,958,959,5,78,0,0,959,960,5,12,0,0,960,962,3,212,
+		106,0,961,932,1,0,0,0,961,936,1,0,0,0,961,940,1,0,0,0,961,943,1,0,0,0,
+		961,946,1,0,0,0,961,949,1,0,0,0,961,953,1,0,0,0,961,957,1,0,0,0,962,157,
+		1,0,0,0,963,966,3,160,80,0,964,965,5,10,0,0,965,967,3,158,79,0,966,964,
+		1,0,0,0,966,967,1,0,0,0,967,159,1,0,0,0,968,971,7,11,0,0,969,970,7,12,
+		0,0,970,972,3,160,80,0,971,969,1,0,0,0,971,972,1,0,0,0,972,161,1,0,0,0,
+		973,975,5,83,0,0,974,973,1,0,0,0,974,975,1,0,0,0,975,976,1,0,0,0,976,977,
+		7,13,0,0,977,163,1,0,0,0,978,979,5,87,0,0,979,980,5,105,0,0,980,165,1,
+		0,0,0,981,985,3,168,84,0,982,985,3,170,85,0,983,985,3,172,86,0,984,981,
+		1,0,0,0,984,982,1,0,0,0,984,983,1,0,0,0,985,167,1,0,0,0,986,987,5,88,0,
+		0,987,988,3,82,41,0,988,989,5,30,0,0,989,990,3,82,41,0,990,169,1,0,0,0,
+		991,992,5,88,0,0,992,993,3,88,44,0,993,994,5,30,0,0,994,995,3,88,44,0,
+		995,171,1,0,0,0,996,997,5,88,0,0,997,998,5,89,0,0,998,999,5,65,0,0,999,
+		1000,5,6,0,0,1000,1001,3,82,41,0,1001,1002,5,30,0,0,1002,1003,3,82,41,
+		0,1003,173,1,0,0,0,1004,1005,5,59,0,0,1005,1011,5,60,0,0,1006,1011,3,126,
+		63,0,1007,1011,3,134,67,0,1008,1011,3,82,41,0,1009,1011,3,84,42,0,1010,
+		1004,1,0,0,0,1010,1006,1,0,0,0,1010,1007,1,0,0,0,1010,1008,1,0,0,0,1010,
+		1009,1,0,0,0,1011,175,1,0,0,0,1012,1020,5,29,0,0,1013,1014,5,59,0,0,1014,
+		1020,5,60,0,0,1015,1020,3,126,63,0,1016,1020,3,134,67,0,1017,1020,3,82,
+		41,0,1018,1020,3,84,42,0,1019,1012,1,0,0,0,1019,1013,1,0,0,0,1019,1015,
+		1,0,0,0,1019,1016,1,0,0,0,1019,1017,1,0,0,0,1019,1018,1,0,0,0,1020,177,
+		1,0,0,0,1021,1022,5,18,0,0,1022,1023,5,90,0,0,1023,1024,7,1,0,0,1024,1025,
+		3,174,87,0,1025,1026,5,19,0,0,1026,1029,3,176,88,0,1027,1028,5,17,0,0,
+		1028,1030,3,186,93,0,1029,1027,1,0,0,0,1029,1030,1,0,0,0,1030,179,1,0,
+		0,0,1031,1032,5,91,0,0,1032,1033,5,90,0,0,1033,1034,7,1,0,0,1034,1037,
+		3,86,43,0,1035,1036,5,17,0,0,1036,1038,3,186,93,0,1037,1035,1,0,0,0,1037,
+		1038,1,0,0,0,1038,181,1,0,0,0,1039,1040,5,92,0,0,1040,1041,5,90,0,0,1041,
+		1042,7,1,0,0,1042,1045,3,86,43,0,1043,1044,5,17,0,0,1044,1046,3,186,93,
+		0,1045,1043,1,0,0,0,1045,1046,1,0,0,0,1046,183,1,0,0,0,1047,1048,5,7,0,
+		0,1048,1049,5,90,0,0,1049,1050,7,1,0,0,1050,1053,3,86,43,0,1051,1052,5,
+		17,0,0,1052,1054,3,186,93,0,1053,1051,1,0,0,0,1053,1054,1,0,0,0,1054,185,
+		1,0,0,0,1055,1058,3,188,94,0,1056,1057,7,4,0,0,1057,1059,3,186,93,0,1058,
+		1056,1,0,0,0,1058,1059,1,0,0,0,1059,187,1,0,0,0,1060,1063,3,190,95,0,1061,
+		1062,7,4,0,0,1062,1064,3,188,94,0,1063,1061,1,0,0,0,1063,1064,1,0,0,0,
+		1064,1082,1,0,0,0,1065,1066,5,3,0,0,1066,1069,3,190,95,0,1067,1068,7,4,
+		0,0,1068,1070,3,188,94,0,1069,1067,1,0,0,0,1069,1070,1,0,0,0,1070,1071,
+		1,0,0,0,1071,1072,5,4,0,0,1072,1082,1,0,0,0,1073,1074,5,3,0,0,1074,1077,
+		3,188,94,0,1075,1076,7,4,0,0,1076,1078,3,188,94,0,1077,1075,1,0,0,0,1077,
+		1078,1,0,0,0,1078,1079,1,0,0,0,1079,1080,5,4,0,0,1080,1082,1,0,0,0,1081,
+		1060,1,0,0,0,1081,1065,1,0,0,0,1081,1073,1,0,0,0,1082,189,1,0,0,0,1083,
+		1084,5,32,0,0,1084,1085,7,5,0,0,1085,1295,3,160,80,0,1086,1088,5,32,0,
+		0,1087,1089,5,34,0,0,1088,1087,1,0,0,0,1088,1089,1,0,0,0,1089,1090,1,0,
+		0,0,1090,1091,5,6,0,0,1091,1092,5,3,0,0,1092,1093,3,158,79,0,1093,1094,
+		5,4,0,0,1094,1295,1,0,0,0,1095,1096,7,14,0,0,1096,1097,7,5,0,0,1097,1295,
+		3,212,106,0,1098,1100,7,14,0,0,1099,1101,5,34,0,0,1100,1099,1,0,0,0,1100,
+		1101,1,0,0,0,1101,1102,1,0,0,0,1102,1103,5,6,0,0,1103,1104,5,3,0,0,1104,
+		1105,3,210,105,0,1105,1106,5,4,0,0,1106,1295,1,0,0,0,1107,1112,7,14,0,
+		0,1108,1113,5,35,0,0,1109,1110,5,36,0,0,1110,1111,5,34,0,0,1111,1113,5,
+		37,0,0,1112,1108,1,0,0,0,1112,1109,1,0,0,0,1113,1115,1,0,0,0,1114,1116,
+		5,38,0,0,1115,1114,1,0,0,0,1115,1116,1,0,0,0,1116,1117,1,0,0,0,1117,1295,
+		3,192,96,0,1118,1120,7,14,0,0,1119,1121,5,34,0,0,1120,1119,1,0,0,0,1120,
+		1121,1,0,0,0,1121,1122,1,0,0,0,1122,1123,5,6,0,0,1123,1124,5,3,0,0,1124,
+		1125,3,210,105,0,1125,1126,5,4,0,0,1126,1295,1,0,0,0,1127,1129,7,14,0,
+		0,1128,1130,5,34,0,0,1129,1128,1,0,0,0,1129,1130,1,0,0,0,1130,1131,1,0,
+		0,0,1131,1132,5,39,0,0,1132,1295,3,212,106,0,1133,1138,7,14,0,0,1134,1139,
+		5,40,0,0,1135,1136,5,36,0,0,1136,1137,5,34,0,0,1137,1139,5,41,0,0,1138,
+		1134,1,0,0,0,1138,1135,1,0,0,0,1139,1140,1,0,0,0,1140,1141,5,42,0,0,1141,
+		1295,3,212,106,0,1142,1147,7,14,0,0,1143,1148,5,43,0,0,1144,1145,5,36,
+		0,0,1145,1146,5,34,0,0,1146,1148,5,44,0,0,1147,1143,1,0,0,0,1147,1144,
+		1,0,0,0,1148,1149,1,0,0,0,1149,1150,5,42,0,0,1150,1295,3,212,106,0,1151,
+		1153,5,93,0,0,1152,1151,1,0,0,0,1152,1153,1,0,0,0,1153,1154,1,0,0,0,1154,
+		1160,5,73,0,0,1155,1157,5,89,0,0,1156,1155,1,0,0,0,1156,1157,1,0,0,0,1157,
+		1158,1,0,0,0,1158,1160,5,94,0,0,1159,1152,1,0,0,0,1159,1156,1,0,0,0,1160,
+		1161,1,0,0,0,1161,1162,7,5,0,0,1162,1295,3,212,106,0,1163,1165,5,93,0,
+		0,1164,1163,1,0,0,0,1164,1165,1,0,0,0,1165,1166,1,0,0,0,1166,1172,5,73,
+		0,0,1167,1169,5,89,0,0,1168,1167,1,0,0,0,1168,1169,1,0,0,0,1169,1170,1,
+		0,0,0,1170,1172,5,94,0,0,1171,1164,1,0,0,0,1171,1168,1,0,0,0,1172,1174,
+		1,0,0,0,1173,1175,5,34,0,0,1174,1173,1,0,0,0,1174,1175,1,0,0,0,1175,1176,
+		1,0,0,0,1176,1177,5,6,0,0,1177,1178,5,3,0,0,1178,1179,3,210,105,0,1179,
+		1180,5,4,0,0,1180,1295,1,0,0,0,1181,1183,5,93,0,0,1182,1181,1,0,0,0,1182,
+		1183,1,0,0,0,1183,1184,1,0,0,0,1184,1189,5,73,0,0,1185,1190,5,35,0,0,1186,
+		1187,5,36,0,0,1187,1188,5,34,0,0,1188,1190,5,37,0,0,1189,1185,1,0,0,0,
+		1189,1186,1,0,0,0,1190,1192,1,0,0,0,1191,1193,5,38,0,0,1192,1191,1,0,0,
+		0,1192,1193,1,0,0,0,1193,1194,1,0,0,0,1194,1295,3,192,96,0,1195,1197,5,
+		93,0,0,1196,1195,1,0,0,0,1196,1197,1,0,0,0,1197,1198,1,0,0,0,1198,1203,
+		5,73,0,0,1199,1204,5,40,0,0,1200,1201,5,36,0,0,1201,1202,5,34,0,0,1202,
+		1204,5,41,0,0,1203,1199,1,0,0,0,1203,1200,1,0,0,0,1204,1205,1,0,0,0,1205,
+		1206,5,42,0,0,1206,1295,3,212,106,0,1207,1209,5,93,0,0,1208,1207,1,0,0,
+		0,1208,1209,1,0,0,0,1209,1210,1,0,0,0,1210,1215,5,73,0,0,1211,1216,5,43,
+		0,0,1212,1213,5,36,0,0,1213,1214,5,34,0,0,1214,1216,5,44,0,0,1215,1211,
+		1,0,0,0,1215,1212,1,0,0,0,1216,1217,1,0,0,0,1217,1218,5,42,0,0,1218,1295,
+		3,212,106,0,1219,1221,5,89,0,0,1220,1219,1,0,0,0,1220,1221,1,0,0,0,1221,
+		1222,1,0,0,0,1222,1227,5,94,0,0,1223,1228,5,37,0,0,1224,1225,5,95,0,0,
+		1225,1226,5,34,0,0,1226,1228,5,37,0,0,1227,1223,1,0,0,0,1227,1224,1,0,
+		0,0,1228,1230,1,0,0,0,1229,1231,5,38,0,0,1230,1229,1,0,0,0,1230,1231,1,
+		0,0,0,1231,1232,1,0,0,0,1232,1295,3,192,96,0,1233,1235,5,89,0,0,1234,1233,
+		1,0,0,0,1234,1235,1,0,0,0,1235,1236,1,0,0,0,1236,1241,5,94,0,0,1237,1242,
+		5,41,0,0,1238,1239,5,95,0,0,1239,1240,5,34,0,0,1240,1242,5,41,0,0,1241,
+		1237,1,0,0,0,1241,1238,1,0,0,0,1242,1243,1,0,0,0,1243,1244,5,42,0,0,1244,
+		1295,3,212,106,0,1245,1247,5,89,0,0,1246,1245,1,0,0,0,1246,1247,1,0,0,
+		0,1247,1248,1,0,0,0,1248,1253,5,94,0,0,1249,1254,5,44,0,0,1250,1251,5,
+		95,0,0,1251,1252,5,34,0,0,1252,1254,5,44,0,0,1253,1249,1,0,0,0,1253,1250,
+		1,0,0,0,1254,1255,1,0,0,0,1255,1256,5,42,0,0,1256,1295,3,212,106,0,1257,
+		1259,5,93,0,0,1258,1257,1,0,0,0,1258,1259,1,0,0,0,1259,1260,1,0,0,0,1260,
+		1266,5,73,0,0,1261,1263,5,89,0,0,1262,1261,1,0,0,0,1262,1263,1,0,0,0,1263,
+		1264,1,0,0,0,1264,1266,5,94,0,0,1265,1258,1,0,0,0,1265,1262,1,0,0,0,1266,
+		1268,1,0,0,0,1267,1269,5,34,0,0,1268,1267,1,0,0,0,1268,1269,1,0,0,0,1269,
+		1270,1,0,0,0,1270,1271,5,6,0,0,1271,1272,5,3,0,0,1272,1273,3,194,97,0,
+		1273,1274,5,4,0,0,1274,1295,1,0,0,0,1275,1277,5,93,0,0,1276,1275,1,0,0,
+		0,1276,1277,1,0,0,0,1277,1278,1,0,0,0,1278,1284,5,73,0,0,1279,1281,5,89,
+		0,0,1280,1279,1,0,0,0,1280,1281,1,0,0,0,1281,1282,1,0,0,0,1282,1284,5,
+		94,0,0,1283,1276,1,0,0,0,1283,1280,1,0,0,0,1284,1286,1,0,0,0,1285,1287,
+		5,34,0,0,1286,1285,1,0,0,0,1286,1287,1,0,0,0,1287,1288,1,0,0,0,1288,1289,
+		5,39,0,0,1289,1295,3,212,106,0,1290,1291,5,96,0,0,1291,1295,5,94,0,0,1292,
+		1293,5,93,0,0,1293,1295,5,94,0,0,1294,1083,1,0,0,0,1294,1086,1,0,0,0,1294,
+		1095,1,0,0,0,1294,1098,1,0,0,0,1294,1107,1,0,0,0,1294,1118,1,0,0,0,1294,
+		1127,1,0,0,0,1294,1133,1,0,0,0,1294,1142,1,0,0,0,1294,1159,1,0,0,0,1294,
+		1171,1,0,0,0,1294,1182,1,0,0,0,1294,1196,1,0,0,0,1294,1208,1,0,0,0,1294,
+		1220,1,0,0,0,1294,1234,1,0,0,0,1294,1246,1,0,0,0,1294,1265,1,0,0,0,1294,
+		1283,1,0,0,0,1294,1290,1,0,0,0,1294,1292,1,0,0,0,1295,191,1,0,0,0,1296,
+		1297,7,15,0,0,1297,193,1,0,0,0,1298,1301,3,192,96,0,1299,1300,5,10,0,0,
+		1300,1302,3,194,97,0,1301,1299,1,0,0,0,1301,1302,1,0,0,0,1302,195,1,0,
+		0,0,1303,1304,5,18,0,0,1304,1305,5,97,0,0,1305,1306,7,1,0,0,1306,1307,
+		3,86,43,0,1307,1308,5,19,0,0,1308,1311,3,86,43,0,1309,1310,5,17,0,0,1310,
+		1312,3,204,102,0,1311,1309,1,0,0,0,1311,1312,1,0,0,0,1312,197,1,0,0,0,
+		1313,1314,5,8,0,0,1314,1315,5,97,0,0,1315,1316,7,1,0,0,1316,1317,3,86,
+		43,0,1317,1318,5,9,0,0,1318,1321,3,12,6,0,1319,1320,5,17,0,0,1320,1322,
+		3,204,102,0,1321,1319,1,0,0,0,1321,1322,1,0,0,0,1322,199,1,0,0,0,1323,
+		1324,5,7,0,0,1324,1325,5,97,0,0,1325,1326,7,1,0,0,1326,1329,3,86,43,0,
+		1327,1328,5,17,0,0,1328,1330,3,204,102,0,1329,1327,1,0,0,0,1329,1330,1,
+		0,0,0,1330,201,1,0,0,0,1331,1332,5,18,0,0,1332,1333,5,97,0,0,1333,1334,
+		7,1,0,0,1334,1335,3,86,43,0,1335,1336,5,19,0,0,1336,1339,3,86,43,0,1337,
+		1338,5,17,0,0,1338,1340,3,204,102,0,1339,1337,1,0,0,0,1339,1340,1,0,0,
+		0,1340,203,1,0,0,0,1341,1344,3,206,103,0,1342,1343,7,4,0,0,1343,1345,3,
+		204,102,0,1344,1342,1,0,0,0,1344,1345,1,0,0,0,1345,205,1,0,0,0,1346,1349,
+		3,208,104,0,1347,1348,7,4,0,0,1348,1350,3,206,103,0,1349,1347,1,0,0,0,
+		1349,1350,1,0,0,0,1350,1368,1,0,0,0,1351,1352,5,3,0,0,1352,1355,3,208,
+		104,0,1353,1354,7,4,0,0,1354,1356,3,206,103,0,1355,1353,1,0,0,0,1355,1356,
+		1,0,0,0,1356,1357,1,0,0,0,1357,1358,5,4,0,0,1358,1368,1,0,0,0,1359,1360,
+		5,3,0,0,1360,1363,3,206,103,0,1361,1362,7,4,0,0,1362,1364,3,206,103,0,
+		1363,1361,1,0,0,0,1363,1364,1,0,0,0,1364,1365,1,0,0,0,1365,1366,5,4,0,
+		0,1366,1368,1,0,0,0,1367,1346,1,0,0,0,1367,1351,1,0,0,0,1367,1359,1,0,
+		0,0,1368,207,1,0,0,0,1369,1370,5,32,0,0,1370,1371,7,5,0,0,1371,1438,3,
+		160,80,0,1372,1374,5,32,0,0,1373,1375,5,34,0,0,1374,1373,1,0,0,0,1374,
+		1375,1,0,0,0,1375,1376,1,0,0,0,1376,1377,5,6,0,0,1377,1378,5,3,0,0,1378,
+		1379,3,158,79,0,1379,1380,5,4,0,0,1380,1438,1,0,0,0,1381,1382,7,16,0,0,
+		1382,1383,7,5,0,0,1383,1438,3,212,106,0,1384,1386,7,16,0,0,1385,1387,5,
+		34,0,0,1386,1385,1,0,0,0,1386,1387,1,0,0,0,1387,1388,1,0,0,0,1388,1389,
+		5,6,0,0,1389,1390,5,3,0,0,1390,1391,3,210,105,0,1391,1392,5,4,0,0,1392,
+		1438,1,0,0,0,1393,1398,7,16,0,0,1394,1399,5,35,0,0,1395,1396,5,36,0,0,
+		1396,1397,5,34,0,0,1397,1399,5,37,0,0,1398,1394,1,0,0,0,1398,1395,1,0,
+		0,0,1399,1401,1,0,0,0,1400,1402,5,38,0,0,1401,1400,1,0,0,0,1401,1402,1,
+		0,0,0,1402,1403,1,0,0,0,1403,1438,3,192,96,0,1404,1406,7,16,0,0,1405,1407,
+		5,34,0,0,1406,1405,1,0,0,0,1406,1407,1,0,0,0,1407,1408,1,0,0,0,1408,1409,
+		5,6,0,0,1409,1410,5,3,0,0,1410,1411,3,194,97,0,1411,1412,5,4,0,0,1412,
+		1438,1,0,0,0,1413,1415,7,16,0,0,1414,1416,5,34,0,0,1415,1414,1,0,0,0,1415,
+		1416,1,0,0,0,1416,1417,1,0,0,0,1417,1418,5,39,0,0,1418,1438,3,212,106,
+		0,1419,1424,7,16,0,0,1420,1425,5,40,0,0,1421,1422,5,36,0,0,1422,1423,5,
+		34,0,0,1423,1425,5,41,0,0,1424,1420,1,0,0,0,1424,1421,1,0,0,0,1425,1426,
+		1,0,0,0,1426,1427,5,42,0,0,1427,1438,3,212,106,0,1428,1433,7,16,0,0,1429,
+		1434,5,43,0,0,1430,1431,5,36,0,0,1431,1432,5,34,0,0,1432,1434,5,44,0,0,
+		1433,1429,1,0,0,0,1433,1430,1,0,0,0,1434,1435,1,0,0,0,1435,1436,5,42,0,
+		0,1436,1438,3,212,106,0,1437,1369,1,0,0,0,1437,1372,1,0,0,0,1437,1381,
+		1,0,0,0,1437,1384,1,0,0,0,1437,1393,1,0,0,0,1437,1404,1,0,0,0,1437,1413,
+		1,0,0,0,1437,1419,1,0,0,0,1437,1428,1,0,0,0,1438,209,1,0,0,0,1439,1442,
+		3,212,106,0,1440,1441,5,10,0,0,1441,1443,3,210,105,0,1442,1440,1,0,0,0,
+		1442,1443,1,0,0,0,1443,211,1,0,0,0,1444,1447,7,9,0,0,1445,1446,5,79,0,
+		0,1446,1448,3,212,106,0,1447,1445,1,0,0,0,1447,1448,1,0,0,0,1448,213,1,
+		0,0,0,1449,1450,5,98,0,0,1450,1451,5,3,0,0,1451,1452,5,4,0,0,1452,1453,
+		5,99,0,0,1453,1454,3,2,1,0,1454,1455,5,100,0,0,1455,215,1,0,0,0,164,223,
+		253,262,267,273,279,287,295,302,307,334,345,353,357,368,371,382,387,395,
+		403,410,413,424,429,434,440,448,452,459,471,477,486,489,494,503,512,521,
+		525,532,576,578,584,590,596,602,608,615,620,623,629,636,640,646,649,656,
+		661,668,671,677,685,703,714,742,748,752,759,762,770,777,785,791,809,819,
+		827,832,837,843,851,855,862,874,886,889,894,903,912,921,925,930,961,966,
+		971,974,984,1010,1019,1029,1037,1045,1053,1058,1063,1069,1077,1081,1088,
+		1100,1112,1115,1120,1129,1138,1147,1152,1156,1159,1164,1168,1171,1174,
+		1182,1189,1192,1196,1203,1208,1215,1220,1227,1230,1234,1241,1246,1253,
+		1258,1262,1265,1268,1276,1280,1283,1286,1294,1301,1311,1321,1329,1339,
+		1344,1349,1355,1363,1367,1374,1386,1398,1401,1406,1415,1424,1433,1437,
+		1442,1447
 	};
 
 	public static readonly ATN _ATN =

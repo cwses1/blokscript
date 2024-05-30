@@ -8,6 +8,7 @@ namespace BlokScript.Entities
 		public string Name;
 		public string Value;
 		public string DatasourceId;
+		public string SpaceId;
 		public object Data;
 
 		public BlokScriptEntityDataLocation DataLocation;

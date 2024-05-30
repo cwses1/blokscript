@@ -19,6 +19,13 @@ namespace BlokScript.Entities
 			DatasourceEntriesList.Add(DatasourceEntry);
 		}
 
+		public void RemoveDatasourceEntry (DatasourceEntryEntity DatasourceEntry)
+		{
+			DatasourceEntryEntitiesById.Remove(DatasourceEntry.DatasourceId);
+			DatasourceEntryEntitiesByName.Remove(DatasourceEntry.Name.ToLower());
+			DatasourceEntriesList.Remove(DatasourceEntry);
+		}
+
 		public bool HasEntryById (int DatasourceEntryId)
 		{
 			return HasEntryById(DatasourceEntryId.ToString());

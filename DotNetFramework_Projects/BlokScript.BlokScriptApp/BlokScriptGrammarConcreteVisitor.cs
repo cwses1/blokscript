@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 
+using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Newtonsoft.Json.Linq;
@@ -25,9 +27,8 @@ using BlokScript.FileReaders;
 using BlokScript.Filters;
 using BlokScript.Serializers;
 using BlokScript.FileWriters;
-using System.Data;
-using System.Net;
 using BlokScript.EntityDataFactories;
+using BlokScript.BlokScriptApp;
 
 namespace BlokScript.BlokScriptApp
 {
@@ -991,9 +992,9 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitCopyBlocksStatement ([NotNull] BlokScriptGrammarParser.CopyBlocksStatementContext Context)
 		{
 			/*
-			copyBlocksStatement: 'copy' 'blocks' ('in' | 'from') spaceSpec 'to' blocksOutputLocation ('where' blockConstraintExprList)?;
+			copyBlocksStatement: 'copy' 'blocks' ('in' | 'from') longOrShortSpaceSpec 'to' blocksOutputLocation ('where' blockConstraintExprList)?;
 			*/
-			SpaceEntity SourceSpace = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec());
+			SpaceEntity SourceSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
 
 			//
 			// GET ALL BLOCKS.
@@ -1345,7 +1346,7 @@ namespace BlokScript.BlokScriptApp
 				| 'local' 'cache'
 				| fileSpec
 				| filesSpec
-				| spaceSpec
+				| longOrShortSpaceSpec
 				;
 			*/
 			BlocksOutputLocation Location = new BlocksOutputLocation();
@@ -1359,10 +1360,10 @@ namespace BlokScript.BlokScriptApp
 			{
 				Location.ToFiles = true;
 			}
-			else if (Context.spaceSpec() != null)
+			else if (Context.longOrShortSpaceSpec() != null)
 			{
 				Location.ToSpace = true;
-				Location.SpaceId = ((SpaceEntity)VisitSpaceSpec(Context.spaceSpec())).SpaceId;
+				Location.SpaceId = ((SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec())).SpaceId;
 			}
 			else if (Context.GetChild(0).GetText() == "console")
 			{
@@ -1434,7 +1435,7 @@ namespace BlokScript.BlokScriptApp
 					Constraint.Operator = BlockConstraintOperator.Equals;
 					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
 				}
-				if (Context.GetChild(1).GetText() == "!=")
+				else if (Context.GetChild(1).GetText() == "!=")
 				{
 					Constraint.Operator = BlockConstraintOperator.NotEquals;
 					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
@@ -1510,7 +1511,7 @@ namespace BlokScript.BlokScriptApp
 					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
 				}
 				else
-					throw new NotImplementedException("VisitBlockConstraint");
+					throw new NotImplementedException();
 			}
 
 			return Constraint;
@@ -1697,9 +1698,9 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitPublishStoriesStatement([NotNull] BlokScriptGrammarParser.PublishStoriesStatementContext Context)
 		{
 			/*
-			publishStoriesStatement: 'publish' 'stories' ('in' | 'from') spaceSpec ('where' storyConstraintExprList)?;
+			publishStoriesStatement: 'publish' 'stories' ('in' | 'from') longOrShortSpaceSpec ('where' storyConstraintExprList)?;
 			*/
-			SpaceEntity TargetSpace = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec());
+			SpaceEntity TargetSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
 			SpaceCache TargetSpaceCache = GetSpaceCacheWithStoriesLoaded(TargetSpace.SpaceId);
 			StoryEntity[] TargetStories = TargetSpaceCache.GetStories();
 
@@ -1721,9 +1722,9 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitUnpublishStoriesStatement([NotNull] BlokScriptGrammarParser.UnpublishStoriesStatementContext Context)
 		{
 			/*
-			unpublishStoriesStatement: 'unpublish' 'stories' ('in' | 'from') spaceSpec ('where' storyConstraintExprList)?;
+			unpublishStoriesStatement: 'unpublish' 'stories' ('in' | 'from') longOrShortSpaceSpec ('where' storyConstraintExprList)?;
 			*/
-			SpaceEntity TargetSpace = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec());
+			SpaceEntity TargetSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
 			SpaceCache TargetSpaceCache = GetSpaceCacheWithStoriesLoaded(TargetSpace.SpaceId);
 			StoryEntity[] TargetStories = TargetSpaceCache.GetStories();
 
@@ -1746,15 +1747,9 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitDeleteStoriesStatement([NotNull] BlokScriptGrammarParser.DeleteStoriesStatementContext Context)
 		{
 			/*
-			deleteStoriesStatement: 'delete' 'stories' ('in' | 'from') (spaceSpec | shortSpaceSpec) ('where' storyConstraintExprList)?;
+			deleteStoriesStatement: 'delete' 'stories' ('in' | 'from') longOrShortSpaceSpec ('where' storyConstraintExprList)?;
 			*/
-			SpaceEntity TargetSpace;
-
-			if (Context.spaceSpec() != null)
-				TargetSpace = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec());
-			else
-				TargetSpace = (SpaceEntity)VisitShortSpaceSpec(Context.shortSpaceSpec());
-
+			SpaceEntity TargetSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
 			SpaceCache TargetSpaceCache = GetSpaceCacheWithStoriesLoaded(TargetSpace.SpaceId);
 			StoryEntity[] TargetStories = TargetSpaceCache.GetStories();
 
@@ -2210,13 +2205,24 @@ namespace BlokScript.BlokScriptApp
 			return Constraint;
 		}
 
+		public override object VisitLongOrShortSpaceSpec([NotNull] BlokScriptGrammarParser.LongOrShortSpaceSpecContext Context)
+		{
+			/*
+			longOrShortSpaceSpec: spaceSpec | shortSpaceSpec;
+			*/
+			return Context.spaceSpec() != null ? (SpaceEntity)VisitSpaceSpec(Context.spaceSpec()) : (SpaceEntity)VisitShortSpaceSpec(Context.shortSpaceSpec());
+		}
+
 		public override object VisitCopyDatasourcesStatement([NotNull] BlokScriptGrammarParser.CopyDatasourcesStatementContext Context)
 		{
 			/*
-			copyDatasourcesStatement: 'copy' 'datasources' ('from' | 'in') spaceSpec 'to' spaceSpec ('where' datasourceConstraintExprList)?;
+			copyDatasourcesStatement: 'copy' 'datasources' ('from' | 'in') longOrShortSpaceSpec 'to' longOrShortSpaceSpec ('where' datasourceConstraintExprList)?;
 			*/
-			SpaceEntity SourceSpace = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec()[0]);
+			SpaceEntity SourceSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec()[0]);
 			EnsureDatasourcesAreLoadedIntoSpace(SourceSpace);
+
+			SpaceEntity TargetSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec()[1]);
+			EnsureDatasourcesAreLoadedIntoSpace(TargetSpace);
 
 			DatasourceEntity[] SourceDatasources = GetDatasourcesInSpace(SourceSpace);
 
@@ -2226,7 +2232,7 @@ namespace BlokScript.BlokScriptApp
 				SourceDatasources = Constraint.Evaluate(SourceDatasources);
 			}
 
-			CopyDatasourcesToSpace(SourceDatasources, (SpaceEntity)VisitSpaceSpec(Context.spaceSpec()[1]));
+			CopyDatasourcesToSpace(SourceDatasources, TargetSpace);
 			return null;
 		}
 
@@ -2898,13 +2904,13 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitDatasourceSpec ([NotNull] BlokScriptGrammarParser.DatasourceSpecContext Context)
 		{
 			/*
-			datasourceSpec: 'datasource' (VARID | INTLITERAL | STRINGLITERAL) 'in' spaceSpec
+			datasourceSpec: 'datasource' (VARID | INTLITERAL | STRINGLITERAL) ('from' | 'in') (spaceSpec | shortSpaceSpec)
 				| VARID
 				;
 			*/
-			if (Context.spaceSpec() != null)
+			if (Context.spaceSpec() != null || Context.shortSpaceSpec() != null)
 			{
-				SpaceEntity Space = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec());
+				SpaceEntity Space = Context.spaceSpec() != null ? (SpaceEntity)VisitSpaceSpec(Context.spaceSpec()) : (SpaceEntity)VisitShortSpaceSpec(Context.shortSpaceSpec());
 
 				if (Context.VARID() != null)
 				{
@@ -2999,9 +3005,15 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitCreateDatasourceEntryStatement ([NotNull] BlokScriptGrammarParser.CreateDatasourceEntryStatementContext Context)
 		{
 			/*
-			createDatasourceEntryStatement: 'create' 'datasource' 'entry' (stringExpr | datasourceEntryUpdateList) ('for' | 'in') datasourceSpec;
+			createDatasourceEntryStatement: 'create' 'datasource' 'entry' (stringExpr | datasourceEntryUpdateList) ('for' | 'in') (datasourceSpec | datasourceShortSpec);
 			*/
-			DatasourceEntity Datasource = (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
+			DatasourceEntity Datasource;
+
+			if (Context.datasourceSpec() != null)
+				Datasource = (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
+			else
+				Datasource = (DatasourceEntity)VisitDatasourceShortSpec(Context.datasourceShortSpec());
+
 			SpaceEntity Space = GetSpaceById(Datasource.SpaceId);
 
 			DatasourceEntryEntity CreatedEntry = new DatasourceEntryEntity();
@@ -3023,6 +3035,7 @@ namespace BlokScript.BlokScriptApp
 			}
 
 			CreatedEntry.DatasourceId = Datasource.DatasourceId;
+			CreatedEntry.SpaceId = Space.SpaceId;
 			CreatedEntry.Data = CreateDatasourceEntryData(CreatedEntry);
 
 			string RequestPath = ManagementPathFactory.CreateDatasourceEntriesPathForCreate(Datasource.SpaceId);
@@ -3055,6 +3068,167 @@ namespace BlokScript.BlokScriptApp
 			Datasource.InsertDatasourceEntry(CreatedEntry);
 
 			return null;
+		}
+
+		public override object VisitDeleteDatasourceEntryStatement([NotNull] BlokScriptGrammarParser.DeleteDatasourceEntryStatementContext Context)
+		{
+			/*
+			deleteDatasourceEntryStatement: 'delete' 'datasource' 'entry' datasourceEntryShortSpec;
+			*/
+			DatasourceEntryEntity Entry = (DatasourceEntryEntity)VisitDatasourceEntryShortSpec(Context.datasourceEntryShortSpec());
+			SpaceCache Cache = GetSpaceCacheById(Entry.SpaceId);
+			SpaceEntity Space = Cache.Space;
+			DatasourceEntity Datasource = Cache.GetDatasourceById(Entry.DatasourceId);
+
+			string RequestPath = ManagementPathFactory.CreateDatasourceEntryPath(Datasource.SpaceId, Entry.DatasourceEntryId);
+			EchoAction($"API DELETE {RequestPath}. Deleting datasource entry in datasource '{Datasource.DatasourceId}'.");
+			GetManagementWebClient().Delete(RequestPath, "");
+			Datasource.RemoveDatasourceEntry(Entry);
+
+			return null;
+		}
+
+		public override object VisitUpdateDatasourceEntryStatement([NotNull] BlokScriptGrammarParser.UpdateDatasourceEntryStatementContext Context)
+		{
+			/*
+			updateDatasourceEntryStatement: 'update' 'datasource' 'entry' datasourceEntryShortSpec 'set' datasourceEntryUpdateList;
+			*/
+			DatasourceEntryEntity Entry = (DatasourceEntryEntity)VisitDatasourceEntryShortSpec(Context.datasourceEntryShortSpec());
+			SpaceCache Cache = GetSpaceCacheById(Entry.SpaceId);
+			SpaceEntity Space = Cache.Space;
+			DatasourceEntity Datasource = Cache.GetDatasourceById(Entry.DatasourceId);
+			DatasourceEntryUpdate[] DatasourceEntryUpdates = (DatasourceEntryUpdate[])VisitDatasourceEntryUpdateList(Context.datasourceEntryUpdateList());
+
+			foreach (DatasourceEntryUpdate CurrentUpdate in DatasourceEntryUpdates)
+			{
+				if (CurrentUpdate.Name == "name")
+					Entry.Name = CurrentUpdate.Value;
+				else if (CurrentUpdate.Name == "value")
+					Entry.Value = CurrentUpdate.Value;
+			}
+
+			Entry.Data = CreateDatasourceEntryData(Entry);
+
+			string RequestPath = ManagementPathFactory.CreateDatasourceEntryPath(Datasource.SpaceId, Entry.DatasourceEntryId);
+			EchoAction($"API PUT {RequestPath}. Updating datasource entry in datasource {DatasourceFormatter.FormatHumanFriendly(Datasource)} in space {SpaceFormatter.FormatHumanFriendly(Space)}.");
+			GetManagementWebClient().PutJson(RequestPath, JsonSerializer.Serialize(Entry.Data));
+
+			return null;
+		}
+
+		public override object VisitDatasourceEntryFullSpec ([NotNull] BlokScriptGrammarParser.DatasourceEntryFullSpecContext Context)
+		{
+			/*
+			datasourceEntryFullSpec: 'datasource' 'entry' datasourceEntryIdentifier 'in' datasourceSpec;
+			*/
+			DatasourceEntity Datasource = (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
+			EnsureDatasourceHasEntriesLoaded(Datasource);
+
+			DatasourceEntryIdentifier EntryId = (DatasourceEntryIdentifier)VisitDatasourceEntryIdentifier(Context.datasourceEntryIdentifier());
+
+			if (EntryId.IntValue != null)
+			{
+				int DatasourceEntryId = EntryId.IntValue.Value;
+
+				if (Datasource.HasEntryById(DatasourceEntryId))
+					return Datasource.GetEntryById(DatasourceEntryId);
+				
+				string ErrorMessage = $"Datasource entry with id '{DatasourceEntryId}' not found in datasource {DatasourceFormatter.FormatHumanFriendly(Datasource)} in space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Datasource.SpaceId))}";
+				EchoError(ErrorMessage);
+				throw new SpaceObjectNotFoundException(ErrorMessage);
+			}
+			else if (EntryId.StringValue != null)
+			{
+				string Name = EntryId.StringValue;
+
+				if (Datasource.HasEntryByName(Name))
+					return Datasource.GetEntryByName(Name);
+
+				string ErrorMessage = $"Datasource entry with name '{Name}' not found in datasource {DatasourceFormatter.FormatHumanFriendly(Datasource)} in space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Datasource.SpaceId))}";
+				EchoError(ErrorMessage);
+				throw new SpaceObjectNotFoundException(ErrorMessage);
+			}
+			else
+				throw new NotImplementedException();
+		}
+
+		public override object VisitDatasourceEntryShortSpec([NotNull] BlokScriptGrammarParser.DatasourceEntryShortSpecContext Context)
+		{
+			/*
+			datasourceEntryShortSpec: datasourceEntryIdentifier 'in' datasourceSpec;
+			*/
+			DatasourceEntity Datasource = (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
+			EnsureDatasourceHasEntriesLoaded(Datasource);
+
+			DatasourceEntryIdentifier EntryId = (DatasourceEntryIdentifier)VisitDatasourceEntryIdentifier(Context.datasourceEntryIdentifier());
+
+			if (EntryId.IntValue != null)
+			{
+				int DatasourceEntryId = EntryId.IntValue.Value;
+
+				if (Datasource.HasEntryById(DatasourceEntryId))
+					return Datasource.GetEntryById(DatasourceEntryId);
+				
+				string ErrorMessage = $"Datasource entry with id '{DatasourceEntryId}' not found in datasource {DatasourceFormatter.FormatHumanFriendly(Datasource)} in space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Datasource.SpaceId))}";
+				EchoError(ErrorMessage);
+				throw new SpaceObjectNotFoundException(ErrorMessage);
+			}
+			else if (EntryId.StringValue != null)
+			{
+				string Name = EntryId.StringValue;
+
+				if (Datasource.HasEntryByName(Name))
+					return Datasource.GetEntryByName(Name);
+
+				string ErrorMessage = $"Datasource entry with name '{Name}' not found in datasource {DatasourceFormatter.FormatHumanFriendly(Datasource)} in space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Datasource.SpaceId))}";
+				EchoError(ErrorMessage);
+				throw new SpaceObjectNotFoundException(ErrorMessage);
+			}
+			else
+				throw new NotImplementedException();
+		}
+
+		public override object VisitDatasourceEntryIdentifier([NotNull] BlokScriptGrammarParser.DatasourceEntryIdentifierContext Context)
+		{
+			/*
+			datasourceEntryIdentifier: (intExpr | stringExpr | VARID);
+			*/
+			DatasourceEntryIdentifier EntryId = new DatasourceEntryIdentifier();
+
+			if (Context.VARID() != null)
+			{
+				string SymbolName = Context.VARID().GetText();
+				BlokScriptSymbol Symbol = _SymbolTableManager.GetSymbol(SymbolName);
+
+				if (Symbol.Type == BlokScriptSymbolType.String)
+				{
+					EntryId.StringValue = (string)Symbol.Value;
+					return EntryId;
+				}
+				else if (Symbol.Type == BlokScriptSymbolType.Int32)
+				{
+					EntryId.IntValue = (int)Symbol.Value;
+					return EntryId;
+				}
+				else
+				{
+					string ErrorMessage = $"Cannot use variable '{Symbol.Name}' of type '{Symbol.Type}' as a datasource entry identifier expression.  Variable type must be 'string' or 'int'.";
+					EchoError(ErrorMessage);
+					throw new TypeNotAllowedException(ErrorMessage);
+				}
+			}
+			else if (Context.stringExpr() != null)
+			{
+				EntryId.StringValue = (string)VisitStringExpr(Context.stringExpr());
+				return EntryId;
+			}
+			else if (Context.intExpr() != null)
+			{
+				EntryId.IntValue = (int)VisitIntExpr(Context.intExpr());
+				return EntryId;
+			}
+			else
+				throw new NotImplementedException();
 		}
 
 		public override object VisitUpdateDatasourceEntriesStatement ([NotNull] BlokScriptGrammarParser.UpdateDatasourceEntriesStatementContext Context)
@@ -3117,9 +3291,9 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitDeleteDatasourceEntriesStatement ([NotNull] BlokScriptGrammarParser.DeleteDatasourceEntriesStatementContext Context)
 		{
 			/*
-			deleteDatasourceEntriesStatement: 'delete' 'datasource' 'entries' 'in' datasourceSpec ('where' datasourceEntryConstraintList)?;
+			deleteDatasourceEntriesStatement: 'delete' 'datasource' 'entries' ('from' | 'in') (datasourceSpec | datasourceShortSpec) ('where' datasourceEntryConstraintExprList)?;
 			*/
-			DatasourceEntity Datasource = (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
+			DatasourceEntity Datasource = Context.datasourceSpec() != null ? (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec()) : (DatasourceEntity)VisitDatasourceShortSpec(Context.datasourceShortSpec());
 			EnsureDatasourceHasEntriesLoaded(Datasource);
 
 			//
@@ -3391,14 +3565,16 @@ namespace BlokScript.BlokScriptApp
 			/*
 			copyDatasourceEntriesStatement: 'copy' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesTargetLocation ('where' datasourceEntryConstraintExprList)? datasourceEntryCopyOptionList?;
 			*/
-
-			//if (Context.datasourceEntryConstraintExprList() != null)
-				//VisitDatasourceEnryConstraintExprList(Context.datasourceEntryConstraintExprList());
-
 			DatasourceEntriesSourceLocation SourceLocation = (DatasourceEntriesSourceLocation)VisitDatasourceEntriesSourceLocation(Context.datasourceEntriesSourceLocation());
 			DatasourceEntriesTargetLocation TargetLocation = (DatasourceEntriesTargetLocation)VisitDatasourceEntriesTargetLocation(Context.datasourceEntriesTargetLocation());
 
 			DatasourceEntryEntity[] SourceEntries = GetDatasourceEntriesFromFromLocation(SourceLocation);
+
+			if (Context.datasourceEntryConstraintExprList() != null)
+			{
+				DatasourceEntryConstraint Constraint = (DatasourceEntryConstraint)VisitDatasourceEntryConstraintExprList(Context.datasourceEntryConstraintExprList());
+				SourceEntries = Constraint.Evaluate(SourceEntries);
+			}
 
 			DatasourceEntryCopyOptionSet CopyOptionSet = new DatasourceEntryCopyOptionSet();
 
@@ -3448,7 +3624,16 @@ namespace BlokScript.BlokScriptApp
 				if (EffectiveFilePath == null)
 					EffectiveFilePath = "datasource-entries.json";
 
-				return DatasourceEntriesFileReader.Read(EffectiveFilePath);
+				string Extension = Path.GetExtension(EffectiveFilePath).ToLower();
+
+				if (Extension == "")
+					throw new NotImplementedException("Could not determine file media type for file '{EffectiveFilePath}'.");
+				else if (Extension == ".json")
+					return DatasourceEntriesFileReader.Read(EffectiveFilePath);
+				else if (Extension == ".csv")
+					return DatasourceEntriesCsvFileReader.Read(EffectiveFilePath);
+				else
+					throw new NotImplementedException("Unsupported media type for file '{EffectiveFilePath}'.");
 			}
 			else
 				throw new NotImplementedException();
@@ -3458,6 +3643,7 @@ namespace BlokScript.BlokScriptApp
 		{
 			/*
 			datasourceEntriesSourceLocation: datasourceSpec
+				| datasourceShortSpec
 				| urlSpec
 				| fileSpec
 				| 'local cache'
@@ -3469,6 +3655,11 @@ namespace BlokScript.BlokScriptApp
 			{
 				Location.FromDatasource = true;
 				Location.Datasource = (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
+			}
+			else if (Context.datasourceSpec() != null)
+			{
+				Location.FromDatasource = true;
+				Location.Datasource = (DatasourceEntity)VisitDatasourceShortSpec(Context.datasourceShortSpec());
 			}
 			else if (Context.urlSpec() != null)
 			{
@@ -3485,7 +3676,7 @@ namespace BlokScript.BlokScriptApp
 				Location.FromLocalCache = true;
 			}
 			else
-				throw new NotImplementedException("VisitDatasourceEntriesSourceLocation");
+				throw new NotImplementedException();
 
 			return Location;
 		}
@@ -3494,6 +3685,7 @@ namespace BlokScript.BlokScriptApp
 		{
 			/*
 			datasourceEntriesTargetLocation: datasourceSpec
+				| datasourceShortSpec
 				| urlSpec
 				| fileSpec
 				| 'local cache'
@@ -3506,6 +3698,11 @@ namespace BlokScript.BlokScriptApp
 			{
 				Location.ToDatasource = true;
 				Location.Datasource = (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
+			}
+			else if (Context.datasourceShortSpec() != null)
+			{
+				Location.ToDatasource = true;
+				Location.Datasource = (DatasourceEntity)VisitDatasourceShortSpec(Context.datasourceShortSpec());
 			}
 			else if (Context.urlSpec() != null)
 			{
@@ -3539,7 +3736,6 @@ namespace BlokScript.BlokScriptApp
 			if (Context.datasourceEntryConstraintExprList() != null)
 			{
 				DatasourceEntryConstraint RootConstraint = new DatasourceEntryConstraint();
-
 				string OperatorToken = Context.GetChild(1).GetText();
 
 				if (OperatorToken == "and")
@@ -3916,9 +4112,9 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitDeleteBlocksStatement ([NotNull] BlokScriptGrammarParser.DeleteBlocksStatementContext Context)
 		{ 
 			/*
-			deleteBlocksStatement: 'delete' 'blocks' ('in' | 'from') spaceSpec ('where' blockConstraintExprList)?;
+			deleteBlocksStatement: 'delete' 'blocks' ('in' | 'from') longOrShortSpaceSpec ('where' blockConstraintExprList)?;
 			*/
-			SpaceEntity SourceSpace = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec());
+			SpaceEntity SourceSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
 
 			//
 			// GET ALL BLOCKS.
@@ -3945,9 +4141,9 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitDeleteDatasourcesStatement([NotNull] BlokScriptGrammarParser.DeleteDatasourcesStatementContext Context)
 		{
 			/*
-			deleteDatasourcesStatement: 'delete' 'datasources' ('from' | 'in') spaceSpec ('where' datasourceConstraintExprList)?;
+			deleteDatasourcesStatement: 'delete' 'datasources' ('from' | 'in') longOrShortSpaceSpec ('where' datasourceConstraintExprList)?;
 			*/
-			SpaceEntity Space = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec());
+			SpaceEntity Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
 			EnsureDatasourcesAreLoadedIntoSpace(Space);
 			DatasourceEntity[] Datasources = GetDatasourcesInSpace(Space);
 
@@ -3971,9 +4167,9 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitCreateDatasourceStatement ([NotNull] BlokScriptGrammarParser.CreateDatasourceStatementContext Context)
 		{
 			/*
-			createDatasourceStatement: 'create' 'datasource' (stringExpr | '(' datasourceUpdateList ')' ) ('for' | 'in') spaceSpec;
+			createDatasourceStatement: 'create' 'datasource' (stringExpr | '(' datasourceUpdateList ')') ('for' | 'in') (spaceSpec | shortSpaceSpec);
 			*/
-			SpaceEntity Space = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec());
+			SpaceEntity Space = Context.spaceSpec() != null ? (SpaceEntity)VisitSpaceSpec(Context.spaceSpec()) : (SpaceEntity)VisitShortSpaceSpec(Context.shortSpaceSpec());
 			EnsureDatasourcesAreLoadedIntoSpace(Space);
 
 			DatasourceEntity Datasource = new DatasourceEntity();
@@ -4080,12 +4276,7 @@ namespace BlokScript.BlokScriptApp
 			/*
 			updateDatasourceStatement: 'update' 'datasource' (datasourceShortSpec | datasourceSpec) 'set' datasourceUpdateList;
 			*/
-			DatasourceEntity Datasource;
-			
-			if (Context.datasourceSpec() != null)
-				Datasource = (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
-			else
-				Datasource = (DatasourceEntity)VisitDatasourceShortSpec(Context.datasourceShortSpec());
+			DatasourceEntity Datasource = Context.datasourceSpec() != null ? (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec()) : (DatasourceEntity)VisitDatasourceShortSpec(Context.datasourceShortSpec());
 
 			foreach (UpdateModel CurrentUpdate in (UpdateModel[])VisitDatasourceUpdateList(Context.datasourceUpdateList()))
 			{
@@ -4138,9 +4329,9 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitDatasourceShortSpec ([NotNull] BlokScriptGrammarParser.DatasourceShortSpecContext Context)
 		{
 			/*
-			datasourceShortSpec: (VARID | INTLITERAL | STRINGLITERAL) 'in' spaceSpec;
+			datasourceShortSpec: (VARID | INTLITERAL | STRINGLITERAL) 'in' (spaceSpec | shortSpaceSpec);
 			*/
-			SpaceEntity Space = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec());
+			SpaceEntity Space = Context.spaceSpec() != null ? (SpaceEntity)VisitSpaceSpec(Context.spaceSpec()) : (SpaceEntity)VisitShortSpaceSpec(Context.shortSpaceSpec());
 
 			if (Context.VARID() != null)
 			{
@@ -4324,6 +4515,40 @@ namespace BlokScript.BlokScriptApp
 			CopyOption.CommandKeyword = Context.GetChild(0).GetText();
 			CopyOption.Param1 = Context.GetChild(1).GetText();
 			return CopyOption;
+		}
+
+		public override object VisitUpdateDatasourcesStatement ([NotNull] BlokScriptGrammarParser.UpdateDatasourcesStatementContext Context)
+		{
+			/*
+			updateDatasourcesStatement: 'update' 'datasources' ('from' | 'in') longOrShortSpaceSpec 'set' datasourceUpdateList ('where' datasourceConstraintExprList)?;
+			*/
+			SpaceEntity Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+			EnsureDatasourcesAreLoadedIntoSpace(Space);
+			DatasourceEntity[] Datasources = GetDatasourcesInSpace(Space);
+
+			if (Context.datasourceConstraintExprList() != null)
+			{
+				DatasourceConstraint Constraint = (DatasourceConstraint)VisitDatasourceConstraintExprList(Context.datasourceConstraintExprList());
+				Datasources = Constraint.Evaluate(Datasources);
+			}
+
+			foreach (DatasourceEntity Datasource in Datasources)
+			{
+				foreach (UpdateModel CurrentUpdate in (UpdateModel[])VisitDatasourceUpdateList(Context.datasourceUpdateList()))
+				{
+					if (CurrentUpdate.Name == "name")
+						Datasource.Name = (string)CurrentUpdate.Value;
+					else if (CurrentUpdate.Name == "slug")
+						Datasource.Slug = (string)CurrentUpdate.Value;
+					else
+						throw new NotImplementedException();
+				}
+
+				Datasource.Data = DatasourceEntityDataFactory.CreateData(Datasource);
+				PersistDatasource(Datasource);
+			}
+
+			return null;
 		}
 
 		public void DeleteBlocks (BlockSchemaEntity[] Blocks)
@@ -4581,6 +4806,7 @@ namespace BlokScript.BlokScriptApp
 			foreach (DatasourceEntryEntity Entry in Entries)
 			{
 				Entry.DatasourceId = DatasourceId;
+				Entry.SpaceId = SpaceId;
 				Entry.DataLocation = BlokScriptEntityDataLocation.Server;
 				Entry.ServerPath = RequestPath;
 			}
@@ -4612,6 +4838,7 @@ namespace BlokScript.BlokScriptApp
 				TargetEntry.Name = SourceEntry.Name;
 				TargetEntry.Value = SourceEntry.Value;
 				TargetEntry.DatasourceId = TargetDatasource.DatasourceId;
+				TargetEntry.SpaceId = TargetDatasource.SpaceId;
 				TargetEntry.Data = CreateDatasourceEntryData(TargetEntry);
 			}
 			else
@@ -4626,6 +4853,7 @@ namespace BlokScript.BlokScriptApp
 				TargetEntry.Name = SourceEntry.Name;
 				TargetEntry.Value = SourceEntry.Value;
 				TargetEntry.DatasourceId = TargetDatasource.DatasourceId;
+				TargetEntry.SpaceId = TargetDatasource.SpaceId;
 				TargetEntry.Data = CreateDatasourceEntryData(TargetEntry);
 				TargetDatasource.InsertDatasourceEntry(TargetEntry);
 			}

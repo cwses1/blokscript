@@ -117,7 +117,7 @@ namespace BlokScript.Filters
 						}
 					}
 				}
-				if (Operator == BlockConstraintOperator.NotEquals)
+				else if (Operator == BlockConstraintOperator.NotEquals)
 				{
 					string ContraintParam = (string)ConstraintData;
 
@@ -322,7 +322,7 @@ namespace BlokScript.Filters
 					}
 				}
 				else
-					throw new NotImplementedException("BlockConstraint");
+					throw new NotImplementedException();
 			}
 
 			return OutList.ToArray();

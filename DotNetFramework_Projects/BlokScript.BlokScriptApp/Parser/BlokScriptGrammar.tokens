@@ -120,10 +120,10 @@ BLOCK_COMMENT=108
 '='=12
 'slug'=13
 'entry'=14
-'entries'=15
-'where'=16
-'copy'=17
-'from'=18
+'from'=15
+'entries'=16
+'where'=17
+'copy'=18
 'to'=19
 'sync'=20
 'skip'=21

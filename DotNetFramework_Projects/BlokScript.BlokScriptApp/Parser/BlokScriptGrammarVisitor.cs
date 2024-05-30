@@ -88,6 +88,36 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitCreateDatasourceEntryStatement([NotNull] BlokScriptGrammarParser.CreateDatasourceEntryStatementContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.deleteDatasourceEntryStatement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDeleteDatasourceEntryStatement([NotNull] BlokScriptGrammarParser.DeleteDatasourceEntryStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.updateDatasourceEntryStatement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitUpdateDatasourceEntryStatement([NotNull] BlokScriptGrammarParser.UpdateDatasourceEntryStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceEntryFullSpec"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceEntryFullSpec([NotNull] BlokScriptGrammarParser.DatasourceEntryFullSpecContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceEntryShortSpec"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceEntryShortSpec([NotNull] BlokScriptGrammarParser.DatasourceEntryShortSpecContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceEntryIdentifier"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceEntryIdentifier([NotNull] BlokScriptGrammarParser.DatasourceEntryIdentifierContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.updateDatasourceEntriesStatement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -261,6 +291,12 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitShortSpaceSpec([NotNull] BlokScriptGrammarParser.ShortSpaceSpecContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.longOrShortSpaceSpec"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLongOrShortSpaceSpec([NotNull] BlokScriptGrammarParser.LongOrShortSpaceSpecContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.blockSpec"/>.
 	/// </summary>
