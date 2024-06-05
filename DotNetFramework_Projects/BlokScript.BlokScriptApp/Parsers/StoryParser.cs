@@ -15,7 +15,10 @@ namespace BlokScript.Parsers
 			CurrentEntity.StoryId = EntityJson.id.ToString();
 			CurrentEntity.Url ="/" + EntityJson.full_slug;
 			CurrentEntity.Name = EntityJson.name;
-			CurrentEntity.Data = EntityJson;
+			CurrentEntity.Slug = EntityJson.slug;
+			CurrentEntity.IsFolder = EntityJson.is_folder;
+			CurrentEntity.ParentId = EntityJson.parent_id.ToString();
+			CurrentEntity.Content = EntityJson.content;
 
 			List<string> Tags = new List<string>();
 
@@ -25,6 +28,8 @@ namespace BlokScript.Parsers
 			}
 
 			CurrentEntity.Tags = Tags.ToArray();
+			CurrentEntity.Data = EntityJson;
+			CurrentEntity.HasContent = CurrentEntity.Content != null;
 			return CurrentEntity;
 		}
 	}

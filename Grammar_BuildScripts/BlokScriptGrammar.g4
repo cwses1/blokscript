@@ -214,7 +214,6 @@ blockOutputLocation: 'console'
 blocksOutputLocation: 'console'
 	| 'local' 'cache'
 	| fileSpec
-	| filesSpec
 	| longOrShortSpaceSpec
 	;
 
@@ -223,8 +222,6 @@ storyOutputLocation: 'console'
 	| fileSpec
 	| spaceSpec
 	;
-
-filesSpec: 'files';
 
 spaceOutputLocation: 'console'
 	| 'local' 'cache'
@@ -285,22 +282,10 @@ compareSpacesStatement: 'compare' spaceSpec 'and' spaceSpec;
 compareBlocksStatement: 'compare' blockSpec 'and' blockSpec;
 compareAllBlocksStatement: 'compare' 'all' 'blocks' 'in' spaceSpec 'and' spaceSpec;
 
-storiesInputLocation: 'local' 'cache'
-	| fileSpec
-	| filesSpec
-	| spaceSpec
-	| shortSpaceSpec
-	;
+storiesInputLocation: fileSpec | longOrShortSpaceSpec;
+storiesOutputLocation: 'console' | fileSpec | longOrShortSpaceSpec;
 
-storiesOutputLocation: 'console'
-	| 'local' 'cache'
-	| fileSpec
-	| filesSpec
-	| spaceSpec
-	| shortSpaceSpec
-	;
-
-copyStoriesStatement: 'copy' 'stories' ('in' | 'from') storiesInputLocation 'to' storiesOutputLocation ('where' storyConstraintExprList)?;
+copyStoriesStatement: 'copy' 'stories' ('with' 'content')? ('in' | 'from') storiesInputLocation 'to' storiesOutputLocation ('where' storyConstraintExprList)?;
 publishStoriesStatement: 'publish' 'stories' ('in' | 'from') longOrShortSpaceSpec ('where' storyConstraintExprList)?;
 unpublishStoriesStatement: 'unpublish' 'stories' ('in' | 'from') longOrShortSpaceSpec ('where' storyConstraintExprList)?;
 deleteStoriesStatement: 'delete' 'stories' ('in' | 'from') longOrShortSpaceSpec ('where' storyConstraintExprList)?;

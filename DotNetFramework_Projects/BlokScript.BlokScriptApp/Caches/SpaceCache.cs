@@ -25,6 +25,11 @@ namespace BlokScript.Caches
 
 		public bool ContainsStory (string Url)
 		{
+			return ContainsStoryByUrl(Url);
+		}
+
+		public bool ContainsStoryByUrl (string Url)
+		{
 			return StoryEntities.ContainsKey(Url);
 		}
 
@@ -40,6 +45,11 @@ namespace BlokScript.Caches
 
 		public StoryEntity GetStory (string Url)
 		{
+			return GetStoryByUrl(Url);
+		}
+
+		public StoryEntity GetStoryByUrl (string Url)
+		{
 			return StoryEntities[Url];
 		}
 
@@ -51,6 +61,14 @@ namespace BlokScript.Caches
 		public void InsertBlock (BlockSchemaEntity Block)
 		{
 			BlockSchemaEntities[Block.ComponentName] = Block;
+		}
+
+		public void InsertStories (StoryEntity[] Stories)
+		{
+			foreach (StoryEntity Story in Stories)
+			{
+				InsertStory(Story);
+			}
 		}
 
 		public void InsertStory (StoryEntity Story)
@@ -70,6 +88,19 @@ namespace BlokScript.Caches
 		{
 			StoryEntities.Remove(Story.Url);
 			StoryEntitiesById.Remove(Story.StoryId);
+
+			if (Story.IsFolder)
+			{
+				//
+				// REMOVING A FOLDER STORY DESTROYS EVERYTHING UNDERNEATH THAT FOLDER IN STORYBLOK.
+				// REMOVE THE FOLDER STORY AND ALL OTHER MATCHING STORIES HERE AS WELL TO MATCH.
+				//
+				foreach (StoryEntity ChildStory in GetStories())
+				{
+					if (ChildStory.Url.StartsWith(Story.Url))
+						RemoveStory(ChildStory);
+				}
+			}
 		}
 
 		public void InsertDatasource (DatasourceEntity Datasource)

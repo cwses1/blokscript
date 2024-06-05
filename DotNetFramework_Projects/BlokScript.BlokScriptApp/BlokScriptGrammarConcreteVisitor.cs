@@ -29,6 +29,8 @@ using BlokScript.Serializers;
 using BlokScript.FileWriters;
 using BlokScript.EntityDataFactories;
 using BlokScript.BlokScriptApp;
+using BlokScript.IO;
+using BlokScript.EntityCloners;
 
 namespace BlokScript.BlokScriptApp
 {
@@ -315,6 +317,12 @@ namespace BlokScript.BlokScriptApp
 				| VARID
 				;
 			*/
+
+			//
+			// SINCE WE ARE GETTING A SPACE, WE START BY GETTING ALL SPACES.
+			//
+			EnsureSpaceDictsLoaded();
+
 			Regex IdRegex = new Regex("^[0-9]+$");
 			Regex CopiedRegex = new Regex("^#[0-9]+$");
 
@@ -436,11 +444,6 @@ namespace BlokScript.BlokScriptApp
 				BlokScriptEntityDataLocation DataLocation = GetFrom.DataLocation;
 
 				//
-				// SINCE WE ARE GETTING A SPACE, WE START BY GETTING ALL SPACES.
-				//
-				EnsureSpaceDictsLoaded();
-
-				//
 				// GET THE SPACE.
 				//
 				if (DataLocation == BlokScriptEntityDataLocation.FilePath)
@@ -475,9 +478,9 @@ namespace BlokScript.BlokScriptApp
 					int Line = Context.VARID().Symbol.Line;
 					int Column = Context.VARID().Symbol.Column;
 
-					Console.WriteLine($"{Line}:{Column}. Variable {SymbolName} not defined.");
-
-					throw new VariableNotDeclaredException(SymbolName);
+					string ErrorMessage = $"{Line}:{Column}. Variable {SymbolName} not defined.";
+					EchoError(ErrorMessage);
+					throw new Exception(ErrorMessage);
 				}
 				else if (TargetSymbol.Type == BlokScriptSymbolType.Space)
 				{
@@ -485,11 +488,39 @@ namespace BlokScript.BlokScriptApp
 				}
 				else if (TargetSymbol.Type == BlokScriptSymbolType.String)
 				{
-					string SpaceId = StringLiteralTrimmer.TrimSpaceId((string)TargetSymbol.Value);
+					//
+					// STRING TYPE VARIABLE PROVIDED.
+					//
+					string SpaceId = null;
+					string SpaceName = null;
+					string SymbolValue = (string)TargetSymbol.Value;
 
-					SpaceEntity Space = new SpaceEntity();
-					Space.SpaceId = SpaceId;
-					return Space;
+					if (IdRegex.IsMatch(SymbolValue))
+					{
+						//
+						// '1234567'
+						//
+						SpaceId = SymbolValue;
+					}
+					else if (CopiedRegex.IsMatch(SymbolValue))
+					{
+						//
+						// '#1234567' (COPIED AND PASTED FROM STORYBLOK)
+						//
+						SpaceId = SymbolValue.Substring(1);
+					}
+					else
+					{
+						//
+						// 'Space Name'
+						//
+						SpaceName = SymbolValue;
+					}
+
+					if (SpaceId != null)
+						return GetSpaceById(SpaceId);
+
+					return GetSpaceByName(SpaceName);
 				}
 				else
 				{
@@ -1025,8 +1056,6 @@ namespace BlokScript.BlokScriptApp
 				CopyBlocksToLocalCache(Blocks);
 			else if (TargetLocation.ToFile)
 				CopyBlocksToFile(Blocks, TargetLocation.FilePath);
-			else if (TargetLocation.ToFiles)
-				CopyBlocksToFiles(Blocks);
 			else if (TargetLocation.ToSpace)
 				CopyBlocksToSpace(Blocks, TargetLocation.SpaceId);
 			else
@@ -1345,7 +1374,6 @@ namespace BlokScript.BlokScriptApp
 			blocksOutputLocation: 'console'
 				| 'local' 'cache'
 				| fileSpec
-				| filesSpec
 				| longOrShortSpaceSpec
 				;
 			*/
@@ -1355,10 +1383,6 @@ namespace BlokScript.BlokScriptApp
 			{
 				Location.ToFile = true;
 				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
-			}
-			else if (Context.filesSpec() != null)
-			{
-				Location.ToFiles = true;
 			}
 			else if (Context.longOrShortSpaceSpec() != null)
 			{
@@ -1750,6 +1774,9 @@ namespace BlokScript.BlokScriptApp
 			deleteStoriesStatement: 'delete' 'stories' ('in' | 'from') longOrShortSpaceSpec ('where' storyConstraintExprList)?;
 			*/
 			SpaceEntity TargetSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+
+			EchoDebug("TargetSpace.SpaceId", TargetSpace.SpaceId);
+
 			SpaceCache TargetSpaceCache = GetSpaceCacheWithStoriesLoaded(TargetSpace.SpaceId);
 			StoryEntity[] TargetStories = TargetSpaceCache.GetStories();
 
@@ -1769,14 +1796,20 @@ namespace BlokScript.BlokScriptApp
 
 			foreach (StoryEntity Story in TargetStories)
 			{
-				string RequestPath = ManagementPathFactory.CreateDeleteStoryPath(Story.StoryId, TargetSpace.SpaceId);
-				EchoAction($"API DELETE {RequestPath}. Deleting story {StoryFormatter.FormatHumanFriendly(Story)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
-				GetManagementWebClient().Delete(RequestPath, "");
+				EchoDebug($"Deleting story {StoryFormatter.FormatHumanFriendly(Story)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
 
 				//
-				// REMOVE THE STORY FROM THE SPACE CACHE.
+				// REMOVE THE STORY FROM THE SPACE CACHE. IT MAY HAVE ALREADY BEEN DELETED, SO WE CHECK.
 				//
-				TargetSpaceCache.RemoveStory(Story);
+				if (TargetSpaceCache.ContainsStoryByUrl(Story.Url))
+				{
+					string RequestPath = ManagementPathFactory.CreateDeleteStoryPath(Story.StoryId, TargetSpace.SpaceId);
+					EchoAction($"API DELETE {RequestPath}. Deleting story {StoryFormatter.FormatHumanFriendly(Story)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
+					GetManagementWebClient().Delete(RequestPath, "");
+					TargetSpaceCache.RemoveStory(Story);
+				}
+				else
+					EchoVerbose($"Story {StoryFormatter.FormatHumanFriendly(Story)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)} not found.  It may have already been deleted.");
 			}
 
 			return null;
@@ -2210,7 +2243,14 @@ namespace BlokScript.BlokScriptApp
 			/*
 			longOrShortSpaceSpec: spaceSpec | shortSpaceSpec;
 			*/
-			return Context.spaceSpec() != null ? (SpaceEntity)VisitSpaceSpec(Context.spaceSpec()) : (SpaceEntity)VisitShortSpaceSpec(Context.shortSpaceSpec());
+
+			//
+			// SINCE WE ARE GETTING A SPACE, WE START BY GETTING ALL SPACES.
+			//
+			EnsureSpaceDictsLoaded();
+			SpaceEntity Space = Context.spaceSpec() != null ? (SpaceEntity)VisitSpaceSpec(Context.spaceSpec()) : (SpaceEntity)VisitShortSpaceSpec(Context.shortSpaceSpec());
+			CacheSpace(Space);
+			return Space;
 		}
 
 		public override object VisitCopyDatasourcesStatement([NotNull] BlokScriptGrammarParser.CopyDatasourcesStatementContext Context)
@@ -2471,17 +2511,14 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitCopyStoriesStatement ([NotNull] BlokScriptGrammarParser.CopyStoriesStatementContext Context)
 		{
 			/*
-			copyStoriesStatement: 'copy' 'stories' ('in' | 'from') storiesInputLocation 'to' storiesOutputLocation ('where' storyConstraintExprList)?;
+			copyStoriesStatement: 'copy' 'stories' ('with' 'content')? ('in' | 'from') storiesInputLocation 'to' storiesOutputLocation ('where' storyConstraintExprList)?;
 			*/
+			
+			//
+			// GET THE STORIES.
+			//
 			StoriesInputLocation InputLocation = (StoriesInputLocation)VisitStoriesInputLocation(Context.storiesInputLocation());
-			StoryEntity[] SourceStories = new StoryEntity[]{};
-
-			if (InputLocation.FromSpace)
-			{
-				SpaceEntity SourceSpace = InputLocation.Space;
-				SpaceCache SourceSpaceCache = GetSpaceCacheWithStoriesLoaded(SourceSpace.SpaceId);
-				SourceStories = SourceSpaceCache.GetStories();
-			}
+			StoryEntity[] SourceStories = GetStoriesFromInputLocation(InputLocation);
 
 			//
 			// APPLY CONSTRAINTS.
@@ -2490,120 +2527,432 @@ namespace BlokScript.BlokScriptApp
 				SourceStories = ((StoryConstraint)VisitStoryConstraintExprList(Context.storyConstraintExprList())).Evaluate(SourceStories);
 
 			//
-			// OUTPUT TO SPECIFIED LOCATION.
+			// LOAD CONTENT IF REQUESTED.
 			//
-			StoriesOutputLocation OutLocation = (StoriesOutputLocation)VisitStoriesOutputLocation(Context.storiesOutputLocation());
-
-			SpaceEntity TargetSpace = null;
-			SpaceCache TargetSpaceCache = null;
-
-			if (OutLocation.ToSpace)
+			if (Context.GetChild(2).GetText() == "with")
 			{
-				TargetSpace = OutLocation.Space;
-				TargetSpaceCache = GetSpaceCacheWithStoriesLoaded(TargetSpace.SpaceId);
+				foreach (StoryEntity SourceStory in SourceStories)
+				{
+					SpaceCache SourceSpaceCache = GetSpaceCacheWithStoriesLoaded(SourceStory.SpaceId);
+					SpaceEntity SourceSpace = SourceSpaceCache.Space;
+
+					string RequestPath = ManagementPathFactory.CreateStoryPath(SourceStory.StoryId, SourceStory.SpaceId);
+					EchoAction($"API GET {RequestPath}. Caching content for story {StoryFormatter.FormatHumanFriendly(SourceStory)} in space {SpaceFormatter.FormatHumanFriendly(SourceSpace)}.");
+
+					string ResponseBody = GetManagementWebClient().GetString(RequestPath);
+					EchoDebug("ResponseBody", ResponseBody);
+
+					dynamic ResponseBodyData = JsonParser.Parse(ResponseBody);
+					SourceStory.Data = ResponseBodyData;
+
+					SourceStory.Content = ResponseBodyData.story.content;
+					SourceStory.HasContent = true;
+					SourceStory.ServerPath = RequestPath;
+				}
 			}
+
+			//
+			// OUTPUT THE STORIES TO THE SPECIFIED LOCATION.
+			//
+			CopyStoriesToOutputLocation(SourceStories, (StoriesOutputLocation)VisitStoriesOutputLocation(Context.storiesOutputLocation()));
+
+			return null;
+		}
+
+		public void CopyStoriesToOutputLocation (StoryEntity[] SourceStories, StoriesOutputLocation OutLocation)
+		{
+			if (OutLocation.ToSpace)
+				CopyStoriesToSpace(SourceStories, OutLocation.Space);
+			else if (OutLocation.ToConsole)
+				CopyStoriesToConsole(SourceStories);
+			else if (OutLocation.ToLocalCache)
+				CopyStoriesToLocalCache(SourceStories);
+			else if (OutLocation.ToFile)
+				CopyStoriesToFilePath(SourceStories, OutLocation.FilePath);
+		}
+
+		public StoryEntity[] GetStoriesFromInputLocation (StoriesInputLocation InputLocation)
+		{
+			if (InputLocation.FromSpace)
+				return GetStoriesFromSpace(InputLocation.Space);
+			else if (InputLocation.FromFile)
+				return GetStoriesFromFile(InputLocation.FilePath);
+
+			return new StoryEntity[]{};
+		}
+
+		public StoryEntity[] GetStoriesFromSpace (SpaceEntity SourceSpace)
+		{
+			return GetSpaceCacheWithStoriesLoaded(SourceSpace.SpaceId).GetStories();
+		}
+
+		public StoryEntity[] GetStoriesFromFile (string FilePath)
+		{
+			string EffectiveFilePath = FilePath;
+
+			if (EffectiveFilePath == null)
+				EffectiveFilePath = "stories.json";
+
+			EchoDebug("EffectiveFilePath", EffectiveFilePath);
+
+			StoryEntity[] Stories = StoriesFileReader.Read(EffectiveFilePath);
+
+			foreach (StoryEntity Story in Stories)
+			{
+				Story.SpaceId = LocalFileSourceSpaceId.Value;
+				Story.DataLocation = BlokScriptEntityDataLocation.FilePath;
+				Story.FilePath = EffectiveFilePath;
+			}
+
+			//
+			// CREATE A SPACE.
+			//
+			SpaceEntity Space = new SpaceEntity();
+			Space.SpaceId = LocalFileSourceSpaceId.Value;
+			Space.Name = "Local File Source Space";
+			CacheSpace(Space);
+
+			//
+			// CACHE THE STORIES.
+			//
+			SpaceCache LocalSpaceCache = GetSpaceCacheById(LocalFileSourceSpaceId.Value);
+			LocalSpaceCache.InsertStories(Stories);
+			return Stories;
+		}
+
+		public void CopyStoriesToConsole (StoryEntity[] SourceStories)
+		{
+			foreach (StoryEntity SourceStory in SourceStories)
+			{
+				EchoToConsole(StoryFormatter.FormatJson(SourceStory));
+			}
+		}
+
+		public void CopyStoriesToLocalCache (StoryEntity[] SourceStories)
+		{
+			foreach (StoryEntity SourceStory in SourceStories)
+			{
+				SpaceCache CurrentSpaceCache = GetSpaceCacheById(SourceStory.SpaceId);
+				CurrentSpaceCache.StoryEntities[SourceStory.Url] = SourceStory;
+			}
+		}
+
+		public void CopyStoriesToFilePath (StoryEntity[] SourceStories, string FilePath)
+		{
+			string EffectiveFilePath = FilePath;
+
+			if (EffectiveFilePath == null)
+				EffectiveFilePath = "stories.json";
+
+			EchoAction($"Saving {SourceStories.Length} stories to file: '{EffectiveFilePath}'.");
+
+			List<object> StoryDataList = new List<object>();
+
+			foreach (StoryEntity Story in SourceStories)
+			{
+				StoryDataList.Add(Story.Data);
+			}
+
+			using (StreamWriter TargetWriter = new StreamWriter(EffectiveFilePath))
+			{
+				TargetWriter.WriteLine(JsonFormatter.FormatIndented(JsonSerializer.Serialize(StoryDataList)));
+			}
+		}
+
+		public void CopyStoriesToSpace (StoryEntity[] SourceStories, SpaceEntity TargetSpace)
+		{
+			LoadSpaceCacheStories(GetSpaceCacheById(TargetSpace.SpaceId));
+			EnsureFolderStoriesExistInSpace(SourceStories, TargetSpace);
 
 			foreach (StoryEntity SourceStory in SourceStories)
 			{
-				if (OutLocation.ToConsole)
+				if (!SourceStory.IsFolder)
+					CopyStoryToSpace(SourceStory, TargetSpace);
+			}
+		}
+
+		public void CopyStoryToSpace (StoryEntity SourceStory, SpaceEntity TargetSpace)
+		{
+			SpaceCache TargetSpaceCache = GetSpaceCacheWithStoriesLoaded(TargetSpace.SpaceId);
+
+			//
+			// IF THE SOURCE STORY DOES NOT CONTAIN CONTENT, THEN WE NEED TO GET THAT CONTENT FIRST.
+			//
+			if (!SourceStory.HasContent)
+			{
+				SpaceCache SourceSpaceCache = GetSpaceCacheById(SourceStory.SpaceId);
+				SpaceEntity SourceSpace = SourceSpaceCache.Space;
+
+				if (SourceStory.DataLocation == BlokScriptEntityDataLocation.Server)
 				{
-					EchoToConsole(StoryFormatter.FormatJson(SourceStory));
-				}
-				else if (OutLocation.ToLocalCache)
-				{
-					SpaceCache CurrentSpaceCache = GetSpaceCacheById(SourceStory.SpaceId);
-					CurrentSpaceCache.StoryEntities[SourceStory.Url] = SourceStory;
-				}
-				else if (OutLocation.ToFile)
-				{
-					if (OutLocation.FilePath == null)
-						OutLocation.FilePath = SourceStory.Url.Replace("/", "_") + ".json";
+					SourceSpaceCache = GetSpaceCacheWithStoriesLoaded(SourceStory.SpaceId);
 
-					EchoAction($"Copying Story '{SourceStory.Url}' to file: '{OutLocation.FilePath}'.");
+					string RequestPath = ManagementPathFactory.CreateStoryPath(SourceStory.StoryId, SourceStory.SpaceId);
+					EchoAction($"API GET {RequestPath}. Caching content for story {StoryFormatter.FormatHumanFriendly(SourceStory)} in space {SpaceFormatter.FormatHumanFriendly(SourceSpace)}.");
 
-					using (StreamWriter TargetWriter = new StreamWriter(OutLocation.FilePath))
-					{
-						TargetWriter.WriteLine(JsonFormatter.FormatIndented(SourceStory.Data));
-					}
-				}
-				else if (OutLocation.ToSpace)
-				{
-					//
-					// IF THE STORY DOES NOT CONTAIN CONTENT, THEN WE NEED TO GET THAT CONTENT FIRST.
-					//
-					if (!SourceStory.HasContent)
-					{
-						string RequestPath = ManagementPathFactory.CreateStoryPath(SourceStory.StoryId, SourceStory.SpaceId);
-						EchoAction($"API GET {RequestPath}. Caching content for story {StoryFormatter.FormatHumanFriendly(SourceStory)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
-						SourceStory.Data = JsonParser.Parse(GetManagementWebClient().GetString(RequestPath));
-						SourceStory.ServerPath = RequestPath;
-						SourceStory.HasContent = true;
-					}
+					string ResponseBody = GetManagementWebClient().GetString(RequestPath);
+					EchoDebug("ResponseBody", ResponseBody);
 
-					//
-					// CREATE THE REQUEST BODY.
-					//
-					string RequestBody = JsonFormatter.FormatIndented(SourceStory.Data);
+					dynamic ResponseBodyData = JsonParser.Parse(ResponseBody);
+					SourceStory.Data = ResponseBodyData;
 
-					//
-					// CHECK FOR EXISTENCE OF THE STORY ON THE SERVER FIRST.
-					// THIS DETERMINES WHETHER WE POST (CREATE) OR PUT (UPDATE).
-					//
-					if (!TargetSpaceCache.ContainsStory(SourceStory.Url))
-					{
-						//
-						// THE TARGET SPACE DOES NOT HAVE THIS STORY.  CREATE THE STORY IN THE TARGET SPACE.
-						//
-						string RequestPath = ManagementPathFactory.CreateStoriesPath(TargetSpace.SpaceId);
-
-
-						EchoAction($"API POST {RequestPath}. Creating story {StoryFormatter.FormatHumanFriendly(SourceStory)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
-
-						try
-						{
-							string ResponseString = GetManagementWebClient().PostJson(RequestPath, RequestBody);
-
-							//
-							// GET THE CREATED STORY.
-							//
-							StoryEntity CreatedStory = StoryParser.Parse(JsonParser.ParseAsDynamic(ResponseString).story);
-
-							//
-							// UPDATE THE TARGET CACHE.
-							//
-							TargetSpaceCache.InsertStory(CreatedStory);
-						}
-						catch (Exception E)
-						{
-							EchoError(E.Message);
-							throw;
-						}
-					}
-					else
-					{
-						//
-						// THE TARGET SPACE HAS THIS STORY.  UPDATE THE STORY IN THE TARGET SPACE.
-						//
-						StoryEntity TargetStory = TargetSpaceCache.GetStory(SourceStory.Url);
-						string RequestPath = ManagementPathFactory.CreateStoryPath(TargetStory.StoryId, TargetSpace.SpaceId);
-
-						try
-						{
-							EchoAction($"API PUT {RequestPath}. Updating story {StoryFormatter.FormatHumanFriendly(TargetStory)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
-							GetManagementWebClient().PutJson(RequestPath, RequestBody);
-						}
-						catch (Exception E)
-						{
-							EchoError(E.Message);
-							throw;
-						}
-					}
+					SourceStory.Content = ResponseBodyData.story.content;
+					SourceStory.HasContent = true;
+					SourceStory.ServerPath = RequestPath;
 				}
 				else
-					throw new NotImplementedException("VisitCopyStoriesStatement");
+				{
+					string ErrorMessage = $"No content for story {StoryFormatter.FormatHumanFriendly(SourceStory)} in space {SpaceFormatter.FormatHumanFriendly(SourceSpace)}.  This can happen if you are copying from a file. If you are copying from a file, verify the story content field exists in the file.";
+					EchoError(ErrorMessage);
+					throw new Exception(ErrorMessage);
+				}
 			}
 
-			return null;
+			//
+			// CHECK FOR EXISTENCE OF THE STORY ON THE SERVER FIRST.
+			// THIS DETERMINES WHETHER WE POST (CREATE) OR PUT (UPDATE).
+			//
+			if (!TargetSpaceCache.ContainsStory(SourceStory.Url))
+			{
+				//
+				// THE TARGET SPACE DOES NOT HAVE THIS STORY.  CREATE THE STORY IN THE TARGET SPACE.
+				//
+
+				//
+				//	CREATE THE TARGET STORY BY CLONING THE SOURCE STORY AND REDOING THE IDENTIFIERS.
+				//
+				EchoDebug("SourceStory.ParentId", SourceStory.ParentId.ToString());
+
+				//
+				// GET THE PARENT ID OF THE FOLDER WHERE THE TARGET STORY GOES.
+				//
+				string TargetParentUrl = UrlUtil.GetParentUrl(SourceStory.Url);
+				EchoDebug("TargetParentUrl", TargetParentUrl);
+				string TargetParentId = null;
+
+				if (TargetParentUrl != "/")
+				{
+					StoryEntity ParentStory = TargetSpaceCache.GetStoryByUrl(TargetParentUrl);
+					TargetParentId = ParentStory.StoryId;
+				}
+
+				EchoDebug("TargetParentId", TargetParentId);
+
+				StoryEntity CreatedTargetStory = StoryCloner.Clone(SourceStory);
+				CreatedTargetStory.ParentId = TargetParentId;
+				CreatedTargetStory.SpaceId = TargetSpace.SpaceId;
+				CreatedTargetStory.Data = StoryEntityDataFactory.CreateData(CreatedTargetStory);
+
+				//
+				// CREATE THE REQUEST PATH.
+				//
+				string RequestPath = ManagementPathFactory.CreateStoriesPath(TargetSpace.SpaceId);
+				EchoAction($"API POST {RequestPath}. Creating story {StoryFormatter.FormatHumanFriendly(SourceStory)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
+
+				//
+				// CREATE THE REQUEST BODY.
+				//
+				string RequestBody = JsonFormatter.FormatIndented(CreatedTargetStory.Data);
+				EchoDebug("RequestBody", RequestBody);
+
+				try
+				{
+					string ResponseString = GetManagementWebClient().PostJson(RequestPath, RequestBody);
+					EchoDebug("ResponseString", ResponseString);
+
+					//
+					// GET THE CREATED STORY.
+					//
+					StoryEntity CreatedStory = StoryParser.Parse(JsonParser.ParseAsDynamic(ResponseString).story);
+
+					//
+					// UPDATE THE TARGET CACHE.
+					//
+					TargetSpaceCache.InsertStory(CreatedStory);
+				}
+				catch (WebException E)
+				{
+					HttpWebResponse Response = (HttpWebResponse)E.Response;
+					int StatusCode = (int)Response.StatusCode;
+					string ResponseString = ExtractStringResponse(E);
+					EchoDebug("StatusCode", $"{StatusCode}");
+					EchoDebug("ResponseString", ResponseString);
+
+					if (StatusCode == 422)
+					{
+						string Message = $"Could not create story {StoryFormatter.FormatHumanFriendly(SourceStory)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}. {ResponseString}";
+						EchoError(Message);
+						EchoDebug(E);
+					}
+
+					throw;
+				}
+			}
+			else
+			{
+				//
+				// THE TARGET SPACE HAS THIS STORY.  UPDATE THE STORY IN THE TARGET SPACE.
+				//
+				StoryEntity TargetStory = TargetSpaceCache.GetStory(SourceStory.Url);
+				string RequestPath = ManagementPathFactory.CreateStoryPath(TargetStory.StoryId, TargetSpace.SpaceId);
+				EchoAction($"API PUT {RequestPath}. Updating story {StoryFormatter.FormatHumanFriendly(TargetStory)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
+
+				//
+				//	CREATE THE TARGET STORY BY CLONING THE SOURCE STORY AND REDOING THE IDENTIFIERS.
+				//
+				//EchoDebug("SourceStory.ParentId", SourceStory.ParentId.ToString());
+
+				//
+				// GET THE PARENT ID OF THE FOLDER WHERE THE TARGET STORY GOES.
+				//
+				string TargetParentUrl = UrlUtil.GetParentUrl(TargetStory.Url);
+				EchoDebug("TargetParentUrl", TargetParentUrl);
+				string TargetParentId = null;
+
+				if (TargetParentUrl != "/")
+				{
+					StoryEntity ParentStory = TargetSpaceCache.GetStoryByUrl(TargetParentUrl);
+					TargetParentId = ParentStory.StoryId;
+				}
+
+				EchoDebug("TargetParentId", TargetParentId);
+				//TargetStory.ParentId = TargetParentId;
+				//TargetStory.Data = StoryEntityDataFactory.CreateData(TargetStory);
+
+				//
+				// HACK HACK HACK!  REMOVE THE updated_at ATTRIBUTE (SET TO NULL) BECAUSE THIS CAUSES 422 {"conflict":true,"story":"has been changed"} ERRORS.
+				//
+				dynamic SourceStoryData = (dynamic)SourceStory.Data;
+				SourceStoryData.parent_id = TargetParentId;
+				SourceStoryData.updated_at = null;
+
+				//
+				// CREATE THE REQUEST BODY.
+				//
+				string RequestBody = JsonFormatter.FormatIndented(SourceStoryData);
+				EchoDebug("RequestBody", RequestBody);
+
+				try
+				{
+					GetManagementWebClient().PutJson(RequestPath, RequestBody);
+				}
+				catch (WebException E)
+				{
+					HttpWebResponse Response = (HttpWebResponse)E.Response;
+					int StatusCode = (int)Response.StatusCode;
+					string ResponseString = ExtractStringResponse(E);
+					EchoDebug("StatusCode", $"{StatusCode}");
+					EchoDebug("ResponseString", ResponseString);
+
+					if (StatusCode == 422)
+					{
+						string Message = $"Could not update story {StoryFormatter.FormatHumanFriendly(SourceStory)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}. {ResponseString}";
+						EchoError(Message);
+						EchoDebug(E);
+					}
+
+					throw;
+				}
+			}
+		}
+
+		public void EnsureFolderStoriesExistInSpace (StoryEntity[] SourceStories, SpaceEntity TargetSpace)
+		{
+			foreach (StoryEntity SourceStory in SourceStories)
+			{
+				if (SourceStory.IsFolder)
+				{
+					EnsureStoryFoldersExistInSpace(SourceStory, TargetSpace);
+				}
+			}
+		}
+
+		public void	EnsureStoryFoldersExistInSpace (StoryEntity Story, SpaceEntity Space)
+		{
+			string[] UrlComponents = Story.Url.Split(new char[]{'/'});
+			string CurrentFolderUrl = "";
+
+			for (int i = 1; i < UrlComponents.Length; i++)
+			{
+				CurrentFolderUrl += "/" + UrlComponents[i];
+				EnsureStoryFolderExistsInSpace(CurrentFolderUrl, Space, Story);
+			}
+		}
+
+		public void	EnsureStoryFolderExistsInSpace (string FolderUrl, SpaceEntity TargetSpace, StoryEntity SourceContextStory)
+		{
+			EchoDebug("FolderUrl", FolderUrl);
+			SpaceCache TargetSpaceCache = GetSpaceCacheById(TargetSpace.SpaceId);
+			
+			if (!TargetSpaceCache.ContainsStoryByUrl(FolderUrl))
+			{
+				string TargetParentUrl = UrlUtil.GetParentUrl(FolderUrl);
+				EchoDebug("TargetParentUrl", TargetParentUrl);
+
+				string TargetParentId = null;
+
+				if (TargetParentUrl != "/")
+				{
+					StoryEntity ParentStory = TargetSpaceCache.GetStoryByUrl(TargetParentUrl);
+					TargetParentId = ParentStory.StoryId;
+				}
+
+				//
+				// IF WE ARE COPYING FROM A FILE THEN THE SPACE ID WILL BE NULL.
+				// THIS SHOULD NOT MATTER BECAUSE ...
+				//
+				SpaceCache SourceSpaceCache = GetSpaceCacheById(SourceContextStory.SpaceId);
+
+				EchoDebug("FolderUrl", FolderUrl);
+				StoryEntity SourceStory = SourceSpaceCache.GetStoryByUrl(FolderUrl);
+
+				StoryEntity Story = new StoryEntity();
+				Story.Name = SourceStory.Name;
+				Story.ParentId = TargetParentId;
+				Story.Slug = SourceStory.Slug;
+				Story.Url = FolderUrl;
+				Story.SpaceId = TargetSpace.SpaceId;
+				Story.IsFolder = true;
+				Story.Data = StoryEntityDataFactory.CreateData(Story);
+				CreateFolderStoryInSpace(Story, TargetSpace);
+			}
+		}
+
+		public void	CreateFolderStoryInSpace (StoryEntity SourceStory, SpaceEntity TargetSpace)
+		{
+			SpaceCache TargetSpaceCache = GetSpaceCacheById(TargetSpace.SpaceId);
+
+			string RequestPath = ManagementPathFactory.CreateStoriesPath(TargetSpace.SpaceId);
+			EchoAction($"API POST {RequestPath}. Creating folder {StoryFormatter.FormatHumanFriendly(SourceStory)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
+
+			string RequestBody = JsonFormatter.FormatIndented(SourceStory.Data);
+			EchoDebug("RequestBody", RequestBody);
+
+			try
+			{
+				string ResponseString = GetManagementWebClient().PostJson(RequestPath, RequestBody);
+				EchoDebug("ResponseString", ResponseString);
+
+				StoryEntity CreatedStory = StoryParser.Parse(JsonParser.ParseAsDynamic(ResponseString).story);
+				TargetSpaceCache.InsertStory(CreatedStory);
+			}
+			catch (WebException E)
+			{
+				HttpWebResponse Response = (HttpWebResponse)E.Response;
+				int StatusCode = (int)Response.StatusCode;
+				string ResponseString = ExtractStringResponse(E);
+				EchoDebug("StatusCode", $"{StatusCode}");
+				EchoDebug("ResponseString", ResponseString);
+
+				if (StatusCode == 422)
+				{
+					string Message = $"Could not create folder {StoryFormatter.FormatHumanFriendly(SourceStory)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}. {ResponseString}";
+					EchoError(Message);
+					EchoDebug(E);
+				}
+
+				throw;
+			}
 		}
 
 		public override object VisitIntExpr ([NotNull] BlokScriptGrammarParser.IntExprContext Context)
@@ -2660,58 +3009,38 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitStoriesInputLocation ([NotNull] BlokScriptGrammarParser.StoriesInputLocationContext Context)
 		{
 			/*
-			storiesInputLocation: 'local' 'cache'
-				| fileSpec
-				| filesSpec
-				| spaceSpec
-				| shortSpaceSpec
-				;
+			storiesInputLocation: fileSpec | longOrShortSpaceSpec;
 			*/
-			if (Context.spaceSpec() != null)
+			if (Context.longOrShortSpaceSpec() != null)
 			{
 				StoriesInputLocation Location = new StoriesInputLocation();
 				Location.FromSpace = true;
-				Location.Space = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec());
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
 				return Location;
 			}
-			else if (Context.shortSpaceSpec() != null)
+			else if (Context.fileSpec() != null)
 			{
 				StoriesInputLocation Location = new StoriesInputLocation();
-				Location.FromSpace = true;
-				Location.Space = (SpaceEntity)VisitShortSpaceSpec(Context.shortSpaceSpec());
+				Location.FromFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
 				return Location;
 			}
+
 			else
-				throw new NotImplementedException("VisitStoriesInputLocation");
+				throw new NotImplementedException();
 		}
 
 		public override object VisitStoriesOutputLocation ([NotNull] BlokScriptGrammarParser.StoriesOutputLocationContext Context)
 		{
 			/*
-			storiesOutputLocation: 'console'
-				| 'local' 'cache'
-				| fileSpec
-				| filesSpec
-				| spaceSpec
-				| shortSpaceSpec
-				;
+			storiesOutputLocation: 'console' | fileSpec | longOrShortSpaceSpec;
 			*/
 			StoriesOutputLocation Location = new StoriesOutputLocation();
 
-			if (Context.spaceSpec() != null)
+			if (Context.longOrShortSpaceSpec() != null)
 			{
 				Location.ToSpace = true;
-				Location.Space = (SpaceEntity)VisitSpaceSpec(Context.spaceSpec());
-			}
-			else if (Context.shortSpaceSpec() != null)
-			{
-				Location.ToSpace = true;
-				Location.Space = (SpaceEntity)VisitShortSpaceSpec(Context.shortSpaceSpec());
-			}
-			else if (Context.filesSpec() != null)
-			{
-				Location.ToFiles = true;
-				//Location.F = (string)VisitFilesSpec(Context.filesSpec());
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
 			}
 			else if (Context.fileSpec() != null)
 			{
@@ -4116,25 +4445,15 @@ namespace BlokScript.BlokScriptApp
 			*/
 			SpaceEntity SourceSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
 
-			//
-			// GET ALL BLOCKS.
-			//
 			BlockSchemaEntity[] Blocks = GetBlocksInSpace(SourceSpace.SpaceId);
 
-			//
-			// APPLY THE CONSTRAINT.
-			//
 			if (Context.blockConstraintExprList() != null)
 			{
 				BlockConstraint Constraint = (BlockConstraint)VisitBlockConstraintExprList(Context.blockConstraintExprList());
 				Blocks = Constraint.Evaluate(Blocks);
 			}
 
-			//
-			// DELETE THE BLOCKS.
-			//
 			DeleteBlocks(Blocks);
-
 			return null;
 		}
 
@@ -4413,6 +4732,12 @@ namespace BlokScript.BlokScriptApp
 			/*
 			shortSpaceSpec: INTLITERAL | STRINGLITERAL;
 			*/
+
+			//
+			// SINCE WE ARE GETTING A SPACE, WE START BY GETTING ALL SPACES.
+			//
+			EnsureSpaceDictsLoaded();
+
 			Regex IdRegex = new Regex("^[0-9]+$");
 			Regex CopiedRegex = new Regex("^#[0-9]+$");
 
@@ -4460,11 +4785,6 @@ namespace BlokScript.BlokScriptApp
 			}
 			else
 				throw new NotImplementedException();
-
-			//
-			// SINCE WE ARE GETTING A SPACE, WE START BY GETTING ALL SPACES.
-			//
-			EnsureSpaceDictsLoaded();
 
 			if (SpaceId != null)
 			{
@@ -4571,7 +4891,32 @@ namespace BlokScript.BlokScriptApp
 		{
 			string RequestPath = ManagementPathFactory.CreateComponentPath(Block.BlockId, Block.SpaceId);
 			EchoAction($"API DELETE {RequestPath}. Deleting block {BlockFormatter.FormatHumanFriendly(Block)} from space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Block.SpaceId))}.");
-			GetManagementWebClient().Delete(RequestPath, "");
+
+			try
+			{
+				GetManagementWebClient().Delete(RequestPath, "");
+			}
+			catch (WebException E)
+			{
+				HttpWebResponse Response = (HttpWebResponse)E.Response;
+				int StatusCode = (int)Response.StatusCode;
+				string ResponseString = ExtractStringResponse(E);
+
+				if (StatusCode == 422)
+				{
+					string Message = $"Could not delete block {BlockFormatter.FormatHumanFriendly(Block)} in space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Block.SpaceId))}. {ResponseString}";
+					EchoError(Message);
+					EchoDebug(E);
+				}
+
+				throw;
+			}
+		}
+
+		public string ExtractStringResponse (WebException E)
+		{
+			HttpWebResponse Response = (HttpWebResponse)E.Response;
+			return Encoding.UTF8.GetString(StreamCopier.CopyToNewByteArray(Response.GetResponseStream()));
 		}
 
 		public void DeleteBlockFromFileSystem (BlockSchemaEntity Block)
@@ -4601,6 +4946,11 @@ namespace BlokScript.BlokScriptApp
 		public SpaceEntity GetSpaceById (string SpaceId)
 		{
 			return _SpaceCacheByIdDict[SpaceId].Space;
+		}
+
+		public SpaceEntity GetSpaceByName (string SpaceName)
+		{
+			return _SpaceCacheByNameDict[SpaceName].Space;
 		}
 
 		public SpaceCache GetSpaceCacheByName (string SpaceName)
@@ -4720,24 +5070,51 @@ namespace BlokScript.BlokScriptApp
 		{
 			SpaceEntity Space = TargetSpaceCache.Space;
 			string SpaceId = Space.SpaceId;
+			int Page = 1;
+			int RequestedPageSize = 1000;
+			int ActualPageSize;
+			int TotalStories = 0;
 
-			string RequestPath = ManagementPathFactory.CreateStoriesPath(SpaceId);
+			do
+			{
+				StoryEntity[] Stories = GetStoryPage(SpaceId, Page, RequestedPageSize);
+				ActualPageSize = Stories.Length;
+				TotalStories += ActualPageSize;
+
+				EchoVerbose($"Caching {ActualPageSize} stories in space {SpaceFormatter.FormatHumanFriendly(Space)}.");
+
+				foreach (StoryEntity Story in Stories)
+				{
+					TargetSpaceCache.InsertStory(Story);
+				}
+			}
+			while (ActualPageSize == RequestedPageSize);
+
+			EchoVerbose($"Cached a total of {TotalStories} stories in space {SpaceFormatter.FormatHumanFriendly(Space)}.");
+
+			TargetSpaceCache.StoriesLoaded = true;
+		}
+
+		public StoryEntity[] GetStoryPage (string SpaceId, int Page, int RequestedPageSize)
+		{
+			SpaceEntity Space = GetSpaceById(SpaceId);
+
+			string RequestPath = ManagementPathFactory.CreatePagedStoriesPath(SpaceId, Page, RequestedPageSize);
 			EchoAction($"API GET {RequestPath}. Caching stories in space {SpaceFormatter.FormatHumanFriendly(Space)}.");
+
 			string ResponseString = GetManagementWebClient().GetString(RequestPath);
+			EchoDebug("ResponseString", ResponseString);
 
 			StoryEntity[] Stories = StoriesResponseReader.ReadResponseString(ResponseString);
 
 			foreach (StoryEntity Story in Stories)
 			{
-				Story.SpaceId = TargetSpaceCache.SpaceId;
+				Story.SpaceId = SpaceId;
 				Story.DataLocation = BlokScriptEntityDataLocation.Server;
 				Story.ServerPath = RequestPath;
-				TargetSpaceCache.InsertStory(Story);
 			}
 
-			EchoVerbose($"Cached {Stories.Length} stories in space {SpaceFormatter.FormatHumanFriendly(Space)}.");
-
-			TargetSpaceCache.StoriesLoaded = true;
+			return Stories;
 		}
 
 		public void LoadSpaceCacheDatasources (SpaceCache TargetSpaceCache)

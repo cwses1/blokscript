@@ -27,6 +27,12 @@
 			return $"/v1/spaces/{SpaceId}/stories";
 		}
 
+
+		public static string CreatePagedStoriesPath (string SpaceId, int PageNumber, int PageSize)
+		{
+			return $"/v1/spaces/{SpaceId}/stories?page={PageNumber}&per_page={PageSize}";
+		}
+
 		public static string CreateStoryPath (string StoryId, string SpaceId)
 		{
 			return $"/v1/spaces/{SpaceId}/stories/{StoryId}";

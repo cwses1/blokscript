@@ -189,6 +189,8 @@
     <Compile Include="Common\DatasourceEntryConstraintDataType.cs" />
     <Compile Include="Common\DatasourceEntryConstraintField.cs" />
     <Compile Include="Common\DatasourceEntryConstraintOperator.cs" />
+    <Compile Include="Common\LocalFileTargetSpaceId.cs" />
+    <Compile Include="Common\LocalFileSourceSpaceId.cs" />
     <Compile Include="Common\RealDataLocation.cs" />
     <Compile Include="Common\SpacesOutputLocation.cs" />
     <Compile Include="Common\StoryConstraintDataType.cs" />
@@ -206,6 +208,8 @@
     <Compile Include="Entities\SpaceEntity.cs" />
     <Compile Include="Entities\SpaceOutputLocation.cs" />
     <Compile Include="Entities\StoryEntity.cs" />
+    <Compile Include="EntityCloners\StoryCloner.cs" />
+    <Compile Include="EntityDataFactories\StoryEntityDataFactory.cs" />
     <Compile Include="EntityDataFactories\DatasourceEntityDataFactory.cs" />
     <Compile Include="EntityDataFactories\DatasourceEntryEntityDataFactory.cs" />
     <Compile Include="FileReaders\BlockSchemaEntityFileReader.cs" />
@@ -214,6 +218,7 @@
     <Compile Include="FileReaders\JsonFileReader.cs" />
     <Compile Include="FileReaders\SpaceFileReader.cs" />
     <Compile Include="FileReaders\DatasourceEntriesFileReader.cs" />
+    <Compile Include="FileReaders\StoriesFileReader.cs" />
     <Compile Include="FileReaders\StoryEntityFileReader.cs" />
     <Compile Include="FileReaders\StringFileReader.cs" />
     <Compile Include="FileWriters\JsonFileWriter.cs" />
@@ -253,6 +258,7 @@
     <Compile Include="Parsers\DatasourceParser.cs" />
     <Compile Include="Parsers\JsonParser.cs" />
     <Compile Include="Parsers\SpaceParser.cs" />
+    <Compile Include="Parsers\StoriesParser.cs" />
     <Compile Include="Parsers\StoryParser.cs" />
     <Compile Include="Parser\BlokScriptGrammarBaseVisitor.cs" />
     <Compile Include="Parser\BlokScriptGrammarLexer.cs" />
@@ -287,6 +293,7 @@
     <Compile Include="Utils\SpaceLiteralTrimmer.cs" />
     <Compile Include="Utils\StringLiteralTrimmer.cs" />
     <Compile Include="Utils\TokenTrimmer.cs" />
+    <Compile Include="Utils\UrlUtil.cs" />
     <Compile Include="VariableNotDeclaredException.cs" />
     <Compile Include="TypeAssignmentException.cs" />
     <Compile Include="SymbolConflictException.cs" />

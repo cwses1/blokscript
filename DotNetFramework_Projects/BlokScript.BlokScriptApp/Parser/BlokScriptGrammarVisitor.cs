@@ -436,12 +436,6 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStoryOutputLocation([NotNull] BlokScriptGrammarParser.StoryOutputLocationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.filesSpec"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFilesSpec([NotNull] BlokScriptGrammarParser.FilesSpecContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.spaceOutputLocation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
