@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using BlokScript.Common;
+using BlokScript.Models;
 using BlokScript.Entities;
 
 namespace BlokScript.Formatters
@@ -13,13 +13,11 @@ namespace BlokScript.Formatters
 			OutputBuilder.AppendLine("-----");
 			OutputBuilder.AppendLine($"BlockOutputLocation");
 			OutputBuilder.AppendLine("-----");
-			OutputBuilder.AppendLine($"ToConsole: {TargetLocation.ToConsole}");
-			OutputBuilder.AppendLine($"ToLocalCache: {TargetLocation.ToLocalCache}");
 			OutputBuilder.AppendLine($"ToFile: {TargetLocation.ToFile}");
 			OutputBuilder.AppendLine($"FilePath: {TargetLocation.FilePath}");
 			OutputBuilder.AppendLine($"ToSpace: {TargetLocation.ToSpace}");
 			OutputBuilder.AppendLine($"ToSpace: {TargetLocation.ToSpace}");
-			OutputBuilder.Append($"SpaceId: {TargetLocation.SpaceId}");
+			OutputBuilder.Append($"SpaceId: {TargetLocation.Space.SpaceId}");
 			return OutputBuilder.ToString();
 		}
 

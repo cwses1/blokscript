@@ -7,6 +7,11 @@ namespace BlokScript.Parsers
 {
 	public class BlockSchemaEntityParser
 	{
+		public static BlockSchemaEntity ParseDynamic (dynamic BlockJson)
+		{
+			return Parse(BlockJson);
+		}
+
 		public static BlockSchemaEntity Parse (dynamic BlockJson)
 		{
 			BlockSchemaEntity Block = new BlockSchemaEntity();

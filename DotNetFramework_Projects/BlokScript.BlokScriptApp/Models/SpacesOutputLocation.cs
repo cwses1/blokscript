@@ -1,9 +1,7 @@
-﻿namespace BlokScript.Common
+﻿namespace BlokScript.Models
 {
 	public class SpacesOutputLocation
 	{
-		public bool ToConsole;
-		public bool ToLocalCache;
 		public bool ToFile;
 		public string FilePath;
 	}

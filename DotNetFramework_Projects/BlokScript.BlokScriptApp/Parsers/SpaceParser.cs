@@ -6,8 +6,11 @@ namespace BlokScript.Parsers
 	{
 		public static SpaceEntity Parse (string ResponseString)
 		{
-			dynamic SpaceData = JsonParser.ParseAsDynamic(ResponseString).space;
+			return ParseDynamic(JsonParser.ParseAsDynamic(ResponseString).space);
+		}
 
+		public static SpaceEntity ParseDynamic (dynamic SpaceData)
+		{
 			SpaceEntity Space = new SpaceEntity();
 			Space.SpaceId = SpaceData.id.ToString();
 			Space.Name = SpaceData.name;

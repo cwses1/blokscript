@@ -31,6 +31,7 @@ using BlokScript.EntityDataFactories;
 using BlokScript.BlokScriptApp;
 using BlokScript.IO;
 using BlokScript.EntityCloners;
+using BlokScript.SymbolFactories;
 
 namespace BlokScript.BlokScriptApp
 {
@@ -716,70 +717,6 @@ namespace BlokScript.BlokScriptApp
 			return VisitChildren(Context);
 		}
 
-		public override object VisitBlockOutputLocation ([NotNull] BlokScriptGrammarParser.BlockOutputLocationContext Context) 
-		{
-			/*
-			blockOutputLocation: 'console'
-				| 'local' 'cache'
-				| 'file' STRINGLITERAL?
-				| spaceSpec
-				;
-			*/
-			BlockOutputLocation Location = new BlockOutputLocation();
-
-			if (Context.spaceSpec() != null)
-			{
-				Location.ToSpace = true;
-				Location.SpaceId = ((SpaceEntity)VisitSpaceSpec(Context.spaceSpec())).SpaceId;
-			}
-			else if (Context.GetChild(0).GetText() == "file")
-			{
-				Location.ToFile = true;
-
-				if (Context.STRINGLITERAL() != null)
-					Location.FilePath = StringLiteralTrimmer.Trim(Context.STRINGLITERAL().GetText());
-			}
-			else if (Context.GetChild(0).GetText() == "console")
-			{
-				Location.ToConsole = true;
-			}
-			else if (Context.GetChild(0).GetText() == "local")
-			{
-				Location.ToLocalCache = true;
-			}
-
-			return Location;
-		}
-
-		public override object VisitSpaceOutputLocation ([NotNull] BlokScriptGrammarParser.SpaceOutputLocationContext Context)
-		{
-			/*
-			spaceOutputLocation: 'console'
-				| 'local' 'cache'
-				| fileSpec
-				;
-			*/
-			SpaceOutputLocation Location = new SpaceOutputLocation();
-
-			if (Context.fileSpec() != null)
-			{
-				Location.ToFile = true;
-				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
-			}
-			else if (Context.GetChild(0).GetText() == "console")
-			{
-				Location.ToConsole = true;
-			}
-			else if (Context.GetChild(0).GetText() == "local")
-			{
-				Location.ToLocalCache = true;
-			}
-			else
-				throw new NotImplementedException("VisitSpaceOutputLocation");
-
-			return Location;
-		}
-
 		public override object VisitVarGetFrom ([NotNull] BlokScriptGrammarParser.VarGetFromContext Context)
 		{
 			/*                    1              1   
@@ -843,34 +780,10 @@ namespace BlokScript.BlokScriptApp
 
 		public void OutputSpacesToLocation (SpaceEntity[] Spaces, SpacesOutputLocation TargetLocation)
 		{
-			if (TargetLocation.ToConsole)
-				OutputSpacesToConsole(Spaces);
-			else if (TargetLocation.ToLocalCache)
-				OutputSpacesToLocalCache(Spaces);
-			else if (TargetLocation.ToFile)
+			if (TargetLocation.ToFile)
 				OutputSpacesToFile(Spaces, TargetLocation.FilePath);
 			else
 				throw new NotImplementedException();
-		}
-
-		public void OutputSpacesToConsole (SpaceEntity[] Spaces)
-		{
-			List<object> SpaceDataList = new List<object>();
-
-			foreach (SpaceEntity CurrentEntity in Spaces)
-			{
-				SpaceDataList.Add(CurrentEntity.Data);
-			}
-
-			Console.WriteLine(JsonFormatter.FormatIndented(SpaceDataList));
-		}
-
-		public void OutputSpacesToLocalCache (SpaceEntity[] Spaces)
-		{
-			foreach (SpaceEntity Space in Spaces)
-			{
-				CacheSpace(Space);
-			}
 		}
 
 		public void OutputSpacesToFile (SpaceEntity[] Spaces, string FilePath)
@@ -886,6 +799,8 @@ namespace BlokScript.BlokScriptApp
 			{
 				SpaceDataList.Add(CurrentEntity.Data);
 			}
+
+			EchoAction($"FILE WRITE: '{EffectiveFilePath}'. Writing {Spaces.Length} spaces to file '{EffectiveFilePath}'.");
 
 			using (StreamWriter SpaceWriter = new StreamWriter(EffectiveFilePath))
 			{
@@ -978,31 +893,6 @@ namespace BlokScript.BlokScriptApp
 			return StringLiteralTrimmer.Trim(Context.GetChild(0).GetText()) == "server" ? RealDataLocation.Server : RealDataLocation.LocalCache;
 		}
 
-		public override object VisitSpacesOutputLocation ([NotNull] BlokScriptGrammarParser.SpacesOutputLocationContext Context)
-		{
-			/*
-			spacesOutputLocation: 'console'
-				| 'local' 'cache'
-				| fileSpec
-				;
-			*/
-			SpacesOutputLocation Location = new SpacesOutputLocation();
-
-			if (Context.fileSpec() != null)
-			{
-				Location.ToFile = true;
-				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
-			}
-			else if (Context.GetChild(0).GetText() == "console")
-				Location.ToConsole = true;
-			else if (Context.GetChild(0).GetText() == "local")
-				Location.ToLocalCache = true;
-			else
-				throw new NotImplementedException("VisitSpacesOutputLocation");
-
-			return Location;
-		}
-
 		public override object VisitFileSpec ([NotNull] BlokScriptGrammarParser.FileSpecContext Context)
 		{
 			/*
@@ -1050,47 +940,26 @@ namespace BlokScript.BlokScriptApp
 
 		public void CopyBlocksToLocation (BlockSchemaEntity[] Blocks, BlocksOutputLocation TargetLocation)
 		{
-			if (TargetLocation.ToConsole)
-				CopyBlocksToConsole(Blocks);
-			else if (TargetLocation.ToLocalCache)
-				CopyBlocksToLocalCache(Blocks);
-			else if (TargetLocation.ToFile)
+			if (TargetLocation.ToFile)
 				CopyBlocksToFile(Blocks, TargetLocation.FilePath);
 			else if (TargetLocation.ToSpace)
-				CopyBlocksToSpace(Blocks, TargetLocation.SpaceId);
+				CopyBlocksToSpace(Blocks, TargetLocation.Space.SpaceId);
 			else
 				throw new NotImplementedException("CopyBlocksToLocation");
 		}
 
-		public void CopyBlocksToConsole (BlockSchemaEntity[] Blocks)
+		public void CopyBlocksToFile (BlockSchemaEntity[] Blocks, string FilePath)
 		{
 			List<object> BlockDataList = new List<object>();
 
-			foreach (BlockSchemaEntity CurrentEntity in Blocks)
+			foreach (BlockSchemaEntity Block in Blocks)
 			{
-				BlockDataList.Add(CurrentEntity.Data);
+				BlockDataList.Add(Block.Data);
 			}
 
-			Console.WriteLine(JsonFormatter.FormatIndented(BlockDataList));
-		}
-
-		public void CopyBlocksToLocalCache (BlockSchemaEntity[] Blocks)
-		{
-			foreach (BlockSchemaEntity CurrentEntity in Blocks)
-			{
-				SpaceCache CurrentSpaceCache = GetSpaceCacheById(CurrentEntity.SpaceId);
-				CurrentSpaceCache.BlockSchemaEntities[CurrentEntity.ComponentName] = CurrentEntity;
-			}
-		}
-
-		public void CopyBlocksToFile (BlockSchemaEntity[] Blocks, string FilePath)
-		{
 			using (StreamWriter TargetWriter = new StreamWriter(FilePath))
 			{
-				foreach (BlockSchemaEntity CurrentEntity in Blocks)
-				{
-					TargetWriter.WriteLine(JsonFormatter.FormatIndented(CurrentEntity.Data));
-				}
+				TargetWriter.WriteLine(JsonFormatter.FormatIndented(BlockDataList));
 			}
 		}
 
@@ -1366,39 +1235,6 @@ namespace BlokScript.BlokScriptApp
 			}
 
 			return null;
-		}
-
-		public override object VisitBlocksOutputLocation ([NotNull] BlokScriptGrammarParser.BlocksOutputLocationContext Context)
-		{
-			/*
-			blocksOutputLocation: 'console'
-				| 'local' 'cache'
-				| fileSpec
-				| longOrShortSpaceSpec
-				;
-			*/
-			BlocksOutputLocation Location = new BlocksOutputLocation();
-
-			if (Context.fileSpec() != null)
-			{
-				Location.ToFile = true;
-				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
-			}
-			else if (Context.longOrShortSpaceSpec() != null)
-			{
-				Location.ToSpace = true;
-				Location.SpaceId = ((SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec())).SpaceId;
-			}
-			else if (Context.GetChild(0).GetText() == "console")
-			{
-				Location.ToConsole = true;
-			}
-			else if (Context.GetChild(0).GetText() == "local")
-			{
-				Location.ToLocalCache = true;
-			}
-
-			return Location;
 		}
 
 		public override object VisitBlockConstraint ([NotNull] BlokScriptGrammarParser.BlockConstraintContext Context)
@@ -1684,39 +1520,6 @@ namespace BlokScript.BlokScriptApp
 			{
 				return (StoryEntity)_SymbolTableManager.GetSymbol(Context.VARID().GetText()).Value;
 			}
-		}
-
-		public override object VisitStoryOutputLocation([NotNull] BlokScriptGrammarParser.StoryOutputLocationContext Context)
-		{
-			/*
-			storyOutputLocation: 'console'
-				| 'local' 'cache'
-				| fileSpec
-				| spaceSpec
-				;
-			*/
-			StoryOutputLocation Location = new StoryOutputLocation();
-
-			if (Context.spaceSpec() != null)
-			{
-				Location.ToSpace = true;
-				Location.SpaceId = ((SpaceEntity)VisitSpaceSpec(Context.spaceSpec())).SpaceId;
-			}
-			else if (Context.fileSpec() != null)
-			{
-				Location.ToFile = true;
-				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
-			}
-			else if (Context.GetChild(0).GetText() == "console")
-			{
-				Location.ToConsole = true;
-			}
-			else if (Context.GetChild(0).GetText() == "local")
-			{
-				Location.ToLocalCache = true;
-			}
-
-			return Location;
 		}
 
 		public override object VisitPublishStoriesStatement([NotNull] BlokScriptGrammarParser.PublishStoriesStatementContext Context)
@@ -2256,13 +2059,38 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitCopyDatasourcesStatement([NotNull] BlokScriptGrammarParser.CopyDatasourcesStatementContext Context)
 		{
 			/*
-			copyDatasourcesStatement: 'copy' 'datasources' ('from' | 'in') longOrShortSpaceSpec 'to' longOrShortSpaceSpec ('where' datasourceConstraintExprList)?;
+			copyDatasourcesStatement: 'copy' 'datasources' ('from' | 'in') longOrShortSpaceSpec 'to' longOrShortSpaceSpec ('where' datasourceConstraintExprList)? datasourceCopyOptionList?;
 			*/
 			SpaceEntity SourceSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec()[0]);
 			EnsureDatasourcesAreLoadedIntoSpace(SourceSpace);
 
 			SpaceEntity TargetSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec()[1]);
 			EnsureDatasourcesAreLoadedIntoSpace(TargetSpace);
+
+			DatasourceCopyOptionSet CopyOptionSet = null;
+
+			if (Context.datasourceCopyOptionList() != null)
+			{
+				CopyOptionSet = new DatasourceCopyOptionSet();
+
+				DatasourceCopyOption[] CopyOptions = (DatasourceCopyOption[])VisitDatasourceCopyOptionList(Context.datasourceCopyOptionList());
+
+				foreach (DatasourceCopyOption CopyOption in CopyOptions)
+				{
+					if (CopyOption.CommandKeyword == "skip")
+					{
+						if (CopyOption.Param1 == "update" || CopyOption.Param1 == "updates")
+							CopyOptionSet.SkipUpdate = true;
+						else if (CopyOption.Param1 == "create" || CopyOption.Param1 == "creates")
+							CopyOptionSet.SkipCreate = true;
+					}
+					else if (CopyOption.CommandKeyword == "include")
+					{
+						if (CopyOption.Param1 == "entries")
+							CopyOptionSet.IncludeEntries = true;
+					}
+				}
+			}
 
 			DatasourceEntity[] SourceDatasources = GetDatasourcesInSpace(SourceSpace);
 
@@ -2272,19 +2100,80 @@ namespace BlokScript.BlokScriptApp
 				SourceDatasources = Constraint.Evaluate(SourceDatasources);
 			}
 
-			CopyDatasourcesToSpace(SourceDatasources, TargetSpace);
+			CopyDatasourcesToSpace(SourceDatasources, TargetSpace, CopyOptionSet);
 			return null;
 		}
 
-		public void CopyDatasourcesToSpace (DatasourceEntity[] SourceDatasources, SpaceEntity TargetSpace)
+		public override object VisitShortFileSpec ([NotNull] BlokScriptGrammarParser.ShortFileSpecContext Context)
 		{
-			foreach (DatasourceEntity Datasource in SourceDatasources)
+			/*
+			shortFileSpec: stringExpr;
+			*/
+			return VisitStringExpr(Context.stringExpr());
+		}
+
+		public void CopyDatasourcesToSpace (DatasourceEntity[] SourceDatasources, SpaceEntity TargetSpace, DatasourceCopyOptionSet CopyOptionSet)
+		{
+			foreach (DatasourceEntity SourceDatasource in SourceDatasources)
 			{
-				CreateDatasourceInSpace(Datasource, TargetSpace);
+				CopyDatasourceToSpace(SourceDatasource, TargetSpace, CopyOptionSet);
 			}
 		}
 
-		public void CreateDatasourceInSpace (DatasourceEntity SourceDatasource, SpaceEntity TargetSpace)
+		public void CopyDatasourceToSpace (DatasourceEntity SourceDatasource, SpaceEntity TargetSpace, DatasourceCopyOptionSet CopyOptionSet)
+		{
+			//
+			// CHECK IF THE DATASOURCE IS ALREADY IN THE TARGET SPACE.
+			//
+			SpaceCache TargetSpaceCache = GetSpaceCacheById(TargetSpace.SpaceId);
+			string DatasourceName = SourceDatasource.Name;
+			
+			if (TargetSpaceCache.ContainsDatasourceByName(DatasourceName))
+			{
+				//
+				// THE DATASOURCE ALREADY EXISTS IN THE TARGET SPACE.
+				//
+
+				//
+				// IF THE SKIP UPDATE COPY OPTION IS SPECIFIED THEN WE ARE DONE.
+				// TO DO: SPECIFY DATASOURCE UPDATE SKIP OR ENTRY UPDATE SKIP...HMMMM....
+				//
+				/*
+				if (CopyOptionSet.SkipUpdate)
+				{
+					EchoDebug("The datasource already exists. Skipping updates.");
+					return;
+				}
+				*/
+
+				//
+				// WHAT IF THE USER SPECIFIES THE DATASOURCE BY SLUG OR ID?
+				//
+				DatasourceEntity TargetDatasource = TargetSpaceCache.GetDatasourceByName(DatasourceName);
+
+				//
+				// COPY THE ENTRIES OVER IF DIRECTED.
+				//
+				if (CopyOptionSet.IncludeEntries)
+					CopyDatasourceEntriesFromDatasourceToDatasource(SourceDatasource, TargetDatasource);
+			}
+			else
+			{
+				//
+				// THIS IS A NEW DATASOURCE IN THE TARGET SPACE.
+				// CREATE IT.
+				//
+				if (CopyOptionSet.SkipCreate)
+				{
+					EchoDebug("The datasource is new.  Skipping create datasource");
+					return;
+				}
+
+				CreateDatasourceInSpace(SourceDatasource, TargetSpace, CopyOptionSet);
+			}
+		}
+
+		public void CreateDatasourceInSpace (DatasourceEntity SourceDatasource, SpaceEntity TargetSpace, DatasourceCopyOptionSet CopyOptionSet)
 		{
 			DatasourceEntity TargetDatasource = new DatasourceEntity();
 			TargetDatasource.Name = SourceDatasource.Name;
@@ -2328,6 +2217,58 @@ namespace BlokScript.BlokScriptApp
 			TargetDatasource.ServerPath = RequestPath;
 
 			GetSpaceCacheById(TargetSpace.SpaceId).InsertDatasource(TargetDatasource);
+
+			if (CopyOptionSet.IncludeEntries)
+				CopyDatasourceEntriesFromDatasourceToDatasource(SourceDatasource, TargetDatasource);
+		}
+
+		public void CopyDatasourceEntriesFromDatasourceToDatasource (DatasourceEntity SourceDatasource, DatasourceEntity TargetDatasource)
+		{
+			DatasourceEntryEntity[] SourceEntries = GetDatasourceEntriesFromDatasource(SourceDatasource);
+
+			//
+			// APPLY CONSTRAINTS?
+			//
+			/*
+			if (Context.datasourceEntryConstraintExprList() != null)
+			{
+				DatasourceEntryConstraint Constraint = (DatasourceEntryConstraint)VisitDatasourceEntryConstraintExprList(Context.datasourceEntryConstraintExprList());
+				SourceEntries = Constraint.Evaluate(SourceEntries);
+			}
+			*/
+
+			//
+			// COPY OPTIONS?
+			//
+			/*
+			DatasourceEntryCopyOptionSet CopyOptionSet = new DatasourceEntryCopyOptionSet();
+
+			if (Context.datasourceEntryCopyOptionList() != null)
+			{
+				DatasourceEntryCopyOption[] CopyOptions = (DatasourceEntryCopyOption[])VisitDatasourceEntryCopyOptionList(Context.datasourceEntryCopyOptionList());
+
+				foreach (DatasourceEntryCopyOption CopyOption in CopyOptions)
+				{
+					if (CopyOption.CommandKeyword == "skip")
+					{
+						if (CopyOption.Param1.StartsWith("update"))
+							CopyOptionSet.SkipUpdate = true;
+						else if (CopyOption.Param1.StartsWith("create"))
+							CopyOptionSet.SkipCreate = true;
+					}
+				}
+			}
+			*/
+
+			CopyEntriesToDatasource(SourceEntries, TargetDatasource, new DatasourceEntryCopyOptionSet());
+		}
+
+		public void CopyEntriesToDatasource(DatasourceEntryEntity[] SourceEntries, DatasourceEntity TargetDatasource, DatasourceEntryCopyOptionSet CopyOptionSet)
+		{
+			foreach (DatasourceEntryEntity SourceEntry in SourceEntries)
+			{
+				CopyEntryToDatasource(SourceEntry, TargetDatasource, new DatasourceEntryCopyOptionSet());
+			}
 		}
 
 		public void PersistDatasource (DatasourceEntity Datasource)
@@ -2618,6 +2559,115 @@ namespace BlokScript.BlokScriptApp
 			SpaceCache LocalSpaceCache = GetSpaceCacheById(LocalFileSourceSpaceId.Value);
 			LocalSpaceCache.InsertStories(Stories);
 			return Stories;
+		}
+
+		public SpaceEntity[] GetSpacesFromFile (string FilePath)
+		{
+			string EffectiveFilePath = FilePath;
+
+			if (EffectiveFilePath == null)
+				EffectiveFilePath = "spaces.json";
+
+			EchoDebug("EffectiveFilePath", EffectiveFilePath);
+
+			SpaceEntity[] Spaces = SpacesFileReader.Read(EffectiveFilePath);
+
+			foreach (SpaceEntity Space in Spaces)
+			{
+				Space.DataLocation = BlokScriptEntityDataLocation.FilePath;
+				Space.FilePath = EffectiveFilePath;
+				CacheSpace(Space);
+			}
+
+			return Spaces;
+		}
+
+		public BlockSchemaEntity[] GetBlocksFromFile (string FilePath)
+		{
+			string EffectiveFilePath = FilePath;
+
+			if (EffectiveFilePath == null)
+				EffectiveFilePath = "blocks.json";
+
+			EchoDebug("EffectiveFilePath", EffectiveFilePath);
+
+			BlockSchemaEntity[] Blocks = BlocksFileReader.Read(EffectiveFilePath);
+
+			foreach (BlockSchemaEntity Block in Blocks)
+			{
+				Block.SpaceId = LocalFileSourceSpaceId.Value;
+				Block.DataLocation = BlokScriptEntityDataLocation.FilePath;
+				Block.FilePath = EffectiveFilePath;
+			}
+
+			return Blocks;
+		}
+
+		public BlockSchemaEntity[] GetBlocksInFile (string FilePath)
+		{
+			return GetBlocksFromFile(FilePath);
+		}
+
+		public DatasourceEntity[] GetDatasourcesFromFile (string FilePath)
+		{
+			string EffectiveFilePath = FilePath;
+
+			if (EffectiveFilePath == null)
+				EffectiveFilePath = "blocks.json";
+
+			EchoDebug("EffectiveFilePath", EffectiveFilePath);
+
+			DatasourceEntity[] Datasources = DatasourcesFileReader.Read(EffectiveFilePath);
+
+			foreach (DatasourceEntity Datasource in Datasources)
+			{
+				Datasource.SpaceId = LocalFileSourceSpaceId.Value;
+				Datasource.DataLocation = BlokScriptEntityDataLocation.FilePath;
+				Datasource.FilePath = EffectiveFilePath;
+			}
+
+			return Datasources;
+		}
+
+		public DatasourceEntity[] GetDatasourcesInFile (string FilePath)
+		{
+			return GetDatasourcesFromFile(FilePath);
+		}
+
+		public String[] GetStringsFromFile (string FilePath)
+		{
+			string EffectiveFilePath = FilePath;
+
+			if (EffectiveFilePath == null)
+				EffectiveFilePath = "strings.json";
+
+			EchoDebug("EffectiveFilePath", EffectiveFilePath);
+
+			return StringsFileReader.Read(EffectiveFilePath);
+		}
+
+		public Regex[] GetRegexesFromFile (string FilePath)
+		{
+			string EffectiveFilePath = FilePath;
+
+			if (EffectiveFilePath == null)
+				EffectiveFilePath = "regexes.json";
+
+			EchoDebug("EffectiveFilePath", EffectiveFilePath);
+
+			return RegexesFileReader.Read(EffectiveFilePath);
+		}
+
+		public int[] GetInt32sFromFile (string FilePath)
+		{
+			string EffectiveFilePath = FilePath;
+
+			if (EffectiveFilePath == null)
+				EffectiveFilePath = "regexes.json";
+
+			EchoDebug("EffectiveFilePath", EffectiveFilePath);
+
+			return Int32sFileReader.Read(EffectiveFilePath);
 		}
 
 		public void CopyStoriesToConsole (StoryEntity[] SourceStories)
@@ -3033,7 +3083,7 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitStoriesOutputLocation ([NotNull] BlokScriptGrammarParser.StoriesOutputLocationContext Context)
 		{
 			/*
-			storiesOutputLocation: 'console' | fileSpec | longOrShortSpaceSpec;
+			storiesOutputLocation: fileSpec | longOrShortSpaceSpec;
 			*/
 			StoriesOutputLocation Location = new StoriesOutputLocation();
 
@@ -3047,16 +3097,8 @@ namespace BlokScript.BlokScriptApp
 				Location.ToFile = true;
 				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
 			}
-			else if (Context.GetChild(0).GetText() == "console")
-			{
-				Location.ToConsole = true;
-			}
-			else if (Context.GetChild(0).GetText() == "local")
-			{
-				Location.ToLocalCache = true;
-			}
 			else
-				throw new NotImplementedException("VisitStoriesOutputLocation");
+				throw new NotImplementedException();
 
 			return Location;
 		}
@@ -3897,7 +3939,7 @@ namespace BlokScript.BlokScriptApp
 			DatasourceEntriesSourceLocation SourceLocation = (DatasourceEntriesSourceLocation)VisitDatasourceEntriesSourceLocation(Context.datasourceEntriesSourceLocation());
 			DatasourceEntriesTargetLocation TargetLocation = (DatasourceEntriesTargetLocation)VisitDatasourceEntriesTargetLocation(Context.datasourceEntriesTargetLocation());
 
-			DatasourceEntryEntity[] SourceEntries = GetDatasourceEntriesFromFromLocation(SourceLocation);
+			DatasourceEntryEntity[] SourceEntries = GetDatasourceEntriesFromLocation(SourceLocation);
 
 			if (Context.datasourceEntryConstraintExprList() != null)
 			{
@@ -3938,34 +3980,39 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public DatasourceEntryEntity[] GetDatasourceEntriesFromFromLocation (DatasourceEntriesSourceLocation SourceLocation)
+		public DatasourceEntryEntity[] GetDatasourceEntriesFromLocation (DatasourceEntriesSourceLocation SourceLocation)
 		{
 			if (SourceLocation.FromDatasource)
-			{
-				DatasourceEntity SourceDatasource = SourceLocation.Datasource;
-				EnsureDatasourceHasEntriesLoaded(SourceDatasource);
-				return SourceDatasource.GetEntries();
-			}
+				return GetDatasourceEntriesFromDatasource(SourceLocation.Datasource);
 			else if (SourceLocation.FromFile)
-			{
-				string EffectiveFilePath = SourceLocation.FilePath;
-
-				if (EffectiveFilePath == null)
-					EffectiveFilePath = "datasource-entries.json";
-
-				string Extension = Path.GetExtension(EffectiveFilePath).ToLower();
-
-				if (Extension == "")
-					throw new NotImplementedException("Could not determine file media type for file '{EffectiveFilePath}'.");
-				else if (Extension == ".json")
-					return DatasourceEntriesFileReader.Read(EffectiveFilePath);
-				else if (Extension == ".csv")
-					return DatasourceEntriesCsvFileReader.Read(EffectiveFilePath);
-				else
-					throw new NotImplementedException("Unsupported media type for file '{EffectiveFilePath}'.");
-			}
+				return GetDatasourceEntriesFromFile(SourceLocation.FilePath);
 			else
 				throw new NotImplementedException();
+		}
+
+		public DatasourceEntryEntity[] GetDatasourceEntriesFromDatasource (DatasourceEntity SourceDatasource)
+		{
+			EnsureDatasourceHasEntriesLoaded(SourceDatasource);
+			return SourceDatasource.GetEntries();
+		}
+
+		public DatasourceEntryEntity[] GetDatasourceEntriesFromFile (string FilePath)
+		{
+			string EffectiveFilePath = FilePath;
+
+			if (EffectiveFilePath == null)
+				EffectiveFilePath = "datasource-entries.json";
+
+			string Extension = Path.GetExtension(EffectiveFilePath).ToLower();
+
+			if (Extension == "")
+				throw new NotImplementedException("Could not determine file media type for file '{EffectiveFilePath}'.");
+			else if (Extension == ".json")
+				return DatasourceEntriesFileReader.Read(EffectiveFilePath);
+			else if (Extension == ".csv")
+				return DatasourceEntriesCsvFileReader.Read(EffectiveFilePath);
+			else
+				throw new NotImplementedException("Unsupported media type for file '{EffectiveFilePath}'.");
 		}
 
 		public override object VisitDatasourceEntriesSourceLocation ([NotNull] BlokScriptGrammarParser.DatasourceEntriesSourceLocationContext Context)
@@ -4519,7 +4566,7 @@ namespace BlokScript.BlokScriptApp
 
 			Datasource.Data = DatasourceEntityDataFactory.CreateData(Datasource);
 
-			CreateDatasourceInSpace(Datasource, Space);
+			CreateDatasourceInSpace(Datasource, Space, new DatasourceCopyOptionSet());
 			return null;
 		}
 
@@ -4871,6 +4918,849 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
+		public override object VisitDatasourceCopyOptionList ([NotNull] BlokScriptGrammarParser.DatasourceCopyOptionListContext Context)
+		{
+			/*
+			datasourceCopyOptionList: datasourceCopyOption (',' datasourceCopyOptionList)?;
+			*/
+			List<DatasourceCopyOption> CopyOptionList = new List<DatasourceCopyOption>();
+			CopyOptionList.Add((DatasourceCopyOption)VisitDatasourceCopyOption(Context.datasourceCopyOption()));
+
+			if (Context.datasourceCopyOptionList() != null)
+				CopyOptionList.AddRange((DatasourceCopyOption[])VisitDatasourceCopyOptionList(Context.datasourceCopyOptionList()));
+
+			return CopyOptionList.ToArray();
+		}
+
+		public override object VisitDatasourceCopyOption ([NotNull] BlokScriptGrammarParser.DatasourceCopyOptionContext Context)
+		{
+			/*
+			datasourceCopyOption: 'skip' ('update' | 'updates' | 'create' | 'creates');
+			*/
+			DatasourceCopyOption CopyOption = new DatasourceCopyOption();
+			CopyOption.CommandKeyword = Context.GetChild(0).GetText();
+			CopyOption.Param1 = Context.GetChild(1).GetText();
+			return CopyOption;
+		}
+
+		public override object VisitStoryInputLocation([NotNull] BlokScriptGrammarParser.StoryInputLocationContext Context)
+		{
+			/*
+			storyInputLocation: fileSpec | longOrShortSpaceSpec;
+			*/
+			StoryInputLocation Location = new StoryInputLocation();
+
+			if (Context.longOrShortSpaceSpec() != null)
+			{
+				Location.FromSpace = true;
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+			}
+			else if (Context.fileSpec() != null)
+			{
+				Location.FromFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			}
+			else
+				throw new NotImplementedException();
+
+			return Location;
+		}
+
+		public override object VisitStoryOutputLocation([NotNull] BlokScriptGrammarParser.StoryOutputLocationContext Context)
+		{
+			/*
+			storyOutputLocation: fileSpec | longOrShortSpaceSpec;
+			*/
+			StoryOutputLocation Location = new StoryOutputLocation();
+
+			if (Context.longOrShortSpaceSpec() != null)
+			{
+				Location.ToSpace = true;
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+			}
+			else if (Context.fileSpec() != null)
+			{
+				Location.ToFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			}
+			else
+				throw new NotImplementedException();
+
+			return Location;
+		}
+
+		public override object VisitSpaceInputLocation([NotNull] BlokScriptGrammarParser.SpaceInputLocationContext Context)
+		{
+			/*
+			spaceInputLocation: fileSpec;
+			*/
+			SpaceInputLocation Location = new SpaceInputLocation();
+			Location.FromFile = true;
+			Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			return Location;
+		}
+
+		public override object VisitSpaceOutputLocation([NotNull] BlokScriptGrammarParser.SpaceOutputLocationContext Context)
+		{
+			/*
+			spaceOutputLocation: fileSpec;
+			*/
+			SpaceOutputLocation Location = new SpaceOutputLocation();
+			Location.ToFile = true;
+			Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			return Location;
+		}
+
+		public override object VisitSpacesInputLocation([NotNull] BlokScriptGrammarParser.SpacesInputLocationContext Context)
+		{
+			/*
+			spacesInputLocation: fileSpec;
+			*/
+			SpacesInputLocation Location = new SpacesInputLocation();
+			Location.FromFile = true;
+			Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			return Location;
+		}
+
+		public override object VisitSpacesOutputLocation([NotNull] BlokScriptGrammarParser.SpacesOutputLocationContext Context)
+		{
+			/*
+			spacesOutputLocation: fileSpec | shortFileSpec;
+			*/
+			SpacesOutputLocation Location = new SpacesOutputLocation();
+			Location.ToFile = true;
+
+			if (Context.fileSpec() != null)
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			else
+				Location.FilePath = (string)VisitShortFileSpec(Context.shortFileSpec());
+
+			return Location;
+		}
+
+		public override object VisitBlockInputLocation([NotNull] BlokScriptGrammarParser.BlockInputLocationContext Context)
+		{
+			/*
+			blockInputLocation: fileSpec | longOrShortSpaceSpec;
+			*/
+			BlockInputLocation Location = new BlockInputLocation();
+
+			if (Context.longOrShortSpaceSpec() != null)
+			{
+				Location.FromSpace = true;
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+			}
+			else if (Context.fileSpec() != null)
+			{
+				Location.FromFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			}
+			else
+				throw new NotImplementedException();
+
+			return Location;
+		}
+
+		public override object VisitBlockOutputLocation ([NotNull] BlokScriptGrammarParser.BlockOutputLocationContext Context)
+		{
+			/*
+			blockOutputLocation: fileSpec | longOrShortSpaceSpec;
+			*/
+			BlockOutputLocation Location = new BlockOutputLocation();
+
+			if (Context.longOrShortSpaceSpec() != null)
+			{
+				Location.ToSpace = true;
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+			}
+			else if (Context.fileSpec() != null)
+			{
+				Location.ToFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			}
+			else
+				throw new NotImplementedException();
+
+			return Location;
+		}
+
+		public override object VisitBlocksInputLocation([NotNull] BlokScriptGrammarParser.BlocksInputLocationContext Context)
+		{
+			/*
+			blocksInputLocation: fileSpec | longOrShortSpaceSpec;
+			*/
+			BlocksInputLocation Location = new BlocksInputLocation();
+
+			if (Context.longOrShortSpaceSpec() != null)
+			{
+				Location.FromSpace = true;
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+			}
+			else if (Context.fileSpec() != null)
+			{
+				Location.FromFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			}
+			else
+				throw new NotImplementedException();
+
+			return Location;
+		}
+
+		public override object VisitBlocksOutputLocation([NotNull] BlokScriptGrammarParser.BlocksOutputLocationContext Context)
+		{
+			/*
+			blocksOutputLocation: fileSpec | longOrShortSpaceSpec;
+			*/
+			BlocksOutputLocation Location = new BlocksOutputLocation();
+
+			if (Context.longOrShortSpaceSpec() != null)
+			{
+				Location.ToSpace = true;
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+			}
+			else if (Context.fileSpec() != null)
+			{
+				Location.ToFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			}
+			else
+				throw new NotImplementedException();
+
+			return Location;
+		}
+	
+		public override object VisitDatasourcesInputLocation([NotNull] BlokScriptGrammarParser.DatasourcesInputLocationContext Context)
+		{
+			/*
+			datasourcesInputLocation: fileSpec | longOrShortSpaceSpec;
+			*/
+			DatasourcesInputLocation Location = new DatasourcesInputLocation();
+
+			if (Context.longOrShortSpaceSpec() != null)
+			{
+				Location.FromSpace = true;
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+			}
+			else if (Context.fileSpec() != null)
+			{
+				Location.FromFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			}
+			else
+				throw new NotImplementedException();
+
+			return Location;
+		}
+
+		public override object VisitDatasourcesOutputLocation([NotNull] BlokScriptGrammarParser.DatasourcesOutputLocationContext Context)
+		{
+			/*
+			datasourcesOutputLocation: fileSpec | longOrShortSpaceSpec;
+			*/
+			DatasourcesOutputLocation Location = new DatasourcesOutputLocation();
+
+			if (Context.longOrShortSpaceSpec() != null)
+			{
+				Location.ToSpace = true;
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+			}
+			else if (Context.fileSpec() != null)
+			{
+				Location.ToFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			}
+			else
+				throw new NotImplementedException();
+
+			return Location;
+		}
+
+		public override object VisitDatasourceInputLocation([NotNull] BlokScriptGrammarParser.DatasourceInputLocationContext Context)
+		{
+			/*
+			datasourceInputLocation: fileSpec | longOrShortSpaceSpec;
+			*/
+			DatasourceInputLocation Location = new DatasourceInputLocation();
+
+			if (Context.longOrShortSpaceSpec() != null)
+			{
+				Location.FromSpace = true;
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+			}
+			else if (Context.fileSpec() != null)
+			{
+				Location.FromFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			}
+			else
+				throw new NotImplementedException();
+
+			return Location;
+		}
+
+		public override object VisitDatasourceOutputLocation([NotNull] BlokScriptGrammarParser.DatasourceOutputLocationContext Context)
+		{
+			/*
+			datasourceOutputLocation: fileSpec | longOrShortSpaceSpec;
+			*/
+			DatasourceOutputLocation Location = new DatasourceOutputLocation();
+
+			if (Context.longOrShortSpaceSpec() != null)
+			{
+				Location.ToSpace = true;
+				Location.Space = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec());
+			}
+			else if (Context.fileSpec() != null)
+			{
+				Location.ToFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			}
+			else
+				throw new NotImplementedException();
+
+			return Location;
+		}
+
+		public override object VisitDirSpec ([NotNull] BlokScriptGrammarParser.DirSpecContext Context)
+		{
+			/*
+			dirSpec: 'directory' (STRINGLITERAL | VARID);
+			*/
+			if (Context.STRINGLITERAL() != null)
+			{
+				return StringLiteralTrimmer.Trim(Context.STRINGLITERAL().GetText());
+			}
+			else if (Context.VARID() != null)
+			{
+				return _SymbolTableManager.GetSymbolValueAsString(Context.VARID().GetText());
+			}
+			else
+				return null;
+		}
+
+		public override object VisitForEachStatement ([NotNull] BlokScriptGrammarParser.ForEachStatementContext Context)
+		{
+			/*
+			forEachStatement: 'foreach' '(' typedVarDecl 'in' foreachEntityListForTypedVarDecl ')' '{' statementList '}'
+				| 'foreach' '(' untypedVarDecl 'in' foreachEntityListForUntypedVarDecl ')' '{' statementList '}'
+				;
+			*/
+
+			//
+			// CREATE A NEW SCOPE FOR THE FOREACH STATEMENT.
+			//
+			_SymbolTableManager.CreateAndPushNewSymbolTable();
+
+			//
+			// CREATE THE ITERATION VARIABLE.
+			//
+			BlokScriptSymbol IterationSymbol = Context.typedVarDecl() != null ? (BlokScriptSymbol)VisitTypedVarDecl(Context.typedVarDecl()) : (BlokScriptSymbol)VisitUntypedVarDecl(Context.untypedVarDecl());
+
+			//
+			// GET THE LIST OF ENTITIES, REPRESENTED BY SYMBOLS (SYMBOLS ARE NOT IN ANY SYMBOL TABLE).
+			// IN THIS CONTEXT, AN ENTITY COULD BE ANY VALID SYMBOL.
+			//
+			BlokScriptSymbol[] Symbols;
+			
+			if (Context.foreachEntityListForTypedVarDecl() != null)
+				Symbols = (BlokScriptSymbol[])VisitForeachEntityListForTypedVarDecl(Context.foreachEntityListForTypedVarDecl());
+			else
+				Symbols = (BlokScriptSymbol[])VisitForeachEntityListForUntypedVarDecl(Context.foreachEntityListForUntypedVarDecl());
+
+			foreach (BlokScriptSymbol Symbol in Symbols)
+			{
+				PerformSymbolAssignment(IterationSymbol, Symbol);
+				VisitStatementList(Context.statementList());
+			}
+
+			_SymbolTableManager.PopSymbolTable();
+			return null;
+		}
+
+		public void PerformSymbolAssignment (BlokScriptSymbol LeftSymbol, BlokScriptSymbol RightSymbol)
+		{
+			if (LeftSymbol.Type == BlokScriptSymbolType.NotAssigned || LeftSymbol.Type == RightSymbol.Type)
+			{
+				LeftSymbol.Type = RightSymbol.Type;
+				LeftSymbol.Value = RightSymbol.Value;
+			}
+			else
+				throw new TypeAssignmentException(LeftSymbol.Type, RightSymbol.Type);
+		}
+
+		public override object VisitForeachSpaceListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachSpaceListForTypedVarDeclContext Context)
+		{
+			/*
+			foreachSpaceListForTypedVarDecl: (fileSpec | spaceFileSpec | 'all'? 'spaces') ('where' spaceConstraintExprList)?;
+			*/
+			SpaceEntity[] Spaces;
+
+			if (Context.fileSpec() != null)
+				Spaces = GetSpacesFromFile((string)VisitFileSpec(Context.fileSpec()));
+			else if (Context.spaceFileSpec() != null)
+				Spaces = GetSpacesFromFile((string)VisitSpaceFileSpec(Context.spaceFileSpec()));
+			else
+				Spaces = GetSpacesFromServer();
+
+			/*
+			if (Context.spaceConstraintExprList() != null)
+				Spaces = ((SpaceConstraint)VisitSpaceConstraintExprList(Context.spaceConstraintExprList())).Evaluate(Spaces);
+			*/
+
+			return SpaceSymbolFactory.CreateSymbols(Spaces);
+		}
+
+		public override object VisitForeachSpaceListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachSpaceListForUntypedVarDeclContext Context)
+		{
+			/*
+			foreachSpaceListForUntypedVarDecl: (spaceFileSpec | 'all'? 'spaces') ('where' spaceConstraintExprList)?;
+			*/
+			SpaceEntity[] Spaces;
+
+			if (Context.spaceFileSpec() != null)
+				Spaces = GetSpacesFromFile((string)VisitSpaceFileSpec(Context.spaceFileSpec()));
+			else
+				Spaces = GetSpacesFromServer();
+
+			/*
+			if (Context.spaceConstraintExprList() != null)
+				Spaces = ((SpaceConstraint)VisitSpaceConstraintExprList(Context.spaceConstraintExprList())).Evaluate(Spaces);
+			*/
+
+			return SpaceSymbolFactory.CreateSymbols(Spaces);
+		}
+
+		public override object VisitForeachBlockListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachBlockListForTypedVarDeclContext Context)
+		{
+			/*
+			foreachBlockListForTypedVarDecl: (fileSpec | blockFileSpec | longOrShortSpaceSpec) ('where' blockConstraintExprList)?;
+			*/
+			BlockSchemaEntity[] Blocks;
+
+			if (Context.fileSpec() != null)
+				Blocks = GetBlocksFromFile((string)VisitFileSpec(Context.fileSpec()));
+			else if (Context.blockFileSpec() != null)
+				Blocks = GetBlocksFromFile((string)VisitBlockFileSpec(Context.blockFileSpec()));
+			else
+			{
+				Blocks = GetBlocksFromSpace((SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec()));
+			}
+
+			if (Context.blockConstraintExprList() != null)
+				Blocks = ((BlockConstraint)VisitBlockConstraintExprList(Context.blockConstraintExprList())).Evaluate(Blocks);
+
+			return BlockSymbolFactory.CreateSymbols(Blocks);
+		}
+
+		public override object VisitForeachBlockListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachBlockListForUntypedVarDeclContext Context)
+		{
+			/*
+			foreachBlockListForTypedVarDecl: (fileSpec | blockFileSpec | longOrShortSpaceSpec) ('where' blockConstraintExprList)?;
+			*/
+			BlockSchemaEntity[] Blocks;
+
+			if (Context.blockFileSpec() != null)
+				Blocks = GetBlocksFromFile((string)VisitBlockFileSpec(Context.blockFileSpec()));
+			else
+			{
+				Blocks = GetBlocksFromSpace((SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec()));
+			}
+
+			if (Context.blockConstraintExprList() != null)
+				Blocks = ((BlockConstraint)VisitBlockConstraintExprList(Context.blockConstraintExprList())).Evaluate(Blocks);
+
+			return BlockSymbolFactory.CreateSymbols(Blocks);
+		}
+
+		public override object VisitForeachDatasourceListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachDatasourceListForTypedVarDeclContext Context)
+		{
+			/*
+			foreachDatasourceListForTypedVarDecl: (fileSpec | datasourceFileSpec | longOrShortSpaceSpec) ('where' datasourceConstraintExprList)?;
+			*/
+			DatasourceEntity[] Datasources;
+
+			if (Context.fileSpec() != null)
+				Datasources = GetDatasourcesFromFile((string)VisitFileSpec(Context.fileSpec()));
+			else if (Context.datasourceFileSpec() != null)
+				Datasources = GetDatasourcesFromFile((string)VisitDatasourceFileSpec(Context.datasourceFileSpec()));
+			else
+			{
+				Datasources = GetDatasourcesFromSpace((SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec()));
+			}
+
+			if (Context.datasourceConstraintExprList() != null)
+				Datasources = ((DatasourceConstraint)VisitDatasourceConstraintExprList(Context.datasourceConstraintExprList())).Evaluate(Datasources);
+
+			return DatasourceSymbolFactory.CreateSymbols(Datasources);
+		}
+
+		public override object VisitForeachDatasourceListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachDatasourceListForUntypedVarDeclContext Context)
+		{
+			/*
+			foreachDatasourceListForUntypedVarDecl: (datasourceFileSpec | longOrShortSpaceSpec) ('where' datasourceConstraintExprList)?;
+			*/
+			DatasourceEntity[] Datasources;
+
+			if (Context.datasourceFileSpec() != null)
+				Datasources = GetDatasourcesFromFile((string)VisitDatasourceFileSpec(Context.datasourceFileSpec()));
+			else
+			{
+				Datasources = GetDatasourcesFromSpace((SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec()));
+			}
+
+			if (Context.datasourceConstraintExprList() != null)
+				Datasources = ((DatasourceConstraint)VisitDatasourceConstraintExprList(Context.datasourceConstraintExprList())).Evaluate(Datasources);
+
+			return DatasourceSymbolFactory.CreateSymbols(Datasources);
+		}
+
+		public override object VisitForeachDatasourceEntryListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachDatasourceEntryListForTypedVarDeclContext Context)
+		{
+			/*
+			foreachDatasourceEntryListForTypedVarDecl: (fileSpec | datasourceEntryFileSpec | longOrShortDatasourceSpec) ('where' datasourceEntryConstraintExprList)?;
+			*/
+			DatasourceEntryEntity[] DatasourceEntries;
+
+			if (Context.fileSpec() != null)
+				DatasourceEntries = GetDatasourceEntriesFromFile((string)VisitFileSpec(Context.fileSpec()));
+			else if (Context.datasourceEntryFileSpec() != null)
+				DatasourceEntries = GetDatasourceEntriesFromFile((string)VisitDatasourceEntryFileSpec(Context.datasourceEntryFileSpec()));
+			else
+				DatasourceEntries = GetDatasourceEntriesFromDatasource((DatasourceEntity)VisitLongOrShortDatasourceSpec(Context.longOrShortDatasourceSpec()));
+
+			if (Context.datasourceEntryConstraintExprList() != null)
+				DatasourceEntries = ((DatasourceEntryConstraint)VisitDatasourceEntryConstraintExprList(Context.datasourceEntryConstraintExprList())).Evaluate(DatasourceEntries);
+
+			return DatasourceEntrySymbolFactory.CreateSymbols(DatasourceEntries);
+		}
+
+		public override object VisitForeachDatasourceEntryListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachDatasourceEntryListForUntypedVarDeclContext Context)
+		{
+			/*
+			foreachDatasourceEntryListForUntypedVarDecl: (datasourceEntryFileSpec | longOrShortDatasourceSpec) ('where' datasourceEntryConstraintExprList)?;
+			*/
+			DatasourceEntryEntity[] DatasourceEntries;
+
+			if (Context.datasourceEntryFileSpec() != null)
+				DatasourceEntries = GetDatasourceEntriesFromFile((string)VisitDatasourceEntryFileSpec(Context.datasourceEntryFileSpec()));
+			else
+				DatasourceEntries = GetDatasourceEntriesFromDatasource((DatasourceEntity)VisitLongOrShortDatasourceSpec(Context.longOrShortDatasourceSpec()));
+
+			if (Context.datasourceEntryConstraintExprList() != null)
+				DatasourceEntries = ((DatasourceEntryConstraint)VisitDatasourceEntryConstraintExprList(Context.datasourceEntryConstraintExprList())).Evaluate(DatasourceEntries);
+
+			return DatasourceEntrySymbolFactory.CreateSymbols(DatasourceEntries);
+		}
+
+		public override object VisitForeachStoryListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachStoryListForTypedVarDeclContext Context)
+		{
+			/*
+			foreachStoryListForTypedVarDecl: (fileSpec | storyFileSpec | spaceSpec) ('where' storyConstraintExprList)?;
+			*/
+			StoryEntity[] Stories;
+
+			if (Context.fileSpec() != null)
+				Stories = GetStoriesFromFile((string)VisitFileSpec(Context.fileSpec()));
+			else if (Context.storyFileSpec() != null)
+				Stories = GetStoriesFromFile((string)VisitStoryFileSpec(Context.storyFileSpec()));
+			else
+				Stories = GetStoriesFromSpace((SpaceEntity)VisitSpaceSpec(Context.spaceSpec()));
+
+			if (Context.storyConstraintExprList() != null)
+				Stories = ((StoryConstraint)VisitStoryConstraintExprList(Context.storyConstraintExprList())).Evaluate(Stories);
+
+			return StorySymbolFactory.CreateSymbols(Stories);
+		}
+
+		public override object VisitForeachStoryListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachStoryListForUntypedVarDeclContext Context)
+		{
+			/*
+			foreachStoryListForUntypedVarDecl: (storyFileSpec | spaceSpec) ('where' storyConstraintExprList)?;
+			*/
+			StoryEntity[] Stories;
+
+			if (Context.storyFileSpec() != null)
+				Stories = GetStoriesFromFile((string)VisitStoryFileSpec(Context.storyFileSpec()));
+			else
+				Stories = GetStoriesFromSpace((SpaceEntity)VisitSpaceSpec(Context.spaceSpec()));
+
+			if (Context.storyConstraintExprList() != null)
+				Stories = ((StoryConstraint)VisitStoryConstraintExprList(Context.storyConstraintExprList())).Evaluate(Stories);
+
+			return StorySymbolFactory.CreateSymbols(Stories);
+		}
+
+		public override object VisitForeachStringListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachStringListForTypedVarDeclContext Context)
+		{
+			/*
+			foreachStringListForTypedVarDecl: fileSpec | 'string' fileSpec | stringExprList;
+			*/
+			string[] Strings;
+
+			if (Context.fileSpec() != null)
+				Strings = GetStringsFromFile((string)VisitFileSpec(Context.fileSpec()));
+			else
+				Strings = (string[])VisitStringExprList(Context.stringExprList());
+
+			return StringSymbolFactory.CreateSymbols(Strings);
+		}
+
+		public override object VisitForeachStringListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachStringListForUntypedVarDeclContext Context)
+		{
+			/*
+			foreachStringListForUntypedVarDecl: 'string' fileSpec | stringExprList;
+			*/
+			string[] Strings;
+
+			if (Context.fileSpec() != null)
+				Strings = GetStringsFromFile((string)VisitFileSpec(Context.fileSpec()));
+			else
+				Strings = (string[])VisitStringExprList(Context.stringExprList());
+
+			return StringSymbolFactory.CreateSymbols(Strings);
+		}
+
+		public override object VisitForeachRegexListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachRegexListForTypedVarDeclContext Context)
+		{
+			/*
+			foreachRegexListForTypedVarDecl: fileSpec | 'regex' fileSpec | regexExprList;
+			*/
+			Regex[] RegexArray;
+
+			if (Context.fileSpec() != null)
+				RegexArray = GetRegexesFromFile((string)VisitFileSpec(Context.fileSpec()));
+			else
+				RegexArray = (Regex[])VisitRegexExprList(Context.regexExprList());
+
+			return RegexSymbolFactory.CreateSymbols(RegexArray);
+		}
+
+		public override object VisitForeachRegexListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachRegexListForUntypedVarDeclContext Context)
+		{
+			/*
+			foreachRegexListForUntypedVarDecl: 'regex' fileSpec | regexExprList;
+			*/
+			Regex[] RegexArray;
+
+			if (Context.fileSpec() != null)
+				RegexArray = GetRegexesFromFile((string)VisitFileSpec(Context.fileSpec()));
+			else
+				RegexArray = (Regex[])VisitRegexExprList(Context.regexExprList());
+
+			return RegexSymbolFactory.CreateSymbols(RegexArray);
+		}
+
+		public override object VisitForeachIntegerListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachIntegerListForTypedVarDeclContext Context)
+		{
+			/*
+			foreachIntegerListForTypedVarDecl: fileSpec | 'int' fileSpec | intExprList;
+			*/
+			int[] Int32Array;
+
+			if (Context.fileSpec() != null)
+				Int32Array = GetInt32sFromFile((string)VisitFileSpec(Context.fileSpec()));
+			else
+				Int32Array = (int[])VisitIntExprList(Context.intExprList());
+
+			return Int32SymbolFactory.CreateSymbols(Int32Array);
+		}
+
+		public override object VisitForeachIntegerListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachIntegerListForUntypedVarDeclContext Context)
+		{
+			/*
+			foreachIntegerListForUntypedVarDecl: 'int' fileSpec | intExprList;
+			*/
+			int[] Int32Array;
+
+			if (Context.fileSpec() != null)
+				Int32Array = GetInt32sFromFile((string)VisitFileSpec(Context.fileSpec()));
+			else
+				Int32Array = (int[])VisitIntExprList(Context.intExprList());
+
+			return Int32SymbolFactory.CreateSymbols(Int32Array);
+		}
+
+		public override object VisitLongOrShortDatasourceSpec([NotNull] BlokScriptGrammarParser.LongOrShortDatasourceSpecContext Context)
+		{
+			/*
+			longOrShortDatasourceSpec: datasourceSpec | datasourceShortSpec;
+			*/
+			if (Context.datasourceShortSpec() != null)
+				return (DatasourceEntity)VisitDatasourceShortSpec(Context.datasourceShortSpec());
+
+			return (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
+		}
+
+		public override object VisitSpaceFileSpec([NotNull] BlokScriptGrammarParser.SpaceFileSpecContext Context)
+		{
+			/*
+			spaceFileSpec: 'space' fileSpec;
+			*/
+			return VisitFileSpec(Context.fileSpec());
+		}
+
+		public override object VisitBlockFileSpec([NotNull] BlokScriptGrammarParser.BlockFileSpecContext Context)
+		{
+			/*
+			blockFileSpec: 'block' fileSpec;
+			*/
+			return VisitFileSpec(Context.fileSpec());
+		}
+
+		public override object VisitDatasourceFileSpec([NotNull] BlokScriptGrammarParser.DatasourceFileSpecContext Context)
+		{
+			/*
+			datasourceFileSpec: 'datasource' fileSpec;
+			*/
+			return VisitFileSpec(Context.fileSpec());
+		}
+
+		public override object VisitDatasourceEntryFileSpec([NotNull] BlokScriptGrammarParser.DatasourceEntryFileSpecContext Context)
+		{
+			/*
+			datasourceEntryFileSpec: 'datasource entry' fileSpec;
+			*/
+			return VisitFileSpec(Context.fileSpec());
+		}
+
+		public override object VisitUntypedVarDecl([NotNull] BlokScriptGrammarParser.UntypedVarDeclContext Context)
+		{
+			/*
+			untypedVarDecl: 'var' VARID;
+			*/
+			BlokScriptSymbol Symbol = new BlokScriptSymbol();
+			Symbol.Name = Context.VARID().GetText();
+			Symbol.Type = BlokScriptSymbolType.NotAssigned;
+			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
+		}
+
+		public override object VisitDatasourceEntriesInputLocation ([NotNull] BlokScriptGrammarParser.DatasourceEntriesInputLocationContext Context)
+		{
+			/*
+			datasourceEntriesInputLocation: fileSpec | datasourceSpec;
+			*/
+			DatasourceEntriesInputLocation Location = new DatasourceEntriesInputLocation();
+
+			if (Context.fileSpec() != null)
+			{
+				Location.FromFile = true;
+				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
+			}
+			else
+			{
+				Location.FromDatasource = true;
+				Location.Datasource = (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
+			}
+
+			return Location;
+		}
+
+		public override object VisitSpaceVarDecl ([NotNull] BlokScriptGrammarParser.SpaceVarDeclContext Context)
+		{
+			/*
+			spaceVarDecl: 'space' VARID;
+			*/
+			BlokScriptSymbol Symbol = new BlokScriptSymbol();
+			Symbol.Name = Context.VARID().GetText();
+			Symbol.Type = BlokScriptSymbolType.Space;
+			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
+		}
+
+		public override object VisitBlockVarDecl ([NotNull] BlokScriptGrammarParser.BlockVarDeclContext Context)
+		{
+			/*
+			blockVarDecl: 'block' VARID;
+			*/
+			BlokScriptSymbol Symbol = new BlokScriptSymbol();
+			Symbol.Name = Context.VARID().GetText();
+			Symbol.Type = BlokScriptSymbolType.Block;
+			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
+		}
+
+		public override object VisitDatasourceVarDecl ([NotNull] BlokScriptGrammarParser.DatasourceVarDeclContext Context)
+		{
+			/*
+			datasourceVarDecl: 'datasource' VARID;
+			*/
+			BlokScriptSymbol Symbol = new BlokScriptSymbol();
+			Symbol.Name = Context.VARID().GetText();
+			Symbol.Type = BlokScriptSymbolType.Datasource;
+			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
+		}
+
+		public override object VisitDatasourceEntryVarDecl ([NotNull] BlokScriptGrammarParser.DatasourceEntryVarDeclContext Context)
+		{
+			/*
+			datasourceEntryVarDecl: 'datasource' 'entry' VARID;
+			*/
+			BlokScriptSymbol Symbol = new BlokScriptSymbol();
+			Symbol.Name = Context.VARID().GetText();
+			Symbol.Type = BlokScriptSymbolType.DatasourceEntry;
+			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
+		}
+
+		public override object VisitStoryVarDecl ([NotNull] BlokScriptGrammarParser.StoryVarDeclContext Context)
+		{
+			/*
+			storyVarDecl: 'story' VARID;
+			*/
+			BlokScriptSymbol Symbol = new BlokScriptSymbol();
+			Symbol.Name = Context.VARID().GetText();
+			Symbol.Type = BlokScriptSymbolType.Story;
+			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
+		}
+
+		public override object VisitStringVarDecl ([NotNull] BlokScriptGrammarParser.StringVarDeclContext Context)
+		{
+			/*
+			stringVarDecl: 'string' VARID;
+			*/
+			BlokScriptSymbol Symbol = new BlokScriptSymbol();
+			Symbol.Name = Context.VARID().GetText();
+			Symbol.Type = BlokScriptSymbolType.String;
+			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
+		}
+
+		public override object VisitRegexVarDecl ([NotNull] BlokScriptGrammarParser.RegexVarDeclContext Context)
+		{
+			/*
+			regexVarDecl: 'regex' VARID;
+			*/
+			BlokScriptSymbol Symbol = new BlokScriptSymbol();
+			Symbol.Name = Context.VARID().GetText();
+			Symbol.Type = BlokScriptSymbolType.Regex;
+			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
+		}
+
+		public override object VisitIntegerVarDecl ([NotNull] BlokScriptGrammarParser.IntegerVarDeclContext Context)
+		{
+			/*
+			integerVarDecl: 'int' VARID;
+			*/
+			BlokScriptSymbol Symbol = new BlokScriptSymbol();
+			Symbol.Name = Context.VARID().GetText();
+			Symbol.Type = BlokScriptSymbolType.Int32;
+			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
+		}
+
+		public override object VisitSpaceConstraintExprList([NotNull] BlokScriptGrammarParser.SpaceConstraintExprListContext Context)
+		{ return VisitChildren(Context); }
+
+		public override object VisitSpaceConstraintExpr([NotNull] BlokScriptGrammarParser.SpaceConstraintExprContext Context)
+		{ return VisitChildren(Context); }
+
+		public override object VisitSpaceConstraint([NotNull] BlokScriptGrammarParser.SpaceConstraintContext Context)
+		{ return VisitChildren(Context); }
+
+		public override object VisitStoryFileSpec ([NotNull] BlokScriptGrammarParser.StoryFileSpecContext Context)
+		{
+			/*
+			storyFileSpec: 'story' fileSpec;
+			*/
+			return VisitFileSpec(Context.fileSpec());
+		}
+
 		public void DeleteBlocks (BlockSchemaEntity[] Blocks)
 		{
 			foreach (BlockSchemaEntity Block in Blocks)
@@ -4956,11 +5846,7 @@ namespace BlokScript.BlokScriptApp
 		public SpaceCache GetSpaceCacheByName (string SpaceName)
 		{
 			if (!_SpaceCacheByNameDict.ContainsKey(SpaceName))
-			{
-				SpaceCache CreatedCache = new SpaceCache();
-				CreatedCache.SpaceName = SpaceName;
-				_SpaceCacheByNameDict[SpaceName] = CreatedCache;
-			}
+				return null;
 
 			return _SpaceCacheByNameDict[SpaceName];
 		}
@@ -4980,6 +5866,13 @@ namespace BlokScript.BlokScriptApp
 		public SpaceCache GetSpaceCacheWithSpaceDataLoadedByName (string SpaceName)
 		{
 			SpaceCache TargetSpaceCache = GetSpaceCacheByName(SpaceName);
+
+			if (TargetSpaceCache == null)
+			{
+				string ErrorMessage = $"Could not find space with name '{SpaceName}'.";
+				EchoError(ErrorMessage);
+				throw new SpaceObjectNotFoundException(ErrorMessage);
+			}
 
 			if (TargetSpaceCache.SpaceDataLoaded)
 				return TargetSpaceCache;
@@ -5034,14 +5927,21 @@ namespace BlokScript.BlokScriptApp
 			return GetSpaceCacheWithDataSourcesLoaded(Space.SpaceId).GetDatasources();
 		}
 
+		public DatasourceEntity[] GetDatasourcesFromSpace (SpaceEntity Space)
+		{
+			return GetDatasourcesInSpace(Space);
+		}
+
 		public void LoadSpaceCacheSpaceData (SpaceCache TargetSpaceCache)
 		{
 			SpaceEntity Space = TargetSpaceCache.Space;
 
 			string RequestPath = ManagementPathFactory.CreateSpacePath(TargetSpaceCache.SpaceId);
+			EchoDebug("RequestPath", RequestPath);
 
 			EchoAction($"API GET {RequestPath}. Caching space data for {SpaceFormatter.FormatHumanFriendly(Space)}.");
 			SpaceEntity TargetSpace = SpaceParser.Parse(GetManagementWebClient().GetString(RequestPath));
+
 			TargetSpace.DataLocation = BlokScriptEntityDataLocation.Server;
 			TargetSpace.ServerPath = RequestPath;
 
@@ -5119,11 +6019,13 @@ namespace BlokScript.BlokScriptApp
 
 		public void LoadSpaceCacheDatasources (SpaceCache TargetSpaceCache)
 		{
-			string RequestPath = ManagementPathFactory.CreateDatasourcesPath(TargetSpaceCache.SpaceId);
+			SpaceEntity TargetSpace = TargetSpaceCache.Space;
 
-			EchoAction($"API GET {RequestPath}. Getting datasources in space '{TargetSpaceCache.SpaceId}'.");
+			string RequestPath = ManagementPathFactory.CreateDatasourcesPath(TargetSpaceCache.SpaceId);
+			EchoAction($"API GET {RequestPath}. Getting datasources in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
 
 			string ResponseString = GetManagementWebClient().GetString(RequestPath);
+			EchoDebug("ResponseString", ResponseString);
 
 			DatasourceEntity[] Datasources = DatasourcesResponseReader.ReadResponseString(ResponseString, TargetSpaceCache.SpaceId);
 
@@ -5169,6 +6071,9 @@ namespace BlokScript.BlokScriptApp
 
 		public DatasourceEntryEntity[] GetDatasourceEntryPage (string SpaceId, DatasourceEntity Datasource, int Page, int RequestedPageSize)
 		{
+			EchoDebug("GetDatasourceEntryPage");
+			EchoDebug("SpaceId", SpaceId);
+
 			SpaceEntity Space = GetSpaceById(SpaceId);
 			string DatasourceId = Datasource.DatasourceId;
 
@@ -5288,6 +6193,11 @@ namespace BlokScript.BlokScriptApp
 			List<BlockSchemaEntity> BlockSchemaEntity = new List<BlockSchemaEntity>();
 			BlockSchemaEntity.AddRange(CurrentSpaceCache.BlockSchemaEntities.Values);
 			return BlockSchemaEntity.ToArray();
+		}
+
+		public BlockSchemaEntity[] GetBlocksFromSpace (SpaceEntity Space)
+		{
+			return GetBlocksInSpace(Space.SpaceId);
 		}
 
 		public void EnsureSpaceDictsLoaded ()

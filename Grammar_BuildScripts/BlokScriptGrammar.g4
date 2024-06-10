@@ -13,7 +13,9 @@ BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 
 script: statementList;
 
-statementList: (statement STATEMENTEND)+;
+statementList: (statement STATEMENTEND)+
+	| forEachStatement statementList?
+	;
 
 statement: loginStatement
 	| varStatement
@@ -43,6 +45,7 @@ statement: loginStatement
 	| copyDatasourceEntriesStatement
 	| syncDatasourceEntriesStatement
 	| updateDatasourcesStatement
+	| 'pass'
 	;
 
 createDatasourceStatement: 'create' 'datasource' (stringExpr | '(' datasourceUpdateList ')') ('for' | 'in') (spaceSpec | shortSpaceSpec);
@@ -69,7 +72,6 @@ copyDatasourceEntriesStatement: 'copy' 'datasource' 'entries' ('from' | 'in') da
 syncDatasourceEntriesStatement: 'sync' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesSourceLocation ('where' datasourceEntryConstraintExprList)?;
 
 datasourceEntryCopyOptionList: datasourceEntryCopyOption (',' datasourceEntryCopyOptionList)?;
-
 datasourceEntryCopyOption: 'skip' ('update' | 'updates' | 'create' | 'creates');
 
 datasourceEntryUpdateList: datasourceEntryUpdate (',' datasourceEntryUpdateList)?;
@@ -198,35 +200,27 @@ printLocalCacheStatement: 'print' 'local' 'cache';
 
 realDataLocation: ('server' | 'local' 'cache');
 
-spacesOutputLocation: 'console'
-	| 'local' 'cache'
-	| fileSpec
-	;
-
 fileSpec: 'file' (STRINGLITERAL | VARID)?;
 
-blockOutputLocation: 'console'
-	| 'local' 'cache'
-	| 'file' STRINGLITERAL?
-	| spaceSpec
-	;
+spaceInputLocation: fileSpec;
+spaceOutputLocation: fileSpec;
 
-blocksOutputLocation: 'console'
-	| 'local' 'cache'
-	| fileSpec
-	| longOrShortSpaceSpec
-	;
+spacesInputLocation: fileSpec;
+spacesOutputLocation: fileSpec | shortFileSpec;
 
-storyOutputLocation: 'console'
-	| 'local' 'cache'
-	| fileSpec
-	| spaceSpec
-	;
+shortFileSpec: stringExpr;
 
-spaceOutputLocation: 'console'
-	| 'local' 'cache'
-	| fileSpec
-	;
+blockInputLocation: fileSpec | longOrShortSpaceSpec;
+blockOutputLocation: fileSpec | longOrShortSpaceSpec;
+
+blocksInputLocation: fileSpec | longOrShortSpaceSpec;
+blocksOutputLocation: fileSpec | longOrShortSpaceSpec;
+
+storyInputLocation: fileSpec | longOrShortSpaceSpec;
+storyOutputLocation: fileSpec | longOrShortSpaceSpec;
+
+storiesInputLocation: fileSpec | longOrShortSpaceSpec;
+storiesOutputLocation: fileSpec | longOrShortSpaceSpec;
 
 varGetFrom: ('on' 'server' | 'in' fileSpec);
 
@@ -282,9 +276,6 @@ compareSpacesStatement: 'compare' spaceSpec 'and' spaceSpec;
 compareBlocksStatement: 'compare' blockSpec 'and' blockSpec;
 compareAllBlocksStatement: 'compare' 'all' 'blocks' 'in' spaceSpec 'and' spaceSpec;
 
-storiesInputLocation: fileSpec | longOrShortSpaceSpec;
-storiesOutputLocation: 'console' | fileSpec | longOrShortSpaceSpec;
-
 copyStoriesStatement: 'copy' 'stories' ('with' 'content')? ('in' | 'from') storiesInputLocation 'to' storiesOutputLocation ('where' storyConstraintExprList)?;
 publishStoriesStatement: 'publish' 'stories' ('in' | 'from') longOrShortSpaceSpec ('where' storyConstraintExprList)?;
 unpublishStoriesStatement: 'unpublish' 'stories' ('in' | 'from') longOrShortSpaceSpec ('where' storyConstraintExprList)?;
@@ -324,10 +315,15 @@ regexExpr: STRINGLITERAL | REGEXLITERAL | VARID;
 
 regexExprList: regexExpr (',' regexExprList)?;
 
-copyDatasourcesStatement: 'copy' 'datasources' ('from' | 'in') longOrShortSpaceSpec 'to' longOrShortSpaceSpec ('where' datasourceConstraintExprList)?;
+copyDatasourcesStatement: 'copy' 'datasources' ('from' | 'in') longOrShortSpaceSpec 'to' longOrShortSpaceSpec ('where' datasourceConstraintExprList)? datasourceCopyOptionList?;
 updateDatasourcesStatement: 'update' 'datasources' ('from' | 'in') longOrShortSpaceSpec 'set' datasourceUpdateList ('where' datasourceConstraintExprList)?;
 deleteDatasourcesStatement: 'delete' 'datasources' ('from' | 'in') longOrShortSpaceSpec ('where' datasourceConstraintExprList)?;
 syncDatasourcesStatement: 'copy' 'datasources' ('from' | 'in') longOrShortSpaceSpec 'to' longOrShortSpaceSpec ('where' datasourceConstraintExprList)?;
+
+datasourceCopyOptionList: datasourceCopyOption (',' datasourceCopyOptionList)?;
+datasourceCopyOption: 'skip' ('update' | 'updates' | 'create' | 'creates')
+	| 'include' 'entries'
+	;
 
 datasourceConstraintExprList: datasourceConstraintExpr (('and' | 'or') datasourceConstraintExprList)?;
 
@@ -348,7 +344,107 @@ datasourceConstraint: 'id' ('=' | '!=') intExpr
 	;
 
 stringExprList: stringExpr (',' stringExprList)?;
-
 stringExpr: (STRINGLITERAL | VARID) ('+' stringExpr)?;
 
-forEachStatement: 'foreach' '(' ')' '{' statementList '}';
+spaceConstraintExprList: spaceConstraintExpr (('and' | 'or') spaceConstraintExprList)?;
+
+spaceConstraintExpr: spaceConstraint (('and' | 'or') spaceConstraintExpr)?
+	| '(' spaceConstraint (('and' | 'or') spaceConstraintExpr)? ')'
+	| '(' spaceConstraintExpr (('and' | 'or') spaceConstraintExpr)? ')'
+	;
+
+spaceConstraint: 'id' ('=' | '!=') intExpr
+	| 'id' 'not'? 'in' '(' intExprList ')'
+	| 'name' ('=' | '!=') stringExpr
+	| 'name' 'not'? 'in' '(' stringExprList ')'
+	| 'name' ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
+	| 'name' 'not'? 'in' '(' regexExprList ')'
+	| 'name' 'not'? 'like' stringExpr
+	| 'name' ('starts' | 'does' 'not' 'start') 'with' stringExpr
+	| 'name' ('ends' | 'does' 'not' 'end') 'with' (stringExpr)
+	;
+
+datasourcesInputLocation: fileSpec | longOrShortSpaceSpec;
+datasourcesOutputLocation: fileSpec | longOrShortSpaceSpec;
+
+datasourceInputLocation: fileSpec | longOrShortSpaceSpec;
+datasourceOutputLocation: fileSpec | longOrShortSpaceSpec;
+
+dirSpec: 'directory' (STRINGLITERAL | VARID);
+
+forEachStatement: 'foreach' '(' typedVarDecl 'in' foreachEntityListForTypedVarDecl ')' '{' statementList '}'
+	| 'foreach' '(' untypedVarDecl 'in' foreachEntityListForUntypedVarDecl ')' '{' statementList '}'
+	;
+
+foreachEntityListForTypedVarDecl: foreachSpaceListForTypedVarDecl
+	| foreachBlockListForTypedVarDecl
+	| foreachDatasourceListForTypedVarDecl
+	| foreachDatasourceEntryListForTypedVarDecl
+	| foreachStoryListForTypedVarDecl
+	| foreachStringListForTypedVarDecl
+	| foreachRegexListForTypedVarDecl
+	| foreachIntegerListForTypedVarDecl;
+
+foreachEntityListForUntypedVarDecl: foreachSpaceListForUntypedVarDecl
+	| foreachBlockListForUntypedVarDecl
+	| foreachDatasourceListForUntypedVarDecl
+	| foreachDatasourceEntryListForUntypedVarDecl
+	| foreachStoryListForUntypedVarDecl
+	| foreachStringListForUntypedVarDecl
+	| foreachRegexListForUntypedVarDecl
+	| foreachIntegerListForUntypedVarDecl;
+
+foreachSpaceListForTypedVarDecl: (fileSpec | spaceFileSpec | 'all'? 'spaces') ('where' spaceConstraintExprList)?;
+foreachSpaceListForUntypedVarDecl: (spaceFileSpec | 'all'? 'spaces') ('where' spaceConstraintExprList)?;
+
+foreachBlockListForTypedVarDecl: (fileSpec | blockFileSpec | longOrShortSpaceSpec) ('where' blockConstraintExprList)?;
+foreachBlockListForUntypedVarDecl: (blockFileSpec | longOrShortSpaceSpec) ('where' blockConstraintExprList)?;
+
+foreachDatasourceListForTypedVarDecl: (fileSpec | datasourceFileSpec | longOrShortSpaceSpec) ('where' datasourceConstraintExprList)?;
+foreachDatasourceListForUntypedVarDecl: (datasourceFileSpec | longOrShortSpaceSpec) ('where' datasourceConstraintExprList)?;
+
+foreachDatasourceEntryListForTypedVarDecl: (fileSpec | datasourceEntryFileSpec | longOrShortDatasourceSpec) ('where' datasourceEntryConstraintExprList)?;
+foreachDatasourceEntryListForUntypedVarDecl: (datasourceEntryFileSpec | longOrShortDatasourceSpec) ('where' datasourceEntryConstraintExprList)?;
+
+foreachStoryListForTypedVarDecl: (fileSpec | storyFileSpec | spaceSpec) ('where' storyConstraintExprList)?;
+foreachStoryListForUntypedVarDecl: (storyFileSpec | spaceSpec) ('where' storyConstraintExprList)?;
+
+foreachStringListForTypedVarDecl: fileSpec | 'string' fileSpec | '[' stringExprList ']';
+foreachStringListForUntypedVarDecl: 'string' fileSpec | stringExprList;
+
+foreachRegexListForTypedVarDecl: fileSpec | 'regex' fileSpec | regexExprList;
+foreachRegexListForUntypedVarDecl: 'regex' fileSpec | regexExprList;
+
+foreachIntegerListForTypedVarDecl: fileSpec | 'int' fileSpec | intExprList;
+foreachIntegerListForUntypedVarDecl: 'int' fileSpec | intExprList;
+
+longOrShortDatasourceSpec: datasourceSpec | datasourceShortSpec;
+
+spaceFileSpec: 'space' fileSpec;
+blockFileSpec: 'block' fileSpec;
+datasourceFileSpec: 'datasource' fileSpec;
+datasourceEntryFileSpec: 'datasource entry' fileSpec;
+storyFileSpec: 'story' fileSpec;
+
+untypedVarDecl: 'var' VARID;
+
+typedVarDecl: spaceVarDecl
+	| blockVarDecl
+	| datasourceVarDecl
+	| datasourceEntryVarDecl
+	| storyVarDecl
+	| stringVarDecl
+	| regexVarDecl
+	| integerVarDecl
+	;
+
+spaceVarDecl: 'space' VARID;
+blockVarDecl: 'block' VARID;
+datasourceVarDecl: 'datasource' VARID;
+datasourceEntryVarDecl: 'datasource' 'entry' VARID;
+storyVarDecl: 'story' VARID;
+stringVarDecl: 'string' VARID;
+regexVarDecl: 'regex' VARID;
+integerVarDecl: 'int' VARID;
+
+datasourceEntriesInputLocation: fileSpec | datasourceSpec;

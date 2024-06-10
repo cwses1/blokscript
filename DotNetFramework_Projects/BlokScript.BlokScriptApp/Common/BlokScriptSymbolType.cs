@@ -2,6 +2,7 @@
 {
 	public enum BlokScriptSymbolType
 	{
+		NotAssigned,
 		String,
 		Space,
 		Block,

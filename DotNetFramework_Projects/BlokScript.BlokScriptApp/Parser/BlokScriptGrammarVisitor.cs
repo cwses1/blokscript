@@ -406,17 +406,47 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitRealDataLocation([NotNull] BlokScriptGrammarParser.RealDataLocationContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.fileSpec"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitFileSpec([NotNull] BlokScriptGrammarParser.FileSpecContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.spaceInputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSpaceInputLocation([NotNull] BlokScriptGrammarParser.SpaceInputLocationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.spaceOutputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSpaceOutputLocation([NotNull] BlokScriptGrammarParser.SpaceOutputLocationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.spacesInputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSpacesInputLocation([NotNull] BlokScriptGrammarParser.SpacesInputLocationContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.spacesOutputLocation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitSpacesOutputLocation([NotNull] BlokScriptGrammarParser.SpacesOutputLocationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.fileSpec"/>.
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.shortFileSpec"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitFileSpec([NotNull] BlokScriptGrammarParser.FileSpecContext context);
+	Result VisitShortFileSpec([NotNull] BlokScriptGrammarParser.ShortFileSpecContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.blockInputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBlockInputLocation([NotNull] BlokScriptGrammarParser.BlockInputLocationContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.blockOutputLocation"/>.
 	/// </summary>
@@ -424,11 +454,23 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitBlockOutputLocation([NotNull] BlokScriptGrammarParser.BlockOutputLocationContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.blocksInputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBlocksInputLocation([NotNull] BlokScriptGrammarParser.BlocksInputLocationContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.blocksOutputLocation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitBlocksOutputLocation([NotNull] BlokScriptGrammarParser.BlocksOutputLocationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.storyInputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStoryInputLocation([NotNull] BlokScriptGrammarParser.StoryInputLocationContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.storyOutputLocation"/>.
 	/// </summary>
@@ -436,11 +478,17 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStoryOutputLocation([NotNull] BlokScriptGrammarParser.StoryOutputLocationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.spaceOutputLocation"/>.
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.storiesInputLocation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitSpaceOutputLocation([NotNull] BlokScriptGrammarParser.SpaceOutputLocationContext context);
+	Result VisitStoriesInputLocation([NotNull] BlokScriptGrammarParser.StoriesInputLocationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.storiesOutputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStoriesOutputLocation([NotNull] BlokScriptGrammarParser.StoriesOutputLocationContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.varGetFrom"/>.
 	/// </summary>
@@ -550,18 +598,6 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitCompareAllBlocksStatement([NotNull] BlokScriptGrammarParser.CompareAllBlocksStatementContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.storiesInputLocation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitStoriesInputLocation([NotNull] BlokScriptGrammarParser.StoriesInputLocationContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.storiesOutputLocation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitStoriesOutputLocation([NotNull] BlokScriptGrammarParser.StoriesOutputLocationContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.copyStoriesStatement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -640,6 +676,18 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitSyncDatasourcesStatement([NotNull] BlokScriptGrammarParser.SyncDatasourcesStatementContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceCopyOptionList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceCopyOptionList([NotNull] BlokScriptGrammarParser.DatasourceCopyOptionListContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceCopyOption"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceCopyOption([NotNull] BlokScriptGrammarParser.DatasourceCopyOptionContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceConstraintExprList"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -670,10 +718,268 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStringExpr([NotNull] BlokScriptGrammarParser.StringExprContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.spaceConstraintExprList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSpaceConstraintExprList([NotNull] BlokScriptGrammarParser.SpaceConstraintExprListContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.spaceConstraintExpr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSpaceConstraintExpr([NotNull] BlokScriptGrammarParser.SpaceConstraintExprContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.spaceConstraint"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSpaceConstraint([NotNull] BlokScriptGrammarParser.SpaceConstraintContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourcesInputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourcesInputLocation([NotNull] BlokScriptGrammarParser.DatasourcesInputLocationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourcesOutputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourcesOutputLocation([NotNull] BlokScriptGrammarParser.DatasourcesOutputLocationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceInputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceInputLocation([NotNull] BlokScriptGrammarParser.DatasourceInputLocationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceOutputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceOutputLocation([NotNull] BlokScriptGrammarParser.DatasourceOutputLocationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.dirSpec"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDirSpec([NotNull] BlokScriptGrammarParser.DirSpecContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.forEachStatement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitForEachStatement([NotNull] BlokScriptGrammarParser.ForEachStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachEntityListForTypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachEntityListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachEntityListForTypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachEntityListForUntypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachEntityListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachEntityListForUntypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachSpaceListForTypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachSpaceListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachSpaceListForTypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachSpaceListForUntypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachSpaceListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachSpaceListForUntypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachBlockListForTypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachBlockListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachBlockListForTypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachBlockListForUntypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachBlockListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachBlockListForUntypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachDatasourceListForTypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachDatasourceListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachDatasourceListForTypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachDatasourceListForUntypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachDatasourceListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachDatasourceListForUntypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachDatasourceEntryListForTypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachDatasourceEntryListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachDatasourceEntryListForTypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachDatasourceEntryListForUntypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachDatasourceEntryListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachDatasourceEntryListForUntypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachStoryListForTypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachStoryListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachStoryListForTypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachStoryListForUntypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachStoryListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachStoryListForUntypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachStringListForTypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachStringListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachStringListForTypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachStringListForUntypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachStringListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachStringListForUntypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachRegexListForTypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachRegexListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachRegexListForTypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachRegexListForUntypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachRegexListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachRegexListForUntypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachIntegerListForTypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachIntegerListForTypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachIntegerListForTypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.foreachIntegerListForUntypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForeachIntegerListForUntypedVarDecl([NotNull] BlokScriptGrammarParser.ForeachIntegerListForUntypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.longOrShortDatasourceSpec"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLongOrShortDatasourceSpec([NotNull] BlokScriptGrammarParser.LongOrShortDatasourceSpecContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.spaceFileSpec"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSpaceFileSpec([NotNull] BlokScriptGrammarParser.SpaceFileSpecContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.blockFileSpec"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBlockFileSpec([NotNull] BlokScriptGrammarParser.BlockFileSpecContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceFileSpec"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceFileSpec([NotNull] BlokScriptGrammarParser.DatasourceFileSpecContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceEntryFileSpec"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceEntryFileSpec([NotNull] BlokScriptGrammarParser.DatasourceEntryFileSpecContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.storyFileSpec"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStoryFileSpec([NotNull] BlokScriptGrammarParser.StoryFileSpecContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.untypedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitUntypedVarDecl([NotNull] BlokScriptGrammarParser.UntypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.typedVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTypedVarDecl([NotNull] BlokScriptGrammarParser.TypedVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.spaceVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSpaceVarDecl([NotNull] BlokScriptGrammarParser.SpaceVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.blockVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBlockVarDecl([NotNull] BlokScriptGrammarParser.BlockVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceVarDecl([NotNull] BlokScriptGrammarParser.DatasourceVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceEntryVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceEntryVarDecl([NotNull] BlokScriptGrammarParser.DatasourceEntryVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.storyVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStoryVarDecl([NotNull] BlokScriptGrammarParser.StoryVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.stringVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStringVarDecl([NotNull] BlokScriptGrammarParser.StringVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.regexVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRegexVarDecl([NotNull] BlokScriptGrammarParser.RegexVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.integerVarDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitIntegerVarDecl([NotNull] BlokScriptGrammarParser.IntegerVarDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.datasourceEntriesInputLocation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDatasourceEntriesInputLocation([NotNull] BlokScriptGrammarParser.DatasourceEntriesInputLocationContext context);
 }
 } // namespace BlokScript.Parser

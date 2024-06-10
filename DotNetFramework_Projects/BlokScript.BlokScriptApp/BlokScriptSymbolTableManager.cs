@@ -18,6 +18,16 @@ namespace BlokScript.BlokScriptApp
 			_SymbolTableStack.Push(SymbolTableParam);
 		}
 
+		public void CreateAndPushNewSymbolTable ()
+		{
+			_SymbolTableStack.Push(new BlokScriptSymbolTable());
+		}
+
+		public BlokScriptSymbolTable PopSymbolTable ()
+		{
+			return _SymbolTableStack.Pop();
+		}
+
 		public BlokScriptSymbol GetSymbol (string SymbolName)
 		{
 			Stack<BlokScriptSymbolTable> TempStack = new Stack<BlokScriptSymbolTable>();
@@ -44,6 +54,13 @@ namespace BlokScript.BlokScriptApp
 				throw new SymbolConflictException(SymbolParam.Name);
 
 			TargetSymbolTable[SymbolParam.Name] = SymbolParam;
+		}
+
+
+		public BlokScriptSymbol AddAndReturnSymbol (BlokScriptSymbol SymbolParam)
+		{
+			AddSymbol(SymbolParam);
+			return SymbolParam;
 		}
 
 		public string GetSymbolValueAsString (string SymbolName)
