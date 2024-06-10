@@ -21,12 +21,6 @@ namespace BlokScript.BlokScriptApp
 			//
 			_CurrentDateTime = DateTime.Now;
 			
-			//
-			// GET CONFIGURATION.
-			//
-			_BaseDir = Directory.GetCurrentDirectory();
-			_ConfigDir = _BaseDir;
-
 			try
 			{
 				MainInternal(Args);
@@ -41,16 +35,18 @@ namespace BlokScript.BlokScriptApp
 
 		public static void MainInternal (string[] Args)
 		{
-			//
-			// DO A QUICK SYSTEM CHECK IF NO ARGUMENTS.
-			//
+			string BlokScriptEnvFilePath = Directory.GetCurrentDirectory() + "\\blokscript-env.json";
+			Console.WriteLine(BlokScriptEnvFilePath);
+
+			if (!File.Exists(BlokScriptEnvFilePath))
+			{
+				Console.WriteLine("blokscript-env.json not found.");
+				return;
+			}
+
 			if (Args.Length == 0)
 			{
 				StringBuilder MessageBuilder = new StringBuilder();
-
-				if (!File.Exists(_BaseDir + "\\blokscript-env.json"))
-					MessageBuilder.AppendLine("blokscript-env.json not found.");
-
 				MessageBuilder.AppendLine("USAGE:");
 				MessageBuilder.AppendLine("blokscript -f <file>");
 				MessageBuilder.AppendLine("blokscript -s \"<script>\"");
@@ -136,13 +132,10 @@ namespace BlokScript.BlokScriptApp
 			// CREATE THE VISITOR.
 			//
 			BlokScriptGrammarConcreteVisitor CreatedVisitor = new BlokScriptGrammarConcreteVisitor();
-			CreatedVisitor.WorkingDir = _BaseDir;
+			CreatedVisitor.WorkingDir = Directory.GetCurrentDirectory();
 			CreatedVisitor.Visit(parser.script());
 		}
 
-
 		private static DateTime _CurrentDateTime;
-		private static string _BaseDir;
-		private static string _ConfigDir;
 	}
 }

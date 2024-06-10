@@ -13,40 +13,42 @@ BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 
 script: statementList;
 
-statementList: (statement STATEMENTEND)+
-	| forEachStatement statementList?
+statementList: statement*;
+
+statement: loginStatement STATEMENTEND
+	| varStatement STATEMENTEND
+	| assignmentStatement STATEMENTEND
+	| printStatement STATEMENTEND
+	| verbosityStatement STATEMENTEND
+	| waitStatement STATEMENTEND
+	| compareStatement STATEMENTEND
+	| copyBlocksStatement STATEMENTEND
+	| copySpacesStatement STATEMENTEND
+	| copyBlocksStatement STATEMENTEND
+	| copyStoriesStatement STATEMENTEND
+	| publishStoriesStatement STATEMENTEND
+	| unpublishStoriesStatement STATEMENTEND
+	| deleteStoriesStatement STATEMENTEND
+	| copyDatasourcesStatement STATEMENTEND
+	| deleteBlocksStatement STATEMENTEND
+	| deleteDatasourcesStatement STATEMENTEND
+	| createDatasourceStatement STATEMENTEND
+	| updateDatasourceStatement STATEMENTEND
+	| deleteDatasourceStatement STATEMENTEND
+	| createDatasourceEntryStatement STATEMENTEND
+	| deleteDatasourceEntryStatement STATEMENTEND
+	| updateDatasourceEntryStatement STATEMENTEND
+	| updateDatasourceEntriesStatement STATEMENTEND
+	| deleteDatasourceEntriesStatement STATEMENTEND
+	| copyDatasourceEntriesStatement STATEMENTEND
+	| syncDatasourceEntriesStatement STATEMENTEND
+	| updateDatasourcesStatement STATEMENTEND
+	| 'pass' STATEMENTEND
+	| scriptBlockDef
+	| forEachStatement
 	;
 
-statement: loginStatement
-	| varStatement
-	| assignmentStatement
-	| printStatement
-	| verbosityStatement
-	| waitStatement
-	| compareStatement
-	| copyBlocksStatement
-	| copySpacesStatement
-	| copyBlocksStatement
-	| copyStoriesStatement
-	| publishStoriesStatement
-	| unpublishStoriesStatement
-	| deleteStoriesStatement
-	| copyDatasourcesStatement
-	| deleteBlocksStatement
-	| deleteDatasourcesStatement
-	| createDatasourceStatement
-	| updateDatasourceStatement
-	| deleteDatasourceStatement
-	| createDatasourceEntryStatement
-	| deleteDatasourceEntryStatement
-	| updateDatasourceEntryStatement
-	| updateDatasourceEntriesStatement
-	| deleteDatasourceEntriesStatement
-	| copyDatasourceEntriesStatement
-	| syncDatasourceEntriesStatement
-	| updateDatasourcesStatement
-	| 'pass'
-	;
+scriptBlockDef: '{' statementList? '}';
 
 createDatasourceStatement: 'create' 'datasource' (stringExpr | '(' datasourceUpdateList ')') ('for' | 'in') (spaceSpec | shortSpaceSpec);
 deleteDatasourceStatement: 'delete' 'datasource' (datasourceShortSpec | datasourceSpec);
@@ -372,8 +374,8 @@ datasourceOutputLocation: fileSpec | longOrShortSpaceSpec;
 
 dirSpec: 'directory' (STRINGLITERAL | VARID);
 
-forEachStatement: 'foreach' '(' typedVarDecl 'in' foreachEntityListForTypedVarDecl ')' '{' statementList '}'
-	| 'foreach' '(' untypedVarDecl 'in' foreachEntityListForUntypedVarDecl ')' '{' statementList '}'
+forEachStatement: 'foreach' '(' typedVarDecl 'in' foreachEntityListForTypedVarDecl ')' scriptBlockDef
+	| 'foreach' '(' untypedVarDecl 'in' foreachEntityListForUntypedVarDecl ')' scriptBlockDef
 	;
 
 foreachEntityListForTypedVarDecl: foreachSpaceListForTypedVarDecl

@@ -41,7 +41,7 @@ namespace BlokScript.BlokScriptApp
 		{
 		}
 
-		public override object VisitScript([NotNull] BlokScriptGrammarParser.ScriptContext context)
+		public override object VisitScript ([NotNull] BlokScriptGrammarParser.ScriptContext context)
 		{
 			//
 			// CREATE THE GLOBAL SYMBOL TABLE.
@@ -111,9 +111,12 @@ namespace BlokScript.BlokScriptApp
 			return VisitChildren(context);
 		}
 
-		public override object VisitStatement([NotNull] BlokScriptGrammarParser.StatementContext context)
+		public override object VisitScriptBlockDef ([NotNull] BlokScriptGrammarParser.ScriptBlockDefContext Context)
 		{
-			return VisitChildren(context);
+			_SymbolTableManager.CreateAndPushNewSymbolTable();
+			object ReturnValue = VisitChildren(Context);
+			_SymbolTableManager.PopSymbolTable();
+			return ReturnValue;
 		}
 
 		public override object VisitLoginStatement([NotNull] BlokScriptGrammarParser.LoginStatementContext Context)
@@ -832,10 +835,17 @@ namespace BlokScript.BlokScriptApp
 				EchoError(ErrorMessage);
 				throw new SymbolNotFoundException(ErrorMessage);
 			}
-
-			if (TargetSymbol.Type == BlokScriptSymbolType.String)
+			else if (TargetSymbol.Type == BlokScriptSymbolType.String)
 			{
 				EchoToConsole((string)TargetSymbol.Value);
+			}
+			else if (TargetSymbol.Type == BlokScriptSymbolType.Int32)
+			{
+				EchoToConsole(TargetSymbol.Value.ToString());
+			}
+			else if (TargetSymbol.Type == BlokScriptSymbolType.Regex)
+			{
+				EchoToConsole(TargetSymbol.Value.ToString());
 			}
 			else if (TargetSymbol.Type == BlokScriptSymbolType.Space)
 			{
@@ -859,7 +869,7 @@ namespace BlokScript.BlokScriptApp
 				EchoToConsole(DatasourceFormatter.FormatJson((DatasourceEntity)TargetSymbol.Value));
 			}
 			else
-				throw new NotImplementedException("VisitPrintVarStatement");
+				throw new NotImplementedException();
 
 			return null;
 		}
@@ -2059,7 +2069,7 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitCopyDatasourcesStatement([NotNull] BlokScriptGrammarParser.CopyDatasourcesStatementContext Context)
 		{
 			/*
-			copyDatasourcesStatement: 'copy' 'datasources' ('from' | 'in') longOrShortSpaceSpec 'to' longOrShortSpaceSpec ('where' datasourceConstraintExprList)? datasourceCopyOptionList?;
+			copyDatasourcesStatement: 'copy' 'datasources' ('from' | 'in') datasourcesInputLocation 'to' datasourcesOutputLocation ('where' datasourceConstraintExprList)? datasourceCopyOptionList?;
 			*/
 			SpaceEntity SourceSpace = (SpaceEntity)VisitLongOrShortSpaceSpec(Context.longOrShortSpaceSpec()[0]);
 			EnsureDatasourcesAreLoadedIntoSpace(SourceSpace);
@@ -5242,8 +5252,8 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitForEachStatement ([NotNull] BlokScriptGrammarParser.ForEachStatementContext Context)
 		{
 			/*
-			forEachStatement: 'foreach' '(' typedVarDecl 'in' foreachEntityListForTypedVarDecl ')' '{' statementList '}'
-				| 'foreach' '(' untypedVarDecl 'in' foreachEntityListForUntypedVarDecl ')' '{' statementList '}'
+			forEachStatement: 'foreach' '(' typedVarDecl 'in' foreachEntityListForTypedVarDecl ')' scriptBlockDef
+				| 'foreach' '(' untypedVarDecl 'in' foreachEntityListForUntypedVarDecl ')' scriptBlockDef
 				;
 			*/
 
@@ -5271,7 +5281,7 @@ namespace BlokScript.BlokScriptApp
 			foreach (BlokScriptSymbol Symbol in Symbols)
 			{
 				PerformSymbolAssignment(IterationSymbol, Symbol);
-				VisitStatementList(Context.statementList());
+				VisitScriptBlockDef(Context.scriptBlockDef());
 			}
 
 			_SymbolTableManager.PopSymbolTable();

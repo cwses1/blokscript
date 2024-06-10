@@ -52,6 +52,12 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStatement([NotNull] BlokScriptGrammarParser.StatementContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.scriptBlockDef"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitScriptBlockDef([NotNull] BlokScriptGrammarParser.ScriptBlockDefContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.createDatasourceStatement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

@@ -2,6 +2,12 @@
 	<property name="DotNetFramework_ProjectsDir" value="../DotNetFramework_Projects" />
 	<property name="DotNetCore_ProjectsDir" value="../DotNetCore_Projects" />
 
+	<target name="all">
+		<call target="clean" />
+		<call target="load" />
+		<call target="build" />
+	</target>
+
 	<target name="clean">
 		<delete>
 			<fileset basedir="${DotNetCore_ProjectsDir}">
