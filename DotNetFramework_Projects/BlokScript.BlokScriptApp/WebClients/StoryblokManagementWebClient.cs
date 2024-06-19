@@ -13,18 +13,12 @@ namespace BlokScript.WebClients
 	{
 		public string GetString (string RequestPath)
 		{
-			//
-			// CREATE THE REQUEST.
-			//
 			HttpWebRequest Request = (HttpWebRequest)WebRequest.Create(BaseUrl + RequestPath);
 			Request.Method = "GET";
 			Request.Headers["Authorization"] = Token;
 			Request.ContentType = "application/json";
-
-			//
-			// SEND THE REQUEST AND READ THE RESPONSE.
-			//
-			HttpWebResponse Response = (HttpWebResponse)Request.GetResponse();
+			Request.Timeout = TimeoutMs;
+			HttpWebResponse Response = Response = (HttpWebResponse)Request.GetResponse();
 
 			using (MemoryStream TargetStream = new MemoryStream())
 			{
@@ -35,14 +29,6 @@ namespace BlokScript.WebClients
 				}
 
 				return Encoding.UTF8.GetString(TargetStream.ToArray());
-				/*
-				string ResponseString = Encoding.UTF8.GetString(TargetStream.ToArray());
-
-				using (StringReader ResponseStringReader = new StringReader(ResponseString))
-				{
-					return (VonageSendSmsResponseModel)JsonSerializer.CreateDefault().Deserialize(ResponseStringReader, typeof(VonageSendSmsResponseModel));
-				}
-				*/
 			}
 		}
 
@@ -277,5 +263,9 @@ namespace BlokScript.WebClients
 
 		public string BaseUrl;
 		public string Token;
+
+		public int TimeoutMs;
+		public int ThrottleMs;
+		public int RetryCount;
 	}
 }

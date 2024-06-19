@@ -39,6 +39,8 @@ namespace BlokScript.BlokScriptApp
 	{
 		public BlokScriptGrammarConcreteVisitor ()
 		{
+			_LastWebClientCallDateTime = DateTime.Now;
+			_ShouldThrottle = false;
 		}
 
 		public override object VisitScript ([NotNull] BlokScriptGrammarParser.ScriptContext context)
@@ -77,6 +79,30 @@ namespace BlokScript.BlokScriptApp
 				CreatedSymbolTable[CurrentSymbol.Name] = CurrentSymbol;
 			}
 
+			{
+				BlokScriptSymbol CurrentSymbol = new BlokScriptSymbol();
+				CurrentSymbol.Name = "_GlobalManagementApiTimeoutMs";
+				CurrentSymbol.Type = BlokScriptSymbolType.Int32;
+				CurrentSymbol.Value = 5000;
+				CreatedSymbolTable[CurrentSymbol.Name] = CurrentSymbol;
+			}
+
+			{
+				BlokScriptSymbol CurrentSymbol = new BlokScriptSymbol();
+				CurrentSymbol.Name = "_GlobalManagementApiThrottleMs";
+				CurrentSymbol.Type = BlokScriptSymbolType.Int32;
+				CurrentSymbol.Value = 500;
+				CreatedSymbolTable[CurrentSymbol.Name] = CurrentSymbol;
+			}
+
+			{
+				BlokScriptSymbol CurrentSymbol = new BlokScriptSymbol();
+				CurrentSymbol.Name = "_GlobalManagementApiRetryCount";
+				CurrentSymbol.Type = BlokScriptSymbolType.Int32;
+				CurrentSymbol.Value = 1;
+				CreatedSymbolTable[CurrentSymbol.Name] = CurrentSymbol;
+			}
+
 			_SymbolTableManager = new BlokScriptSymbolTableManager();
 			_SymbolTableManager.PushSymbolTable(CreatedSymbolTable);
 
@@ -106,6 +132,15 @@ namespace BlokScript.BlokScriptApp
 
 				if (GlobalEnv.Verbosity != null)
 					_SymbolTableManager.GetSymbol("_GlobalVerbosity").Value = (int)BlokScriptVerbosityParser.Parse(GlobalEnv.Verbosity);
+
+				if (GlobalEnv.ManagementApiTimeoutMs != null)
+					_SymbolTableManager.GetSymbol("_GlobalManagementApiTimeoutMs").Value = GlobalEnv.ManagementApiTimeoutMs.Value;
+
+				if (GlobalEnv.ManagementApiThrottleMs != null)
+					_SymbolTableManager.GetSymbol("_GlobalManagementApiThrottleMs").Value = GlobalEnv.ManagementApiThrottleMs.Value;
+
+				if (GlobalEnv.ManagementApiRetryCount != null)
+					_SymbolTableManager.GetSymbol("_GlobalManagementApiRetryCount").Value = GlobalEnv.ManagementApiRetryCount.Value;
 			}
 
 			return VisitChildren(context);
@@ -1002,6 +1037,7 @@ namespace BlokScript.BlokScriptApp
 			foreach (BlockSchemaEntity SourceBlock in Blocks)
 			{
 				string RequestBody = JsonFormatter.FormatIndented(SourceBlock.Data);
+				EchoDebug("RequestBody", RequestBody);
 
 				//
 				// CHECK FOR EXISTENCE OF THE BLOCK ON THE SERVER FIRST.
@@ -1015,9 +1051,14 @@ namespace BlokScript.BlokScriptApp
 					string RequestPath = ManagementPathFactory.CreateComponentsPath(SpaceId);
 					EchoAction($"API POST {RequestPath}. Creating block {BlockFormatter.FormatHumanFriendly(SourceBlock)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
 
-					string CreatedBlockString = WebClient.PostJson(RequestPath, RequestBody);
+					ThrottleWebClientIfNeeded();
 
-					BlockSchemaEntity CreatedBlock =  CreateComponentResponseReader.ReadResponseString(CreatedBlockString);
+					string ResponseString = WebClient.PostJson(RequestPath, RequestBody);
+					EchoDebug("ResponseString", ResponseString);
+
+					RecordLastWebClientCall();
+
+					BlockSchemaEntity CreatedBlock =  CreateComponentResponseReader.ReadResponseString(ResponseString);
 					CreatedBlock.SpaceId = SpaceId;
 					CreatedBlock.DataLocation = BlokScriptEntityDataLocation.Server;
 					CreatedBlock.ServerPath = RequestPath;
@@ -1550,9 +1591,57 @@ namespace BlokScript.BlokScriptApp
 			foreach (StoryEntity Story in TargetStories)
 			{
 				string RequestPath = ManagementPathFactory.CreatePublishStoryPath(Story.StoryId, TargetSpace.SpaceId);
-				EchoAction($"API GET {RequestPath}. Publishing story {StoryFormatter.FormatHumanFriendly(Story)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
-				GetManagementWebClient().GetString(RequestPath);
+				string ResponseString = null;
+				bool Retry = true;
+				int RetryAttemptsRemaining = _SymbolTableManager.GetSymbolValueAsInt32("_GlobalManagementApiRetryCount");
+
+				while (Retry)
+				{
+					try
+					{
+						ThrottleWebClientIfNeeded();
+						EchoAction($"API GET {RequestPath}. Publishing story {StoryFormatter.FormatHumanFriendly(Story)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
+						ResponseString = GetManagementWebClient().GetString(RequestPath);
+						RecordLastWebClientCall();
+						EchoDebug("ResponseString", ResponseString);
+						Retry = false;
+					}
+					catch (WebException E)
+					{
+						RecordLastWebClientCall();
+						EchoDebug(E);
+
+						if (E.Status == WebExceptionStatus.Timeout)
+						{
+							EchoWarning($"Request timeout exceeded. Retry attempts remaining: {RetryAttemptsRemaining}.");
+
+							if (RetryAttemptsRemaining > 0)
+							{
+								Retry = true;
+								RetryAttemptsRemaining--;
+							}
+							else
+							{
+								Retry = false;
+								throw;
+							}
+						}
+						else
+						{
+							int StatusCode = (int)((HttpWebResponse)E.Response).StatusCode;
+
+							if (StatusCode == 422)
+							{
+								EchoError($"Publish of story {StoryFormatter.FormatHumanFriendly(Story)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)} was rejected by Storyblok: {E.Message}.");
+								Retry = false;
+							}
+
+							throw;
+						}
+					}
+				}
 			}
+
 			return null;
 		}
 
@@ -1574,8 +1663,55 @@ namespace BlokScript.BlokScriptApp
 			foreach (StoryEntity Story in TargetStories)
 			{
 				string RequestPath = ManagementPathFactory.CreateUnpublishStoryPath(Story.StoryId, TargetSpace.SpaceId);
-				EchoAction($"API GET {RequestPath} | Unpublishing Story '{Story.Url}'.");
-				GetManagementWebClient().GetString(RequestPath);
+				string ResponseString = null;
+				bool Retry = true;
+				int RetryAttemptsRemaining = _SymbolTableManager.GetSymbolValueAsInt32("_GlobalManagementApiRetryCount");
+
+				while (Retry)
+				{
+					try
+					{
+						EchoAction($"API GET {RequestPath} | Unpublishing Story '{Story.Url}'.");
+						ThrottleWebClientIfNeeded();
+						ResponseString = GetManagementWebClient().GetString(RequestPath);
+						RecordLastWebClientCall();
+						EchoDebug("ResponseString", ResponseString);
+						Retry = false;
+					}
+					catch (WebException E)
+					{
+						RecordLastWebClientCall();
+						EchoDebug(E);
+
+						if (E.Status == WebExceptionStatus.Timeout)
+						{
+							EchoWarning($"Request timeout exceeded. Retry attempts remaining: {RetryAttemptsRemaining}.");
+
+							if (RetryAttemptsRemaining > 0)
+							{
+								Retry = true;
+								RetryAttemptsRemaining--;
+							}
+							else
+							{
+								Retry = false;
+								throw;
+							}
+						}
+						else
+						{
+							int StatusCode = (int)((HttpWebResponse)E.Response).StatusCode;
+
+							if (StatusCode == 422)
+							{
+								EchoError($"Unpublish of story {StoryFormatter.FormatHumanFriendly(Story)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)} was rejected by Storyblok. {E.Message}.");
+								Retry = false;
+							}
+
+							throw;
+						}
+					}
+				}
 			}
 
 			return null;
@@ -2191,30 +2327,58 @@ namespace BlokScript.BlokScriptApp
 			TargetDatasource.Data = DatasourceEntityDataFactory.CreateData(TargetDatasource);
 
 			string RequestPath = ManagementPathFactory.CreateDatasourcesPath(TargetSpace.SpaceId);
-			EchoAction($"API POST {RequestPath}. Creating datasource {DatasourceFormatter.FormatHumanFriendly(SourceDatasource)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
+			string ResponseString = null;
+			bool Retry = true;
+			int RetryAttemptsRemaining = _SymbolTableManager.GetSymbolValueAsInt32("_GlobalManagementApiRetryCount");
 
-			string RequestBody = JsonFormatter.FormatIndented(TargetDatasource.Data);
-			EchoDebug("RequestBody", RequestBody);
-
-			string ResponseString;
-
-			try
+			while (Retry)
 			{
-				ResponseString = GetManagementWebClient().PostJson(RequestPath, RequestBody);
-				EchoDebug("ResponseString", ResponseString);
-			}
-			catch (WebException E)
-			{
-				int StatusCode = (int)((HttpWebResponse)E.Response).StatusCode;
-
-				if (StatusCode == 422)
+				try
 				{
-					EchoError($"Creation of datasource {DatasourceFormatter.FormatHumanFriendly(SourceDatasource)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)} was rejected by Storyblok.  This can happen if you are missing a required field such as the name or slug, or if the datasource already exists.");
-					EchoError(E.Message);
-				}
+					EchoAction($"API POST {RequestPath}. Creating datasource {DatasourceFormatter.FormatHumanFriendly(SourceDatasource)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
 
-				EchoDebug(E);
-				throw;
+					string RequestBody = JsonFormatter.FormatIndented(TargetDatasource.Data);
+					EchoDebug("RequestBody", RequestBody);
+
+					ThrottleWebClientIfNeeded();
+					ResponseString = GetManagementWebClient().PostJson(RequestPath, RequestBody);
+					RecordLastWebClientCall();
+					EchoDebug("ResponseString", ResponseString);
+					Retry = false;
+				}
+				catch (WebException E)
+				{
+					RecordLastWebClientCall();
+					EchoDebug(E);
+
+					if (E.Status == WebExceptionStatus.Timeout)
+					{
+						EchoWarning($"Request timeout exceeded. Retry attempts remaining: {RetryAttemptsRemaining}.");
+
+						if (RetryAttemptsRemaining > 0)
+						{
+							Retry = true;
+							RetryAttemptsRemaining--;
+						}
+						else
+						{
+							Retry = false;
+							throw;
+						}
+					}
+					else
+					{
+						int StatusCode = (int)((HttpWebResponse)E.Response).StatusCode;
+
+						if (StatusCode == 422)
+						{
+							EchoError($"Creation of datasource {DatasourceFormatter.FormatHumanFriendly(SourceDatasource)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)} was rejected by Storyblok.  This can happen if you are missing a required field such as the name or slug, or if the datasource already exists. {E.Message}.");
+							Retry = false;
+						}
+
+						throw;
+					}
+				}
 			}
 
 			DatasourceEntity CreatedDatasource = DatasourceParser.Parse(ResponseString);
@@ -5829,6 +5993,9 @@ namespace BlokScript.BlokScriptApp
 			StoryblokManagementWebClient CreatedWebClient = new StoryblokManagementWebClient();
 			CreatedWebClient.BaseUrl = _SymbolTableManager.GetSymbolValueAsString("_GlobalManagementApiBaseUrl");
 			CreatedWebClient.Token = _SymbolTableManager.GetSymbolValueAsString("_GlobalPersonalAccessToken");
+			CreatedWebClient.TimeoutMs = _SymbolTableManager.GetSymbolValueAsInt32("_GlobalManagementApiTimeoutMs");
+			CreatedWebClient.ThrottleMs = _SymbolTableManager.GetSymbolValueAsInt32("_GlobalManagementApiThrottleMs");
+			CreatedWebClient.RetryCount = _SymbolTableManager.GetSymbolValueAsInt32("_GlobalManagementApiRetryCount");
 			return CreatedWebClient;
 		}
 
@@ -6222,9 +6389,58 @@ namespace BlokScript.BlokScriptApp
 		public void LoadSpaceDicts ()
 		{
 			string RequestPath = ManagementPathFactory.CreateSpacesPath();
-			EchoAction($"API GET {RequestPath}. Caching all spaces.");
+			string ResponseString = null;
+			bool Retry = true;
+			int RetryAttemptsRemaining = _SymbolTableManager.GetSymbolValueAsInt32("_GlobalManagementApiRetryCount");
 
-			foreach (SpaceEntity Space in SpacesResponseReader.ReadResponseString(GetManagementWebClient().GetString(RequestPath)))
+			while (Retry)
+			{
+				try
+				{
+					ThrottleWebClientIfNeeded();
+					EchoAction($"API GET {RequestPath}. Caching all spaces.");
+					ResponseString = GetManagementWebClient().GetString(RequestPath);
+					RecordLastWebClientCall();
+					EchoDebug("ResponseString", ResponseString);
+					Retry = false;
+				}
+				catch (WebException E)
+				{
+					RecordLastWebClientCall();
+					EchoDebug(E);
+
+					if (E.Status == WebExceptionStatus.Timeout)
+					{
+						EchoWarning($"Request timeout exceeded. Retry attempts remaining: {RetryAttemptsRemaining}.");
+
+						if (RetryAttemptsRemaining > 0)
+						{
+							Retry = true;
+							RetryAttemptsRemaining--;
+						}
+						else
+						{
+							Retry = false;
+							throw;
+						}
+					}
+					else
+					{
+						/*
+						int StatusCode = (int)((HttpWebResponse)E.Response).StatusCode;
+
+						if (StatusCode == 422)
+						{
+							EchoError($"Publish of story {StoryFormatter.FormatHumanFriendly(Story)} in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)} was rejected by Storyblok: {E.Message}.");
+							Retry = false;
+						}
+						*/
+						throw;
+					}
+				}
+			}
+
+			foreach (SpaceEntity Space in SpacesResponseReader.ReadResponseString(ResponseString))
 			{
 				Space.DataLocation = BlokScriptEntityDataLocation.Server;
 				Space.ServerPath = RequestPath;
@@ -6321,6 +6537,33 @@ namespace BlokScript.BlokScriptApp
 			Console.WriteLine(Message);
 		}
 
+		public void ThrottleWebClientIfNeeded ()
+		{
+			if (_ShouldThrottle)
+			{
+				int ThrottleMs = _SymbolTableManager.GetSymbolValueAsInt32("_GlobalManagementApiThrottleMs");
+				int CallSpanMs = (int)DateTime.Now.Subtract(_LastWebClientCallDateTime).TotalMilliseconds;
+
+				EchoDebug("ThrottleMs", ThrottleMs.ToString());
+				EchoDebug("CallSpanMs", CallSpanMs.ToString());
+
+				if (CallSpanMs < ThrottleMs)
+				{
+					int SleepMs = ThrottleMs - CallSpanMs;
+					EchoDebug("SleepMs", SleepMs.ToString());
+					EchoDebug($"Automatic throttling set to {ThrottleMs} ms.  Waiting {SleepMs} ms before next API call.");
+					System.Threading.Thread.Sleep(SleepMs);
+				}
+			}
+
+			_ShouldThrottle = true;
+		}
+
+		public void RecordLastWebClientCall ()
+		{
+			_LastWebClientCallDateTime = DateTime.Now;
+		}
+
 		public string WorkingDir
 		{
 			set
@@ -6328,12 +6571,13 @@ namespace BlokScript.BlokScriptApp
 				_WorkingDir = value;
 			}
 		}
-
 		private BlokScriptSymbolTableManager _SymbolTableManager;
 		private Dictionary<string, SpaceCache> _SpaceCacheByIdDict;
 		private Dictionary<string, SpaceCache> _SpaceCacheByNameDict;
 		private bool _SpaceDictsLoaded;
 		private int _ActionNumber = 1;
 		private string _WorkingDir;
+		private bool _ShouldThrottle;
+		private DateTime _LastWebClientCallDateTime;
 	}
 }
