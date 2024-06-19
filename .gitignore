@@ -9,3 +9,6 @@ DotNetCore_Projects/**/*.cs
 *.log
 Logs/
 Logs/*.log
+DotNetCore_BuildScripts/*.zip
+DotNetFramework_BuildScripts/*.zip
+

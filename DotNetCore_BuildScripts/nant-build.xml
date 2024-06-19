@@ -1,11 +1,16 @@
 <project name="DotNetCore_BuildScripts">
 	<property name="DotNetFramework_ProjectsDir" value="../DotNetFramework_Projects" />
 	<property name="DotNetCore_ProjectsDir" value="../DotNetCore_Projects" />
+	<property name="ZipTargetSubdir" value="bin/Debug/net8.0" />
+	<property name="Version" value="0.0.3" />
+	<property name="ZipFileName" value="BlokScriptDotNetCore-${Version}.zip" />
+	<property name="ZipFileBaseDir" value="${DotNetCore_ProjectsDir}/${ZipTargetSubdir}" />
 
 	<target name="all">
 		<call target="clean" />
 		<call target="load" />
 		<call target="build" />
+		<call target="zipfile" />
 	</target>
 
 	<target name="clean">
@@ -36,6 +41,14 @@
 		<exec program="dotnet" workingdir="${DotNetCore_ProjectsDir}">
 			<arg value="pack" />
 		</exec>
+	</target>
+
+	<target name="zipfile">
+		<zip zipfile="${ZipFileName}">
+			<fileset basedir="${ZipFileBaseDir}">
+				<include name="*.*" />
+			</fileset>
+		</zip>
 	</target>
 
 </project>
