@@ -941,19 +941,28 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitFileSpec ([NotNull] BlokScriptGrammarParser.FileSpecContext Context)
 		{
 			/*
-			fileSpec: 'file' (STRINGLITERAL | VARID)?;
+			fileSpec: 'file' stringExpr;
 			*/
-			if (Context.STRINGLITERAL() != null)
-			{
-				return StringLiteralTrimmer.Trim(Context.STRINGLITERAL().GetText());
-			}
-			else if (Context.VARID() != null)
-			{
-				return _SymbolTableManager.GetSymbolValueAsString(Context.VARID().GetText());
-			}
-			else
-				return null;
+			return Context.stringExpr();
 		}
+
+		public override object VisitCompleteFileSpec ([NotNull] BlokScriptGrammarParser.CompleteFileSpecContext Context)
+		{
+			/*
+			completeFileSpec: ('csv' | 'json')? 'file' stringExpr;
+			*/
+			FileSpec CreatedFileSpec = new FileSpec();
+			CreatedFileSpec.FilePath = (string)VisitStringExpr(Context.stringExpr());
+			CreatedFileSpec.ForcedMediaType = null;
+
+			string Token1 = Context.GetChild(0).GetText();
+
+			if (Token1 != "file")
+				CreatedFileSpec.ForcedMediaType = Token1;
+
+			return CreatedFileSpec;
+		}
+
 
 		public override object VisitCopyBlocksStatement ([NotNull] BlokScriptGrammarParser.CopyBlocksStatementContext Context)
 		{
@@ -4138,7 +4147,6 @@ namespace BlokScript.BlokScriptApp
 					}
 				}
 			}
-
 			if (TargetLocation.ToDatasource)
 			{
 				DatasourceEntity TargetDatasource = TargetLocation.Datasource;
@@ -4148,10 +4156,48 @@ namespace BlokScript.BlokScriptApp
 					CopyEntryToDatasource(SourceEntry, TargetDatasource, CopyOptionSet);
 				}
 			}
+			else if (TargetLocation.ToFile)
+			{
+				CopyEntriesToFile(SourceEntries, TargetLocation.FileSpec, CopyOptionSet);
+			}
 			else
 				throw new NotImplementedException();
 
 			return null;
+		}
+
+		public void CopyEntriesToFile (DatasourceEntryEntity[] SourceEntries, FileSpec TargetFileSpec, DatasourceEntryCopyOptionSet CopyOptionSet)
+		{
+			if (TargetFileSpec.ForcedMediaType != null)
+			{
+				if (TargetFileSpec.ForcedMediaType == "csv")
+					CopyEntriesToCsvFile(SourceEntries, TargetFileSpec.FilePath, CopyOptionSet);
+				else if (TargetFileSpec.ForcedMediaType == "json")
+					CopyEntriesToJsonFile(SourceEntries, TargetFileSpec.FilePath, CopyOptionSet);
+				else
+					throw new NotImplementedException();
+			}
+			else
+			{
+				string Extension = Path.GetExtension(TargetFileSpec.FilePath);
+
+				if (Extension == ".csv")
+					CopyEntriesToCsvFile(SourceEntries, TargetFileSpec.FilePath, CopyOptionSet);
+				else if (Extension == ".json")
+					CopyEntriesToJsonFile(SourceEntries, TargetFileSpec.FilePath, CopyOptionSet);
+				else
+					throw new NotImplementedException();
+			}
+		}
+
+		public void CopyEntriesToCsvFile (DatasourceEntryEntity[] SourceEntries, string FilePath, DatasourceEntryCopyOptionSet CopyOptionSet)
+		{
+			DatasourceEntriesCsvFileWriter.Write(SourceEntries, FilePath);
+		}
+
+		public void CopyEntriesToJsonFile (DatasourceEntryEntity[] SourceEntries, string FilePath, DatasourceEntryCopyOptionSet CopyOptionSet)
+		{
+			DatasourceEntriesJsonFileWriter.Write(SourceEntries, FilePath);
 		}
 
 		public DatasourceEntryEntity[] GetDatasourceEntriesFromLocation (DatasourceEntriesSourceLocation SourceLocation)
@@ -4159,7 +4205,9 @@ namespace BlokScript.BlokScriptApp
 			if (SourceLocation.FromDatasource)
 				return GetDatasourceEntriesFromDatasource(SourceLocation.Datasource);
 			else if (SourceLocation.FromFile)
-				return GetDatasourceEntriesFromFile(SourceLocation.FilePath);
+			{
+				return GetDatasourceEntriesFromFileSpec(SourceLocation.FileSpec);
+			}
 			else
 				throw new NotImplementedException();
 		}
@@ -4168,6 +4216,30 @@ namespace BlokScript.BlokScriptApp
 		{
 			EnsureDatasourceHasEntriesLoaded(SourceDatasource);
 			return SourceDatasource.GetEntries();
+		}
+
+		public DatasourceEntryEntity[] GetDatasourceEntriesFromFileSpec (FileSpec SourceFileSpec)
+		{
+			if (SourceFileSpec.ForcedMediaType != null)
+			{
+				if (SourceFileSpec.ForcedMediaType == "json")
+					return DatasourceEntriesFileReader.Read(SourceFileSpec.FilePath);
+				else if (SourceFileSpec.ForcedMediaType == "csv")
+					return DatasourceEntriesCsvFileReader.Read(SourceFileSpec.FilePath);
+				else
+					throw new NotImplementedException();
+			}
+			else
+			{
+				string Extension = Path.GetExtension(SourceFileSpec.FilePath).ToLower();
+
+				if (Extension == ".json")
+					return DatasourceEntriesFileReader.Read(SourceFileSpec.FilePath);
+				else if (Extension == ".csv")
+					return DatasourceEntriesCsvFileReader.Read(SourceFileSpec.FilePath);
+				else
+					throw new NotImplementedException();
+			}
 		}
 
 		public DatasourceEntryEntity[] GetDatasourceEntriesFromFile (string FilePath)
@@ -4192,38 +4264,19 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitDatasourceEntriesSourceLocation ([NotNull] BlokScriptGrammarParser.DatasourceEntriesSourceLocationContext Context)
 		{
 			/*
-			datasourceEntriesSourceLocation: datasourceSpec
-				| datasourceShortSpec
-				| urlSpec
-				| fileSpec
-				| 'local cache'
-				;
+			datasourceEntriesSourceLocation: longOrShortDatasourceSpec | completeFileSpec;
 			*/
 			DatasourceEntriesSourceLocation Location = new DatasourceEntriesSourceLocation();
 
-			if (Context.datasourceSpec() != null)
+			if (Context.longOrShortDatasourceSpec() != null)
 			{
 				Location.FromDatasource = true;
-				Location.Datasource = (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
+				Location.Datasource = (DatasourceEntity)VisitLongOrShortDatasourceSpec(Context.longOrShortDatasourceSpec());
 			}
-			else if (Context.datasourceSpec() != null)
-			{
-				Location.FromDatasource = true;
-				Location.Datasource = (DatasourceEntity)VisitDatasourceShortSpec(Context.datasourceShortSpec());
-			}
-			else if (Context.urlSpec() != null)
-			{
-				Location.FromUrl = true;
-				Location.UrlSpec = (UrlSpec)VisitUrlSpec(Context.urlSpec());
-			}
-			else if (Context.fileSpec() != null)
+			else if (Context.completeFileSpec() != null)
 			{
 				Location.FromFile = true;
-				Location.FilePath = (string)VisitFileSpec(Context.fileSpec());
-			}
-			else if (Context.GetChild(0).GetText() == "local")
-			{
-				Location.FromLocalCache = true;
+				Location.FileSpec = (FileSpec)VisitCompleteFileSpec(Context.completeFileSpec());
 			}
 			else
 				throw new NotImplementedException();
@@ -4234,46 +4287,22 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitDatasourceEntriesTargetLocation ([NotNull] BlokScriptGrammarParser.DatasourceEntriesTargetLocationContext Context)
 		{
 			/*
-			datasourceEntriesTargetLocation: datasourceSpec
-				| datasourceShortSpec
-				| urlSpec
-				| fileSpec
-				| 'local cache'
-				| 'console'
-				;
+			datasourceEntriesTargetLocation: longOrShortDatasourceSpec | completeFileSpec;
 			*/
 			DatasourceEntriesTargetLocation Location = new DatasourceEntriesTargetLocation();
 
-			if (Context.datasourceSpec() != null)
+			if (Context.longOrShortDatasourceSpec() != null)
 			{
 				Location.ToDatasource = true;
-				Location.Datasource = (DatasourceEntity)VisitDatasourceSpec(Context.datasourceSpec());
+				Location.Datasource = (DatasourceEntity)VisitLongOrShortDatasourceSpec(Context.longOrShortDatasourceSpec());
 			}
-			else if (Context.datasourceShortSpec() != null)
-			{
-				Location.ToDatasource = true;
-				Location.Datasource = (DatasourceEntity)VisitDatasourceShortSpec(Context.datasourceShortSpec());
-			}
-			else if (Context.urlSpec() != null)
-			{
-				Location.ToUrl = true;
-				Location.UrlSpec = (UrlSpec)VisitUrlSpec(Context.urlSpec());
-			}
-			else if (Context.fileSpec() != null)
+			else if (Context.completeFileSpec() != null)
 			{
 				Location.ToFile = true;
-				Location.FileSpec = (FileSpec)VisitFileSpec(Context.fileSpec());
-			}
-			else if (Context.GetChild(0).GetText() == "local")
-			{
-				Location.ToLocalCache = true;
-			}
-			else if (Context.GetChild(0).GetText() == "console")
-			{
-				Location.ToConsole = true;
+				Location.FileSpec = (FileSpec)VisitCompleteFileSpec(Context.completeFileSpec());
 			}
 			else
-				throw new NotImplementedException("VisitDatasourceEntriesTargetLocation");
+				throw new NotImplementedException();
 
 			return Location;
 		}

@@ -4,11 +4,12 @@ using System.IO;
 using System.Collections.Generic;
 
 using CsvHelper;
+using CsvHelper.Configuration;
 
 using BlokScript.Entities;
 using BlokScript.Parsers;
 using BlokScript.Common;
-using CsvHelper.Configuration;
+using BlokScript.EntityDataFactories;
 
 namespace BlokScript.FileReaders
 {
@@ -37,6 +38,7 @@ namespace BlokScript.FileReaders
 						Entry.Value = SourceCsvReader.GetField("value");
 						Entry.FilePath = FilePath;
 						Entry.DataLocation = BlokScriptEntityDataLocation.FilePath;
+						Entry.Data = DatasourceEntryEntityDataFactory.CreateData(Entry);
 						DatasourceEntryEntityList.Add(Entry);
 					}
 				}

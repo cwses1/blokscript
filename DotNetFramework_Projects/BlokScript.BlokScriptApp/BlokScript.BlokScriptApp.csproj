@@ -178,6 +178,7 @@
     <Compile Include="Common\BlockConstraintDataType.cs" />
     <Compile Include="Common\BlockConstraintField.cs" />
     <Compile Include="Common\BlockConstraintOperator.cs" />
+    <Compile Include="EntityDataExtractors\DatasourceEntriesDataExtractor.cs" />
     <Compile Include="FileReaders\DatasourcesFileReader.cs" />
     <Compile Include="FileReaders\BlocksFileReader.cs" />
     <Compile Include="FileReaders\Int32sFileReader.cs" />
@@ -187,6 +188,8 @@
     <Compile Include="FileReaders\StringsFileReader.cs" />
     <Compile Include="FileReaders\StringArrayFileReader.cs" />
     <Compile Include="FileReaders\Int32ArrayFileReader.cs" />
+    <Compile Include="FileWriters\DatasourceEntriesCsvFileWriter.cs" />
+    <Compile Include="FileWriters\DatasourceEntriesJsonFileWriter.cs" />
     <Compile Include="Models\DatasourceEntriesInputLocation.cs" />
     <Compile Include="Models\DatasourceOutputLocation.cs" />
     <Compile Include="Models\DatasourceInputLocation.cs" />

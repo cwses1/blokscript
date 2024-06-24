@@ -82,22 +82,11 @@ datasourceEntryUpdate: 'name' '=' stringExpr
 	| 'value' '=' stringExpr
 	;
 
-datasourceEntriesSourceLocation: datasourceSpec
-	| datasourceShortSpec
-	| urlSpec
-	| fileSpec
-	| 'local cache'
-	;
+datasourceEntriesSourceLocation: longOrShortDatasourceSpec | completeFileSpec;
 
 urlSpec: ('csv' | 'json')? 'url' stringExpr;
 
-datasourceEntriesTargetLocation: datasourceSpec
-	| datasourceShortSpec
-	| urlSpec
-	| fileSpec
-	| 'local cache'
-	| 'console'
-	;
+datasourceEntriesTargetLocation: longOrShortDatasourceSpec | completeFileSpec;
 	
 datasourceEntryConstraintExprList: datasourceEntryConstraintExpr (('and' | 'or') datasourceEntryConstraintExprList)?;
 
@@ -202,7 +191,8 @@ printLocalCacheStatement: 'print' 'local' 'cache';
 
 realDataLocation: ('server' | 'local' 'cache');
 
-fileSpec: 'file' (STRINGLITERAL | VARID)?;
+fileSpec: 'file' stringExpr;
+completeFileSpec: ('csv' | 'json')? 'file' stringExpr;
 
 spaceInputLocation: fileSpec;
 spaceOutputLocation: fileSpec;

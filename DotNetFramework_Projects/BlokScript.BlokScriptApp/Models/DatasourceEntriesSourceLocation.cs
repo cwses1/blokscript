@@ -7,12 +7,7 @@ namespace BlokScript.Models
 		public bool FromLocalCache;
 
 		public bool FromFile;
-		public string FilePath;
-
-		//public bool FromFiles;
-
-		public bool FromUrl;
-		public UrlSpec UrlSpec;
+		public FileSpec FileSpec;
 
 		public bool FromDatasource;
 		public DatasourceEntity Datasource;

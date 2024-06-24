@@ -8,7 +8,6 @@ namespace BlokScript.Models
 		public bool ToLocalCache;
 		public bool ToFile;
 		public FileSpec FileSpec;
-		//public bool ToFiles;
 
 		public bool ToUrl;
 		public UrlSpec UrlSpec;

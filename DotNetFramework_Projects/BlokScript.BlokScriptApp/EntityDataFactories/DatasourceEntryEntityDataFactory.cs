@@ -11,11 +11,18 @@ namespace BlokScript.EntityDataFactories
 		public static object CreateData (DatasourceEntryEntity Entry)
 		{
 			Hashtable DatasourceEntryHash = new Hashtable();
+
 			if (Entry.DatasourceEntryId != null)
 				DatasourceEntryHash["id"] = Int32.Parse(Entry.DatasourceEntryId);
-			DatasourceEntryHash["name"] = Entry.Name;
-			DatasourceEntryHash["value"] = Entry.Value;
-			DatasourceEntryHash["datasource_id"] = Int32.Parse(Entry.DatasourceId);
+
+			if (Entry.Name != null)
+				DatasourceEntryHash["name"] = Entry.Name;
+
+			if (Entry.Value != null)
+				DatasourceEntryHash["value"] = Entry.Value;
+
+			if (Entry.DatasourceId != null)
+				DatasourceEntryHash["datasource_id"] = Int32.Parse(Entry.DatasourceId);
 
 			Hashtable DatasourceEntryWrapperHash = new Hashtable();
 			DatasourceEntryWrapperHash["datasource_entry"] = DatasourceEntryHash;
