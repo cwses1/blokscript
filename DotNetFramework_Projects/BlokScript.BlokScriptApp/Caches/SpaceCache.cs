@@ -9,7 +9,9 @@ namespace BlokScript.Caches
 	{
 		public SpaceCache ()
 		{
-			BlockSchemaEntities = new Dictionary<string, BlockSchemaEntity>();
+			BlockSchemaEntitiesByName = new Dictionary<string, BlockSchemaEntity>();
+			BlockSchemaEntitiesById = new Dictionary<string, BlockSchemaEntity>();
+
 			StoryEntities = new Dictionary<string, StoryEntity>();
 			StoryEntitiesById = new Dictionary<string, StoryEntity>();
 
@@ -20,7 +22,12 @@ namespace BlokScript.Caches
 
 		public bool ContainsBlock (string ComponentName)
 		{
-			return BlockSchemaEntities.ContainsKey(ComponentName);
+			return BlockSchemaEntitiesByName.ContainsKey(ComponentName);
+		}
+
+		public bool ContainsBlockById (string BlockId)
+		{
+			return BlockSchemaEntitiesById.ContainsKey(BlockId);
 		}
 
 		public bool ContainsStory (string Url)
@@ -40,7 +47,12 @@ namespace BlokScript.Caches
 
 		public BlockSchemaEntity GetBlock (string ComponentName)
 		{
-			return BlockSchemaEntities[ComponentName];
+			return BlockSchemaEntitiesByName[ComponentName];
+		}
+
+		public BlockSchemaEntity GetBlockById (string BlockId)
+		{
+			return BlockSchemaEntitiesById[BlockId];
 		}
 
 		public StoryEntity GetStory (string Url)
@@ -60,7 +72,8 @@ namespace BlokScript.Caches
 
 		public void InsertBlock (BlockSchemaEntity Block)
 		{
-			BlockSchemaEntities[Block.ComponentName] = Block;
+			BlockSchemaEntitiesByName[Block.ComponentName] = Block;
+			BlockSchemaEntitiesById[Block.BlockId] = Block;
 		}
 
 		public void InsertStories (StoryEntity[] Stories)
@@ -170,7 +183,8 @@ namespace BlokScript.Caches
 		public SpaceEntity Space;
 
 		public bool ComponentsLoaded;
-		public Dictionary<string, BlockSchemaEntity> BlockSchemaEntities;
+		public Dictionary<string, BlockSchemaEntity> BlockSchemaEntitiesByName;
+		public Dictionary<string, BlockSchemaEntity> BlockSchemaEntitiesById;
 
 		public bool StoriesLoaded;
 		public Dictionary<string, StoryEntity> StoryEntities;

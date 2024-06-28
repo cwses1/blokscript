@@ -114,11 +114,39 @@ namespace BlokScript.BlokScriptApp
 			}
 			catch (Exception E)
 			{
-				Console.WriteLine(E.Message);
-				Console.WriteLine(E.StackTrace);
+				Console.WriteLine(GetExceptionMessage(E));
 			}
 		}
 
+		public static string GetExceptionMessage (Exception E)
+		{
+			StringBuilder MessageBuilder = new StringBuilder();
+			MessageBuilder.AppendLine(E.GetType().ToString());
+			MessageBuilder.AppendLine(E.Message);
+
+			if (E.GetType() == typeof(InputMismatchException))
+			{
+				InputMismatchException SpecialException = (InputMismatchException)E;
+				MessageBuilder.AppendLine($"OffendingToken: {SpecialException.OffendingToken.Text}");
+				MessageBuilder.AppendLine($"Type: {SpecialException.OffendingToken.Type}");
+				MessageBuilder.AppendLine($"Line: {SpecialException.OffendingToken.Line}");
+				MessageBuilder.AppendLine($"Column: {SpecialException.OffendingToken.Column}");
+				MessageBuilder.AppendLine($"Channel: {SpecialException.OffendingToken.Channel}");
+				MessageBuilder.AppendLine($"TokenIndex: {SpecialException.OffendingToken.TokenIndex}");
+			}
+
+			MessageBuilder.AppendLine(E.StackTrace);
+
+			if (E.InnerException != null)
+			{
+				MessageBuilder.AppendLine("E.InnerException:");
+				MessageBuilder.Append(GetExceptionMessage(E.InnerException));
+
+				
+			}
+
+			return MessageBuilder.ToString();
+		}
 
 		public static void Parse (string ScriptString)
 		{

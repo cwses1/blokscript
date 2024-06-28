@@ -179,6 +179,7 @@
     <Compile Include="Common\BlockConstraintField.cs" />
     <Compile Include="Common\BlockConstraintOperator.cs" />
     <Compile Include="EntityDataExtractors\DatasourceEntriesDataExtractor.cs" />
+    <Compile Include="Extractors\JsonExtractor.cs" />
     <Compile Include="FileReaders\DatasourcesFileReader.cs" />
     <Compile Include="FileReaders\BlocksFileReader.cs" />
     <Compile Include="FileReaders\Int32sFileReader.cs" />
@@ -189,6 +190,8 @@
     <Compile Include="FileReaders\StringArrayFileReader.cs" />
     <Compile Include="FileReaders\Int32ArrayFileReader.cs" />
     <Compile Include="FileWriters\DatasourceEntriesCsvFileWriter.cs" />
+    <Compile Include="FileWriters\BlockJsonFileWriter.cs" />
+    <Compile Include="FileWriters\SpaceFileWriter.cs" />
     <Compile Include="FileWriters\DatasourceEntriesJsonFileWriter.cs" />
     <Compile Include="Models\DatasourceEntriesInputLocation.cs" />
     <Compile Include="Models\DatasourceOutputLocation.cs" />
@@ -274,6 +277,11 @@
     <Compile Include="Models\UpdateModel.cs" />
     <Compile Include="Models\UrlSpec.cs" />
     <Compile Include="Models\VarGetFromDirective.cs" />
+    <Compile Include="NativeFunctions\ReplaceFunction.cs" />
+    <Compile Include="NativeFunctions\ToUpperFunction.cs" />
+    <Compile Include="NativeFunctions\ToLowerFunction.cs" />
+    <Compile Include="NativeFunctions\TrimFunction.cs" />
+    <Compile Include="NativeFunctions\SluggifyFunction.cs" />
     <Compile Include="Parsers\BlockParser.cs" />
     <Compile Include="Parsers\DatasourcesParser.cs" />
     <Compile Include="Parsers\BlocksParser.cs" />
