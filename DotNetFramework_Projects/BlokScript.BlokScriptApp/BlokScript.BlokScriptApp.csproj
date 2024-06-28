@@ -175,8 +175,11 @@
   <ItemGroup>
     <Compile Include="BlokScriptGrammarConcreteLexer.cs" />
     <Compile Include="Caches\SpaceCache.cs" />
+    <Compile Include="Common\SpaceConstraintDataType.cs" />
     <Compile Include="Common\BlockConstraintDataType.cs" />
+    <Compile Include="Common\SpaceConstraintField.cs" />
     <Compile Include="Common\BlockConstraintField.cs" />
+    <Compile Include="Common\SpaceConstraintOperator.cs" />
     <Compile Include="Common\BlockConstraintOperator.cs" />
     <Compile Include="EntityDataExtractors\DatasourceEntriesDataExtractor.cs" />
     <Compile Include="Extractors\JsonExtractor.cs" />
@@ -193,6 +196,7 @@
     <Compile Include="FileWriters\BlockJsonFileWriter.cs" />
     <Compile Include="FileWriters\SpaceFileWriter.cs" />
     <Compile Include="FileWriters\DatasourceEntriesJsonFileWriter.cs" />
+    <Compile Include="Filters\SpaceConstraint.cs" />
     <Compile Include="Models\DatasourceEntriesInputLocation.cs" />
     <Compile Include="Models\DatasourceOutputLocation.cs" />
     <Compile Include="Models\DatasourceInputLocation.cs" />

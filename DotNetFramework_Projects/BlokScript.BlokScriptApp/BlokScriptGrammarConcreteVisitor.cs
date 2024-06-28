@@ -5793,10 +5793,8 @@ namespace BlokScript.BlokScriptApp
 			else
 				Spaces = GetSpacesFromServer();
 
-			/*
 			if (Context.spaceConstraintExprList() != null)
 				Spaces = ((SpaceConstraint)VisitSpaceConstraintExprList(Context.spaceConstraintExprList())).Evaluate(Spaces);
-			*/
 
 			return SpaceSymbolFactory.CreateSymbols(Spaces);
 		}
@@ -5813,10 +5811,8 @@ namespace BlokScript.BlokScriptApp
 			else
 				Spaces = GetSpacesFromServer();
 
-			/*
 			if (Context.spaceConstraintExprList() != null)
 				Spaces = ((SpaceConstraint)VisitSpaceConstraintExprList(Context.spaceConstraintExprList())).Evaluate(Spaces);
-			*/
 
 			return SpaceSymbolFactory.CreateSymbols(Spaces);
 		}
@@ -6231,13 +6227,261 @@ namespace BlokScript.BlokScriptApp
 		}
 
 		public override object VisitSpaceConstraintExprList([NotNull] BlokScriptGrammarParser.SpaceConstraintExprListContext Context)
-		{ return VisitChildren(Context); }
+		{
+			/*
+			spaceConstraintExprList: spaceConstraintExpr (('and' | 'or') spaceConstraintExprList)?;
+			*/
+			SpaceConstraint RootConstraint = new SpaceConstraint();
+
+			if (Context.spaceConstraintExprList() != null)
+			{
+				string OperatorToken = Context.GetChild(1).GetText();
+
+				if (OperatorToken == "and")
+					RootConstraint.Operator = SpaceConstraintOperator.Intersect;
+				else if (OperatorToken == "or")
+					RootConstraint.Operator = SpaceConstraintOperator.Union;
+				else
+					throw new NotImplementedException();
+
+				RootConstraint.LeftChildConstraint = (SpaceConstraint)VisitSpaceConstraintExpr(Context.spaceConstraintExpr());
+				RootConstraint.RightChildConstraint = (SpaceConstraint)VisitSpaceConstraintExprList(Context.spaceConstraintExprList());
+			}
+			else
+			{
+				RootConstraint.Operator = SpaceConstraintOperator.Root;
+				RootConstraint.ChildConstraint = (SpaceConstraint)VisitSpaceConstraintExpr(Context.spaceConstraintExpr());
+			}
+
+			return RootConstraint;
+		}
 
 		public override object VisitSpaceConstraintExpr([NotNull] BlokScriptGrammarParser.SpaceConstraintExprContext Context)
-		{ return VisitChildren(Context); }
+		{
+			/*
+			spaceConstraintExpr: spaceConstraint (('and' | 'or') spaceConstraintExpr)?
+				| '(' spaceConstraint (('and' | 'or') spaceConstraintExpr)? ')'
+				| '(' spaceConstraintExpr (('and' | 'or') spaceConstraintExpr)? ')'
+				;
+			*/
+			if (Context.GetChild(0).GetText() == "(")
+			{
+				SpaceConstraint RootConstraint = new SpaceConstraint();
+				RootConstraint.Operator = SpaceConstraintOperator.Root;
 
-		public override object VisitSpaceConstraint([NotNull] BlokScriptGrammarParser.SpaceConstraintContext Context)
-		{ return VisitChildren(Context); }
+				if (Context.spaceConstraint() != null)
+				{
+					SpaceConstraint ThisConstraint = (SpaceConstraint)VisitSpaceConstraint(Context.spaceConstraint());
+
+					if (Context.spaceConstraintExpr().Length > 0)
+					{
+						SpaceConstraint OpConstraint = new SpaceConstraint();
+						OpConstraint.LeftChildConstraint = ThisConstraint;
+						OpConstraint.RightChildConstraint = (SpaceConstraint)VisitSpaceConstraintExpr(Context.spaceConstraintExpr(0));
+
+						string OperatorToken = Context.GetChild(2).GetText();
+
+						if (OperatorToken == "and")
+							OpConstraint.Operator = SpaceConstraintOperator.Intersect;
+						else if (OperatorToken == "or")
+							OpConstraint.Operator = SpaceConstraintOperator.Union;
+						else
+							throw new NotImplementedException();
+
+						RootConstraint.ChildConstraint = OpConstraint;
+					}
+					else
+					{
+						RootConstraint.ChildConstraint = ThisConstraint;
+					}
+				}
+				else
+				{
+					SpaceConstraint OpConstraint = new SpaceConstraint();
+					OpConstraint.LeftChildConstraint = (SpaceConstraint)VisitSpaceConstraintExpr(Context.spaceConstraintExpr()[0]);
+					OpConstraint.RightChildConstraint = (SpaceConstraint)VisitSpaceConstraintExpr(Context.spaceConstraintExpr()[1]);
+
+					string OperatorToken = Context.GetChild(2).GetText();
+
+					if (OperatorToken == "and")
+						OpConstraint.Operator = SpaceConstraintOperator.Intersect;
+					else if (OperatorToken == "or")
+						OpConstraint.Operator = SpaceConstraintOperator.Union;
+					else
+						throw new NotImplementedException();
+
+					RootConstraint.ChildConstraint = OpConstraint;
+				}
+
+				return RootConstraint;
+			}
+			else
+			{
+				// spaceConstraint (('and' | 'or') spaceConstraintExpr)?
+
+				if (Context.spaceConstraintExpr().Length > 0)
+				{
+					string OperatorToken = Context.GetChild(1).GetText();
+
+					Echo(OperatorToken);
+
+					SpaceConstraint OpConstraint = new SpaceConstraint();
+					OpConstraint.LeftChildConstraint = (SpaceConstraint)VisitSpaceConstraint(Context.spaceConstraint());
+					OpConstraint.RightChildConstraint = (SpaceConstraint)VisitSpaceConstraintExpr(Context.spaceConstraintExpr(0));
+
+					if (OperatorToken == "and")
+						OpConstraint.Operator = SpaceConstraintOperator.Intersect;
+					else if (OperatorToken == "or")
+						OpConstraint.Operator = SpaceConstraintOperator.Union;
+					else
+						throw new NotImplementedException();
+
+					return OpConstraint;
+				}
+				else
+					return (SpaceConstraint)VisitSpaceConstraint(Context.spaceConstraint());
+			}
+		}
+
+		public override object VisitSpaceConstraint ([NotNull] BlokScriptGrammarParser.SpaceConstraintContext Context)
+		{
+			/*
+			spaceConstraint: 'id' ('=' | '!=') intExpr
+				| 'id' 'not'? 'in' '(' intExprList ')'
+				| 'name' ('=' | '!=') stringExpr
+				| 'name' 'not'? 'in' '(' stringExprList ')'
+				| 'name' ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
+				| 'name' 'not'? 'in' '(' regexExprList ')'
+				| 'name' 'not'? 'like' stringExpr
+				| 'name' ('starts' | 'does' 'not' 'start') 'with' stringExpr
+				| 'name' ('ends' | 'does' 'not' 'end') 'with' (stringExpr)
+				;
+			*/
+			SpaceConstraint Constraint = new SpaceConstraint();
+
+			if (Context.GetChild(0).GetText() == "id")
+			{
+				//
+				// CONSTRAIN BY ID.
+				//
+				Constraint.Field = SpaceConstraintField.Id;
+
+				if (Context.GetChild(1).GetText() == "=")
+				{
+					Constraint.Operator = SpaceConstraintOperator.Equals;
+					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
+				}
+				else if (Context.GetChild(1).GetText() == "!=")
+				{
+					Constraint.Operator = SpaceConstraintOperator.NotEquals;
+					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
+				}
+				else if (Context.GetChild(1).GetText() == "in")
+				{
+					Constraint.Operator = SpaceConstraintOperator.In;
+					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
+				}
+				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
+				{
+					Constraint.Operator = SpaceConstraintOperator.NotIn;
+					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
+				}
+				else
+					throw new NotImplementedException("VisitSpaceConstraint");
+			}
+			if (Context.GetChild(0).GetText() == "name")
+			{
+				//
+				// CONSTRAIN BY NAME.
+				//
+				Constraint.Field = SpaceConstraintField.Name;
+
+				if (Context.GetChild(1).GetText() == "=")
+				{
+					Constraint.Operator = SpaceConstraintOperator.Equals;
+					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
+				}
+				else if (Context.GetChild(1).GetText() == "!=")
+				{
+					Constraint.Operator = SpaceConstraintOperator.NotEquals;
+					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
+				}
+				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
+				{
+					Constraint.Operator = SpaceConstraintOperator.NotIn;
+
+					if (Context.stringExprList() != null)
+					{
+						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
+						Constraint.ConstraintDataType = SpaceConstraintDataType.StringList;
+					}
+					else if (Context.regexExprList() != null)
+					{
+						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
+						Constraint.ConstraintDataType = SpaceConstraintDataType.RegexList;
+					}
+				}
+				else if (Context.GetChild(1).GetText() == "in")
+				{
+					Constraint.Operator = SpaceConstraintOperator.In;
+
+					if (Context.stringExprList() != null)
+					{
+						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
+						Constraint.ConstraintDataType = SpaceConstraintDataType.StringList;
+					}
+					else if (Context.regexExprList() != null)
+					{
+						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
+						Constraint.ConstraintDataType = SpaceConstraintDataType.RegexList;
+					}
+				}
+				else if (Context.GetChild(1).GetText() == "matches")
+				{
+					Constraint.Operator = SpaceConstraintOperator.MatchesRegex;
+					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
+				}
+				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "match")
+				{
+					Constraint.Operator = SpaceConstraintOperator.DoesNotMatchRegex;
+					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
+				}
+				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "like")
+				{
+					Constraint.Operator = SpaceConstraintOperator.NotLike;
+					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
+				}
+				else if (Context.GetChild(1).GetText() == "like")
+				{
+					Constraint.Operator = SpaceConstraintOperator.Like;
+					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
+				}
+				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "start")
+				{
+					Constraint.Operator = SpaceConstraintOperator.DoesNotStartWith;
+					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
+				}
+				else if (Context.GetChild(1).GetText() == "starts")
+				{
+					Constraint.Operator = SpaceConstraintOperator.StartsWith;
+					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
+				}
+				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "end")
+				{
+					Constraint.Operator = SpaceConstraintOperator.DoesNotEndWith;
+					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
+				}
+				else if (Context.GetChild(1).GetText() == "ends")
+				{
+					Constraint.Operator = SpaceConstraintOperator.EndsWith;
+					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
+				}
+				else
+					throw new NotImplementedException();
+			}
+
+			return Constraint;
+		}
 
 		public override object VisitStoryFileSpec ([NotNull] BlokScriptGrammarParser.StoryFileSpecContext Context)
 		{

@@ -1,1 +1,9 @@
+#
+# RUN THIS IF YOU HAVE THE ANTLR4 COMMAND SET UP.
+#
+antlr4 -o BlokScript.Parser -no-listener -visitor -Dlanguage=CSharp -package BlokScript.Parser BlokScriptGrammar.g4
+
+#
+# OR YOU CAN RUN IT MANUALLY, IT'S A LITTLE LONGER.
+#
 java -jar antlr-4.13.1-complete.jar -o BlokScript.Parser -no-listener -visitor -Dlanguage=CSharp -package BlokScript.Parser BlokScriptGrammar.g4
