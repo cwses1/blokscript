@@ -94,6 +94,30 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitCopySpacesStatement([NotNull] BlokScriptGrammarParser.CopySpacesStatementContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.selectSpacesStatement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSelectSpacesStatement([NotNull] BlokScriptGrammarParser.SelectSpacesStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.selectFieldList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSelectFieldList([NotNull] BlokScriptGrammarParser.SelectFieldListContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.constrainedSpaceList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitConstrainedSpaceList([NotNull] BlokScriptGrammarParser.ConstrainedSpaceListContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.completeSpaceList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitCompleteSpaceList([NotNull] BlokScriptGrammarParser.CompleteSpaceListContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.createBlockStatement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

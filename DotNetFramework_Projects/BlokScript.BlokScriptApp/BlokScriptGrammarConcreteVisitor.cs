@@ -781,22 +781,23 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitCopySpacesStatement ([NotNull] BlokScriptGrammarParser.CopySpacesStatementContext Context)
 		{
 			/*
-			copySpacesStatement: 'copy' 'spaces' ('from' realDataLocation)? 'to' spacesOutputLocation;
+			copySpacesStatement: 'copy' 'spaces' ('from' spacesInputLocation)? 'to' spacesOutputLocation;
 			*/
-			OutputSpacesToLocation(GetSpacesFromLocation(Context.realDataLocation() != null ? (RealDataLocation)VisitRealDataLocation(Context.realDataLocation()) : RealDataLocation.Server), (SpacesOutputLocation)VisitSpacesOutputLocation(Context.spacesOutputLocation()));
+			SpacesInputLocation InputLocation = null;
+
+			if (Context.spacesInputLocation() != null)
+				InputLocation = (SpacesInputLocation)VisitSpacesInputLocation(Context.spacesInputLocation());
+
+			OutputSpacesToLocation(GetSpacesFromLocation(InputLocation), (SpacesOutputLocation)VisitSpacesOutputLocation(Context.spacesOutputLocation()));
 			return null;
 		}
 
-		public SpaceEntity[] GetSpacesFromLocation (RealDataLocation Location)
+		public SpaceEntity[] GetSpacesFromLocation (SpacesInputLocation Location)
 		{
-			List<SpaceEntity> SpaceEntityList = new List<SpaceEntity>();
+			if (Location.FromFile)
+				return GetSpacesFromFile(Location.FilePath);
 
-			if (Location == RealDataLocation.LocalCache)
-				return GetSpacesFromLocalCache();
-			else if (Location == RealDataLocation.Server)
-				return GetSpacesFromServer();
-			else
-				throw new NotImplementedException("SourceLocation == RealDataLocation in VisitCopySpacesStatement.");
+			return GetSpacesFromServer();
 		}
 
 		public SpaceEntity[] GetSpacesFromLocalCache ()
@@ -6608,6 +6609,68 @@ namespace BlokScript.BlokScriptApp
 			intArrayLiteral: '[' intExprList? ']';
 			*/
 			return VisitIntExprList(Context.intExprList());
+		}
+
+		public override object VisitSelectSpacesStatement ([NotNull] BlokScriptGrammarParser.SelectSpacesStatementContext Context)
+		{
+			/*
+			selectSpacesStatement: 'select' selectFieldList 'from' constrainedSpaceList ('to' spacesOutputLocation)?;
+			*/
+			string[] Fields = (string[])VisitSelectFieldList(Context.selectFieldList());
+			SpaceEntity[] Spaces = (SpaceEntity[])VisitConstrainedSpaceList(Context.constrainedSpaceList());
+
+
+
+
+			return null;
+		}
+
+		public override object VisitConstrainedSpaceList ([NotNull] BlokScriptGrammarParser.ConstrainedSpaceListContext Context)
+		{
+			/*
+			constrainedSpaceList: completeSpaceList ('where' spaceConstraintExprList)?;
+			*/
+			SpaceEntity[] Spaces = (SpaceEntity[])VisitCompleteSpaceList(Context.completeSpaceList());
+
+			if (Context.spaceConstraintExprList() != null)
+			{
+				SpaceConstraint Constraint = (SpaceConstraint)VisitSpaceConstraintExprList(Context.spaceConstraintExprList());
+				Spaces = Constraint.Evaluate(Spaces);
+			}
+
+			return Spaces;
+		}
+
+		public override object VisitCompleteSpaceList([NotNull] BlokScriptGrammarParser.CompleteSpaceListContext Context)
+		{
+			/*
+			completeSpaceList: 'spaces' (('from' | 'in') spacesInputLocation)?;
+			*/
+			if (Context.spacesInputLocation() != null)
+				return GetSpacesFromLocation((SpacesInputLocation)VisitSpacesInputLocation(Context.spacesInputLocation()));
+
+			return GetSpacesFromServer();
+		}
+
+		public override object VisitSelectFieldList([NotNull] BlokScriptGrammarParser.SelectFieldListContext Context)
+		{
+			/*
+			selectFieldList: '*' (',' selectFieldList)?
+				| VARID (',' selectFieldList)?
+				| VARID
+				;
+			*/
+			List<string> FieldList = new List<string>();
+
+			if (Context.VARID() != null)
+				FieldList.Add(Context.VARID().GetText());
+			else if (Context.GetChild(0).GetText() == "*")
+				FieldList.Add("*");
+
+			if (Context.selectFieldList() != null)
+				FieldList.AddRange((string[])VisitSelectFieldList(Context.selectFieldList()));
+
+			return FieldList.ToArray();
 		}
 
 		public BlockSchemaEntity GetBlockUsingVariableName (string SymbolName)

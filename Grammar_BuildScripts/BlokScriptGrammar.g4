@@ -77,7 +77,16 @@ spaceUpdate: 'name' '=' stringExpr
 	| 'default' 'content' 'type' '=' stringExpr
 	;
 
-copySpacesStatement: 'copy' 'spaces' ('from' realDataLocation)? 'to' spacesOutputLocation;
+copySpacesStatement: 'copy' 'spaces' ('from' spacesInputLocation)? 'to' spacesOutputLocation;
+selectSpacesStatement: 'select' selectFieldList 'from' constrainedSpaceList ('to' spacesOutputLocation)?;
+
+selectFieldList: '*' (',' selectFieldList)?
+	| VARID (',' selectFieldList)?
+	| VARID
+	;
+
+constrainedSpaceList: completeSpaceList ('where' spaceConstraintExprList)?;
+completeSpaceList: 'spaces' (('from' | 'in') spacesInputLocation)?;
 
 createBlockStatement: 'create' 'block' '(' blockUpdateList ')' 'in' longOrShortSpaceSpec;
 copyBlockStatement: 'copy' 'block' longOrShortBlockSpec 'to' blockOutputLocation;
@@ -440,8 +449,8 @@ foreachEntityListForUntypedVarDecl: foreachSpaceListForUntypedVarDecl
 	| foreachRegexListForUntypedVarDecl
 	| foreachIntegerListForUntypedVarDecl;
 
-foreachSpaceListForTypedVarDecl: (fileSpec | spaceFileSpec | 'all'? 'spaces') ('where' spaceConstraintExprList)?;
-foreachSpaceListForUntypedVarDecl: (spaceFileSpec | 'all'? 'spaces') ('where' spaceConstraintExprList)?;
+foreachSpaceListForTypedVarDecl: (fileSpec | spaceFileSpec | 'spaces') ('where' spaceConstraintExprList)?;
+foreachSpaceListForUntypedVarDecl: (spaceFileSpec | 'spaces') ('where' spaceConstraintExprList)?;
 
 foreachBlockListForTypedVarDecl: (fileSpec | blockFileSpec | longOrShortSpaceSpec) ('where' blockConstraintExprList)?;
 foreachBlockListForUntypedVarDecl: (blockFileSpec | 'blocks' 'in' spaceSpec) ('where' blockConstraintExprList)?;
