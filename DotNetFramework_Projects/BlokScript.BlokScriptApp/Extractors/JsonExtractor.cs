@@ -13,7 +13,12 @@ namespace BlokScript.Extractors
 		{
 			JContainer JsonObject = (JContainer)JsonDataObject;
 			JToken Token = JsonObject[FieldName];
-			JTokenType TokenType = Token.Type;
+			JTokenType TokenType;
+
+			if (Token == null)
+				TokenType = JTokenType.Undefined;
+			else
+				TokenType = Token.Type;
 
 			BlokScriptSymbol Symbol = new BlokScriptSymbol();
 			Symbol.Type = TypeReference.GetSymbolType(TokenType);
@@ -23,17 +28,25 @@ namespace BlokScript.Extractors
 
 		public static object ExtractNativeValueFromJToken (JToken Token)
 		{
+			if (Token == null)
+				return null;
+
 			if (Token.Type == JTokenType.Integer)
 				return Token.Value<int>();
-			else if (Token.Type == JTokenType.String)
+
+			if (Token.Type == JTokenType.String)
 				return Token.Value<string>();
-			else if (Token.Type == JTokenType.Date)
+
+			if (Token.Type == JTokenType.Date)
 				return Token.Value<DateTime>();
-			else if (Token.Type == JTokenType.Null)
+
+			if (Token.Type == JTokenType.Null)
 				return null;
-			else if (Token.Type == JTokenType.Undefined)
+
+			if (Token.Type == JTokenType.Undefined)
 				return null;
-			else if (Token.Type == JTokenType.Boolean)
+
+			if (Token.Type == JTokenType.Boolean)
 				return Token.Value<bool>();
 
 			throw new TypeNotAllowedException($"{Token.Type}");

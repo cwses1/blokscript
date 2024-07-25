@@ -16,10 +16,15 @@ namespace BlokScript.Extractors
 			_JsonToSymbolTypeDict[JTokenType.Integer] = BlokScriptSymbolType.Int32;
 			_JsonToSymbolTypeDict[JTokenType.Boolean] = BlokScriptSymbolType.Boolean;
 			_JsonToSymbolTypeDict[JTokenType.Date] = BlokScriptSymbolType.DateTime;
+			_JsonToSymbolTypeDict[JTokenType.Null] = BlokScriptSymbolType.JsonNull;
+			_JsonToSymbolTypeDict[JTokenType.Undefined] = BlokScriptSymbolType.JsonUndefined;
 		}
 
 		public static BlokScriptSymbolType GetSymbolType (JTokenType JTokenTypeParam)
 		{
+			if (!_JsonToSymbolTypeDict.ContainsKey(JTokenTypeParam))
+				throw new KeyNotFoundException($"JTokenType: {JTokenTypeParam}");
+
 			return _JsonToSymbolTypeDict[JTokenTypeParam];
 		}
 

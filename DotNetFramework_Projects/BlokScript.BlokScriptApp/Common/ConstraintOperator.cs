@@ -17,6 +17,10 @@
 		StartsWith,
 		DoesNotStartWith,
 		EndsWith,
-		DoesNotEndWith
+		DoesNotEndWith,
+		IsJsonNull,
+		IsNotJsonNull,
+		IsJsonUndefined,
+		IsNotJsonUndefined
 	}
 }

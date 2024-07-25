@@ -183,7 +183,13 @@
     <Compile Include="Common\ConstraintOperator.cs" />
     <Compile Include="Common\SpaceConstraintOperator.cs" />
     <Compile Include="Common\BlockConstraintOperator.cs" />
-    <Compile Include="Comparators\BlokScriptSymbolComparator.cs" />
+    <Compile Include="Comparators\BlokScriptSymbolConstraintComparator.cs" />
+    <Compile Include="ConstraintOperators\IsNotJsonUndefinedContraintOperator.cs" />
+    <Compile Include="ConstraintOperators\IsJsonUndefinedContraintOperator.cs" />
+    <Compile Include="ConstraintOperators\IsNotJsonNullContraintOperator.cs" />
+    <Compile Include="ConstraintOperators\IsJsonNullContraintOperator.cs" />
+    <Compile Include="ConstraintOperators\NotInContraintOperator.cs" />
+    <Compile Include="ConstraintOperators\InContraintOperator.cs" />
     <Compile Include="ConstraintOperators\NotEqualsContraintOperator.cs" />
     <Compile Include="ConstraintOperators\EqualsContraintOperator.cs" />
     <Compile Include="EntityReferences\EntityField.cs" />

@@ -8,7 +8,7 @@ using BlokScript.Common;
 
 namespace BlokScript.Comparators
 {
-	public class BlokScriptSymbolComparator
+	public class BlokScriptSymbolConstraintComparator
 	{
 		public static bool AreEqual (BlokScriptSymbol LeftSymbol, BlokScriptSymbol RightSymbol)
 		{
@@ -21,8 +21,24 @@ namespace BlokScript.Comparators
 			return Compare(LeftSymbol, RightSymbol);
 		}
 
+		public static bool CanCompare (BlokScriptSymbol LeftSymbol, BlokScriptSymbol RightSymbol)
+		{
+			return LeftSymbol.Type == BlokScriptSymbolType.JsonNull
+				|| RightSymbol.Type == BlokScriptSymbolType.JsonNull
+				|| LeftSymbol.Type == RightSymbol.Type;
+		}
+
 		public static bool Compare (BlokScriptSymbol LeftSymbol, BlokScriptSymbol RightSymbol)
 		{
+			if (LeftSymbol.Type == BlokScriptSymbolType.NotAssigned
+				|| LeftSymbol.Type == BlokScriptSymbolType.JsonNull
+				|| RightSymbol.Type == BlokScriptSymbolType.NotAssigned
+				|| RightSymbol.Type == BlokScriptSymbolType.JsonNull)
+				return false;
+
+			if (LeftSymbol.Type == BlokScriptSymbolType.JsonUndefined && RightSymbol.Type == BlokScriptSymbolType.JsonUndefined)
+				return true;
+
 			if (LeftSymbol.Type == BlokScriptSymbolType.Int32)
 				return ((int)LeftSymbol.Value) == ((int)RightSymbol.Value);
 
@@ -33,14 +49,6 @@ namespace BlokScript.Comparators
 				return ((Regex)LeftSymbol.Value) == ((Regex)RightSymbol.Value);
 
 			throw new NotImplementedException();
-		}
-
-		public static bool CanCompare (BlokScriptSymbol LeftSymbol, BlokScriptSymbol RightSymbol)
-		{
-			//
-			// CAN WE PERFORM AN EQUALS COMPARISON FOR THESE 2 SYMBOLS?
-			//
-			return LeftSymbol.Type == RightSymbol.Type;
 		}
 	}
 }

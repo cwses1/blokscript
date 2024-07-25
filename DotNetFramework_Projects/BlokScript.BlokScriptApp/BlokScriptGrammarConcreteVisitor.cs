@@ -5871,6 +5871,9 @@ namespace BlokScript.BlokScriptApp
 				| VARID 'not'? 'like' stringExpr
 				| VARID ('starts' | 'does' 'not' 'start') 'with' stringExpr
 				| VARID ('ends' | 'does' 'not' 'end') 'with' (stringExpr)
+				| VARID 'is' 'not'? 'null'
+				| VARID 'is' 'not'? 'undefined'
+				| VARID 'is' 'not'? 'defined'
 				;
 			*/
 			if (Context.GetChild(1).GetText() == "=")
@@ -5897,6 +5900,31 @@ namespace BlokScript.BlokScriptApp
 				return ConstraintOperator.DoesNotEndWith;
 			else if (Context.GetChild(1).GetText() == "ends")
 				return ConstraintOperator.EndsWith;
+			else if (Context.GetChild(1).GetText() == "is")
+			{
+				if (Context.GetChild(2).GetText() == "not")
+				{
+					if (Context.GetChild(3).GetText() == "null")
+						return ConstraintOperator.IsNotJsonNull;
+					else if (Context.GetChild(3).GetText() == "undefined")
+						return ConstraintOperator.IsNotJsonUndefined;
+					else if (Context.GetChild(3).GetText() == "defined")
+						return ConstraintOperator.IsJsonUndefined;
+					else
+						throw new NotImplementedException();
+				}
+				else
+				{
+					if (Context.GetChild(2).GetText() == "null")
+						return ConstraintOperator.IsJsonNull;
+					else if (Context.GetChild(2).GetText() == "undefined")
+						return ConstraintOperator.IsJsonUndefined;
+					else if (Context.GetChild(2).GetText() == "defined")
+						return ConstraintOperator.IsNotJsonUndefined;
+					else
+						throw new NotImplementedException();
+				}
+			}
 
 			throw new NotImplementedException();
 		}
@@ -5910,6 +5938,9 @@ namespace BlokScript.BlokScriptApp
 				| VARID 'not'? 'like' generalExpr
 				| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
 				| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
+				| VARID 'is' 'not'? 'null'
+				| VARID 'is' 'not'? 'undefined'
+				| VARID 'is' 'not'? 'defined'
 				;
 			*/
 			SpaceConstraint Constraint = new SpaceConstraint();
@@ -5920,6 +5951,52 @@ namespace BlokScript.BlokScriptApp
 				Constraint.ConstraintData = VisitGeneralExpr(Context.generalExpr());
 			else if (Context.generalExprList() != null)
 				Constraint.ConstraintData = VisitGeneralExprList(Context.generalExprList());
+			else if (Context.GetChild(1).GetText() == "is")
+			{
+				if (Context.GetChild(2).GetText() == "not")
+				{
+					if (Context.GetChild(3).GetText() == "null")
+					{
+						BlokScriptSymbol JsonNullSymbol = new BlokScriptSymbol();
+						JsonNullSymbol.Type = BlokScriptSymbolType.JsonNull;
+						Constraint.ConstraintData = JsonNullSymbol;
+					}
+					else if (Context.GetChild(3).GetText() == "undefined")
+					{
+						BlokScriptSymbol JsonNullSymbol = new BlokScriptSymbol();
+						JsonNullSymbol.Type = BlokScriptSymbolType.JsonUndefined;
+						Constraint.ConstraintData = JsonNullSymbol;
+					}
+					else if (Context.GetChild(3).GetText() == "defined")
+					{
+						BlokScriptSymbol JsonNullSymbol = new BlokScriptSymbol();
+						JsonNullSymbol.Type = BlokScriptSymbolType.JsonUndefined;
+						Constraint.ConstraintData = JsonNullSymbol;
+					}
+				}
+				else if (Context.GetChild(2).GetText() == "null")
+				{
+					BlokScriptSymbol JsonNullSymbol = new BlokScriptSymbol();
+					JsonNullSymbol.Type = BlokScriptSymbolType.JsonNull;
+					Constraint.ConstraintData = JsonNullSymbol;
+				}
+				else if (Context.GetChild(2).GetText() == "undefined")
+				{
+					BlokScriptSymbol JsonNullSymbol = new BlokScriptSymbol();
+					JsonNullSymbol.Type = BlokScriptSymbolType.JsonUndefined;
+					Constraint.ConstraintData = JsonNullSymbol;
+				}
+				else if (Context.GetChild(2).GetText() == "defined")
+				{
+					BlokScriptSymbol JsonNullSymbol = new BlokScriptSymbol();
+					JsonNullSymbol.Type = BlokScriptSymbolType.JsonUndefined;
+					Constraint.ConstraintData = JsonNullSymbol;
+				}
+				else
+					throw new NotImplementedException();
+			}
+			else
+				throw new NotImplementedException();
 
 			return Constraint;
 		}

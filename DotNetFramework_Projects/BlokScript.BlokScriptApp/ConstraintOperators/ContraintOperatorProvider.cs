@@ -18,11 +18,29 @@ namespace BlokScript.ConstraintOperators
 			if (Operator == ConstraintOperator.NotEquals)
 				return NotEqualsContraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
 
+			if (Operator == ConstraintOperator.In)
+				return InContraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
+
+			if (Operator == ConstraintOperator.NotIn)
+				return NotInContraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
+
 			if (Operator == ConstraintOperator.StartsWith)
 				return StartsWithContraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
 			
 			if (Operator == ConstraintOperator.EndsWith)
 				return EndsWithContraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
+
+			if (Operator == ConstraintOperator.IsJsonNull)
+				return IsJsonNullContraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
+
+			if (Operator == ConstraintOperator.IsNotJsonNull)
+				return IsNotJsonNullContraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
+
+			if (Operator == ConstraintOperator.IsJsonUndefined)
+				return IsJsonUndefinedContraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
+
+			if (Operator == ConstraintOperator.IsNotJsonUndefined)
+				return IsNotJsonUndefinedContraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
 
 			throw new NotImplementedException();
 		}

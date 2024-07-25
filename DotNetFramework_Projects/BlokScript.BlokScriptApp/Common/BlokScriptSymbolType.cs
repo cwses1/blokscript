@@ -13,6 +13,8 @@
 		DatasourceEntry,
 		VerbosityEnum,
 		Boolean,
-		DateTime
+		DateTime,
+		JsonNull,
+		JsonUndefined
 	}
 }

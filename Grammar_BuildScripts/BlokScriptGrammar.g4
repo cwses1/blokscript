@@ -318,6 +318,8 @@ storyConstraint: VARID ('=' | '!=') generalExpr
 	| VARID 'not'? 'like' generalExpr
 	| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
 	| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
+	| VARID 'is' 'not'? 'null'
+	| VARID 'is' 'not'? 'undefined'
 	| (('any'? 'tag') | ('all'? 'tags')) ('=' | '!=') generalExpr
 	| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'in' '(' generalExprList ')'
 	| 'any'? 'tag' ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
@@ -389,6 +391,9 @@ spaceConstraint: VARID ('=' | '!=') generalExpr
 	| VARID 'not'? 'like' generalExpr
 	| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
 	| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
+	| VARID 'is' 'not'? 'null'
+	| VARID 'is' 'not'? 'undefined'
+	| VARID 'is' 'not'? 'defined'
 	;
 
 datasourcesInputLocation: fileSpec | longOrShortSpaceSpec;
