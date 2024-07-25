@@ -33,6 +33,8 @@ using BlokScript.IO;
 using BlokScript.EntityCloners;
 using BlokScript.SymbolFactories;
 using BlokScript.NativeFunctions;
+using BlokScript.EntitySelectFactories;
+using BlokScript.ConsoleWriters;
 
 namespace BlokScript.BlokScriptApp
 {
@@ -1585,142 +1587,74 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
+		public BlockConstraintOperator GetBlockConstraintOperatorFromContext ([NotNull] BlokScriptGrammarParser.BlockConstraintContext Context)
+		{
+			/*
+			blockConstraint: VARID ('=' | '!=') generalExpr
+				| VARID 'not'? 'in' '(' generalExprList ')'
+				| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+				| VARID 'not'? 'like' generalExpr
+				| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
+				| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
+				;
+			*/
+			if (Context.GetChild(1).GetText() == "=")
+				return BlockConstraintOperator.Equals;
+			else if (Context.GetChild(1).GetText() == "!=")
+				return BlockConstraintOperator.NotEquals;
+			else if (Context.GetChild(1).GetText() == "in")
+				return BlockConstraintOperator.In;
+			else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
+				return BlockConstraintOperator.NotIn;
+			else if (Context.GetChild(1).GetText() == "matches")
+				return BlockConstraintOperator.MatchesRegex;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "match")
+				return BlockConstraintOperator.DoesNotMatchRegex;
+			else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "like")
+				return BlockConstraintOperator.NotLike;
+			else if (Context.GetChild(1).GetText() == "like")
+				return BlockConstraintOperator.Like;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "start")
+				return BlockConstraintOperator.DoesNotStartWith;
+			else if (Context.GetChild(1).GetText() == "starts")
+				return BlockConstraintOperator.StartsWith;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "end")
+				return BlockConstraintOperator.DoesNotEndWith;
+			else if (Context.GetChild(1).GetText() == "ends")
+				return BlockConstraintOperator.EndsWith;
+
+			throw new NotImplementedException();
+		}
+
+		public BlockConstraintField GetBlockConstraintFieldFromSymbolName (string SymbolName)
+		{
+			if (SymbolName == "id")
+				return BlockConstraintField.Id;
+			else if (SymbolName == "name")
+				return BlockConstraintField.Name;
+
+			throw new NotImplementedException();
+		}
+
 		public override object VisitBlockConstraint ([NotNull] BlokScriptGrammarParser.BlockConstraintContext Context)
 		{
 			/*
-			blockConstraint: 'id' ('=' | '!=') intExpr
-				| 'id' 'not'? 'in' '(' intExprList ')'
-				| 'name' ('=' | '!=') stringExpr
-				| 'name' 'not'? 'in' '(' stringExprList ')'
-				| 'name' ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
-				| 'name' 'not'? 'in' '(' regexExprList ')'
-				| 'name' 'not'? 'like' stringExpr
-				| 'name' ('starts' | 'does' 'not' 'start') 'with' stringExpr
-				| 'name' ('ends' | 'does' 'not' 'end') 'with' stringExpr
+			blockConstraint: VARID ('=' | '!=') generalExpr
+				| VARID 'not'? 'in' '(' generalExprList ')'
+				| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+				| VARID 'not'? 'like' generalExpr
+				| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
+				| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
 				;
 			*/
 			BlockConstraint Constraint = new BlockConstraint();
+			Constraint.Field = GetBlockConstraintFieldFromSymbolName(Context.VARID().GetText());
+			Constraint.Operator = GetBlockConstraintOperatorFromContext(Context);
 
-			if (Context.GetChild(0).GetText() == "id")
-			{
-				//
-				// CONSTRAIN BY ID.
-				//
-				Constraint.Field = BlockConstraintField.Id;
-
-				if (Context.GetChild(1).GetText() == "=")
-				{
-					Constraint.Operator = BlockConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "!=")
-				{
-					Constraint.Operator = BlockConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "in")
-				{
-					Constraint.Operator = BlockConstraintOperator.In;
-					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
-				{
-					Constraint.Operator = BlockConstraintOperator.NotIn;
-					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
-				}
-				else
-					throw new NotImplementedException("VisitBlockConstraint");
-			}
-			if (Context.GetChild(0).GetText() == "name")
-			{
-				//
-				// CONSTRAIN BY NAME.
-				//
-				Constraint.Field = BlockConstraintField.Name;
-
-				if (Context.GetChild(1).GetText() == "=")
-				{
-					Constraint.Operator = BlockConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "!=")
-				{
-					Constraint.Operator = BlockConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
-				{
-					Constraint.Operator = BlockConstraintOperator.NotIn;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = BlockConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = BlockConstraintDataType.RegexList;
-					}
-				}
-				else if (Context.GetChild(1).GetText() == "in")
-				{
-					Constraint.Operator = BlockConstraintOperator.In;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = BlockConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = BlockConstraintDataType.RegexList;
-					}
-				}
-				else if (Context.GetChild(1).GetText() == "matches")
-				{
-					Constraint.Operator = BlockConstraintOperator.MatchesRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "match")
-				{
-					Constraint.Operator = BlockConstraintOperator.DoesNotMatchRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "like")
-				{
-					Constraint.Operator = BlockConstraintOperator.NotLike;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "like")
-				{
-					Constraint.Operator = BlockConstraintOperator.Like;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "start")
-				{
-					Constraint.Operator = BlockConstraintOperator.DoesNotStartWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "starts")
-				{
-					Constraint.Operator = BlockConstraintOperator.StartsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "end")
-				{
-					Constraint.Operator = BlockConstraintOperator.DoesNotEndWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "ends")
-				{
-					Constraint.Operator = BlockConstraintOperator.EndsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else
-					throw new NotImplementedException();
-			}
+			if (Context.generalExpr() != null)
+				Constraint.ConstraintData = VisitGeneralExpr(Context.generalExpr());
+			else if (Context.generalExprList() != null)
+				Constraint.ConstraintData = VisitGeneralExprList(Context.generalExprList());
 
 			return Constraint;
 		}
@@ -2061,425 +1995,165 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
+		public StoryConstraintOperator GetStoryConstraintOperatorFromContext ([NotNull] BlokScriptGrammarParser.StoryConstraintContext Context)
+		{
+			/*
+			storyConstraint: VARID ('=' | '!=') generalExpr
+				| VARID 'not'? 'in' '(' generalExprList ')'
+				| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+				| VARID 'not'? 'like' generalExpr
+				| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
+				| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
+				| (('any'? 'tag') | ('all'? 'tags')) ('=' | '!=') generalExpr
+				| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'in' '(' generalExprList ')'
+				| 'any'? 'tag' ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+				| 'any'? 'tag' ('starts' | 'does' 'not' 'start') 'with' generalExpr
+				| 'any'? 'tag' ('ends' | 'does' 'not' 'end') 'with' generalExpr
+				| 'all'? 'tags' ('match' | 'do' 'not' 'match') 'regex'? generalExpr
+				| 'all'? 'tags' ('start' | 'do' 'not' 'start') 'with' generalExpr
+				| 'all'? 'tags' ('end' | 'do' 'not' 'end') 'with' generalExpr
+				| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'in' '(' generalExprList ')'
+				| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'like' generalExpr
+				| 'no' 'tags'
+				| 'any' 'tags'
+				;
+			*/
+			for (int i = 0;; i++)
+			{
+				string Token = Context.GetChild(i).GetText();
+				string NextToken = Context.GetChild(i + 1) != null ? Context.GetChild(i + 1).GetText() : null;
+				string NexterToken = Context.GetChild(i + 2) != null ? Context.GetChild(i + 2).GetText() : null;
+
+				if (Token == "=")
+					return StoryConstraintOperator.Equals;
+				else if (Token == "!=")
+					return StoryConstraintOperator.NotEquals;
+				else if (Token == "not" && NextToken == "in")
+					return StoryConstraintOperator.NotIn;
+				else if (Token == "in")
+					return StoryConstraintOperator.In;
+				else if (Token == "matches")
+					return StoryConstraintOperator.MatchesRegex;
+				else if (Token == "does" && NextToken == "not" && NexterToken == "match")
+					return StoryConstraintOperator.DoesNotMatchRegex;
+				else if (Token == "not" && NextToken == "like")
+					return StoryConstraintOperator.NotLike;
+				else if (Token == "like")
+					return StoryConstraintOperator.Like;
+				else if (Token == "starts")
+					return StoryConstraintOperator.StartsWith;
+				else if (Token == "doesnotstart")
+					return StoryConstraintOperator.DoesNotStartWith;
+				else if (Token == "ends")
+					return StoryConstraintOperator.EndsWith;
+				else if (Token == "doesnotend")
+					return StoryConstraintOperator.DoesNotEndWith;
+				else if (Token == "tags")
+				{
+					if (Context.GetChild(0).GetText() == "any")
+						return StoryConstraintOperator.AnyTags;
+					else if (Context.GetChild(0).GetText() == "no")
+						return StoryConstraintOperator.NoTags;
+				}
+			}
+
+			throw new NotImplementedException();
+		}
+
+		public StoryConstraintField GetStoryConstraintFieldFromContext ([NotNull] BlokScriptGrammarParser.StoryConstraintContext Context)
+		{
+			/*
+			storyConstraint: VARID ('=' | '!=') generalExpr
+				| VARID 'not'? 'in' '(' generalExprList ')'
+				| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+				| VARID 'not'? 'like' generalExpr
+				| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
+				| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
+				| (('any'? 'tag') | ('all'? 'tags')) ('=' | '!=') generalExpr
+				| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'in' '(' generalExprList ')'
+				| 'any'? 'tag' ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+				| 'any'? 'tag' ('starts' | 'does' 'not' 'start') 'with' generalExpr
+				| 'any'? 'tag' ('ends' | 'does' 'not' 'end') 'with' generalExpr
+				| 'all'? 'tags' ('match' | 'do' 'not' 'match') 'regex'? generalExpr
+				| 'all'? 'tags' ('start' | 'do' 'not' 'start') 'with' generalExpr
+				| 'all'? 'tags' ('end' | 'do' 'not' 'end') 'with' generalExpr
+				| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'in' '(' generalExprList ')'
+				| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'like' generalExpr
+				| 'no' 'tags'
+				| 'any' 'tags'
+				;
+			*/
+			if (Context.VARID() != null)
+				return GetStoryConstraintFieldFromSymbolName(Context.VARID().GetText());
+			else
+			{
+				for (int i = 0;; i++)
+				{
+					string Token = Context.GetChild(i).GetText();
+					string NextToken = Context.GetChild(i + 1) != null ? Context.GetChild(i + 1).GetText() : null;
+
+					if (Token == "tag")
+						return StoryConstraintField.AnyTag;
+					else if (Token == "tags")
+						return StoryConstraintField.AllTags;
+					else if (Token == "any")
+					{
+						if (NextToken == "tags")
+							return StoryConstraintField.TagExistence;
+						else
+							return StoryConstraintField.AnyTag;
+					}
+					else if (Token == "all")
+						return StoryConstraintField.AllTags;
+					else if (Token == "no" && NextToken == "tags")
+						return StoryConstraintField.TagExistence;
+				}
+			}
+
+			throw new NotImplementedException();
+		}
+
+		public StoryConstraintField GetStoryConstraintFieldFromSymbolName (string SymbolName)
+		{
+			if (SymbolName == "id")
+				return StoryConstraintField.Id;
+			else if (SymbolName == "name")
+				return StoryConstraintField.Name;
+
+			throw new NotImplementedException();
+		}
+
 		public override object VisitStoryConstraint ([NotNull] BlokScriptGrammarParser.StoryConstraintContext Context)
 		{
 			/*
-			storyConstraint: 'id' ('=' | '!=') intExpr
-				| 'id' 'not'? 'in' '(' intExprList ')'
-				| ('name' | 'url') ('=' | '!=') stringExpr
-				| ('name' | 'url') 'not'? 'in' '(' stringExprList ')'
-				| ('name' | 'url') ('matches' | 'does' 'not' 'match') 'regex'? (stringExpr | REGEXLITERAL)
-				| ('name' | 'url') 'not'? 'in' '(' stringExprList ')'
-				| ('name' | 'url') 'not'? 'like' (STRINGLITERAL | VARID)
-				| ('name' | 'url') ('starts' | 'does' 'not' 'start') 'with' stringExpr
-				| ('name' | 'url') ('ends' | 'does' 'not' 'end') 'with' (stringExpr)
-				| (('any'? 'tag') | ('all'? 'tags')) '=' stringExpr
-				| (('any'? 'tag') | ('all'? 'tags')) 'in' '(' stringExprList ')'
-				| (('any'? 'tag' 'matches') | ('all'? 'tags' 'match')) 'regex'? regexExpr
-				| (('any'? 'tag' 'matches') | ('all'? 'tags' 'match')) 'in' '(' regexExprList ')'
-				| (('any'? 'tag') | ('all'? 'tags')) 'like' stringExpr
-				| (('any'? 'tag') | ('all'? 'tags')) 'starts' 'with' stringExpr
-				| (('any'? 'tag') | ('all'? 'tags')) 'ends' 'with' stringExpr
+			storyConstraint: VARID ('=' | '!=') generalExpr
+				| VARID 'not'? 'in' '(' generalExprList ')'
+				| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+				| VARID 'not'? 'like' generalExpr
+				| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
+				| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
+				| (('any'? 'tag') | ('all'? 'tags')) ('=' | '!=') generalExpr
+				| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'in' '(' generalExprList ')'
+				| 'any'? 'tag' ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+				| 'any'? 'tag' ('starts' | 'does' 'not' 'start') 'with' generalExpr
+				| 'any'? 'tag' ('ends' | 'does' 'not' 'end') 'with' generalExpr
+				| 'all'? 'tags' ('match' | 'do' 'not' 'match') 'regex'? generalExpr
+				| 'all'? 'tags' ('start' | 'do' 'not' 'start') 'with' generalExpr
+				| 'all'? 'tags' ('end' | 'do' 'not' 'end') 'with' generalExpr
+				| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'in' '(' generalExprList ')'
+				| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'like' generalExpr
+				| 'no' 'tags'
+				| 'any' 'tags'
 				;
 			*/
 			StoryConstraint Constraint = new StoryConstraint();
+			Constraint.Field = GetStoryConstraintFieldFromContext(Context);
+			Constraint.Operator = GetStoryConstraintOperatorFromContext(Context);
 
-			if (Context.GetChild(0).GetText() == "id")
-			{
-				Constraint.Field = StoryConstraintField.Id;
-
-				if (Context.GetChild(1).GetText() == "=")
-				{
-					Constraint.Operator = StoryConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "!=")
-				{
-					Constraint.Operator = StoryConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "in")
-				{
-					Constraint.Operator = StoryConstraintOperator.In;
-					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
-				{
-					Constraint.Operator = StoryConstraintOperator.NotIn;
-					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
-				}
-				else
-					throw new NotImplementedException("VisitStoryConstraint");
-			}
-			else if (Context.GetChild(0).GetText() == "name" || Context.GetChild(0).GetText() == "url")
-			{
-				if (Context.GetChild(0).GetText() == "name")
-					Constraint.Field = StoryConstraintField.Name;
-				else if (Context.GetChild(0).GetText() == "url")
-					Constraint.Field = StoryConstraintField.Url;
-				else
-					throw new NotImplementedException("VisitStoryConstraint");
-
-				if (Context.GetChild(1).GetText() == "=")
-				{
-					Constraint.Operator = StoryConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "!=")
-				{
-					Constraint.Operator = StoryConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
-				{
-					Constraint.Operator = StoryConstraintOperator.NotIn;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.RegexList;
-					}
-					else
-						throw new NotImplementedException("");
-				}
-				else if (Context.GetChild(1).GetText() == "in")
-				{
-					Constraint.Operator = StoryConstraintOperator.In;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.RegexList;
-					}
-					else
-						throw new NotImplementedException("");
-				}
-				else if (Context.GetChild(1).GetText() == "matches")
-				{
-					Constraint.Operator = StoryConstraintOperator.MatchesRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "match")
-				{
-					Constraint.Operator = StoryConstraintOperator.DoesNotMatchRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "like")
-				{
-					Constraint.Operator = StoryConstraintOperator.NotLike;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "like")
-				{
-					Constraint.Operator = StoryConstraintOperator.Like;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "start")
-				{
-					Constraint.Operator = StoryConstraintOperator.DoesNotStartWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "starts")
-				{
-					Constraint.Operator = StoryConstraintOperator.StartsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "end")
-				{
-					Constraint.Operator = StoryConstraintOperator.DoesNotEndWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "ends")
-				{
-					Constraint.Operator = StoryConstraintOperator.EndsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else
-					throw new NotImplementedException("VisitStoryConstraint");
-			}
-			else if (Context.GetChild(0).GetText() == "any" || Context.GetChild(0).GetText() == "tag" || Context.GetChild(0).GetText() == "no")
-			{
-				Constraint.Field = StoryConstraintField.AnyTag;
-
-				string OperatorToken = null;
-				int i = 1;
-
-				while (OperatorToken == null)
-				{
-					string Token = Context.GetChild(i).GetText();
-					string NextToken = Context.GetChild(i + 1) != null ? Context.GetChild(i + 1).GetText() : null;
-					string NexterToken = Context.GetChild(i + 2) != null ? Context.GetChild(i + 2).GetText() : null;
-
-					if (Token == "=")
-						OperatorToken = "=";
-					else if (Token == "!=")
-						OperatorToken = "!=";
-					else if (Token == "not" && NextToken == "in")
-						OperatorToken = "notin";
-					else if (Token == "in")
-						OperatorToken = "in";
-					else if (Token == "matches")
-						OperatorToken = "matches";
-					else if (Token == "does" && NextToken == "not" && NexterToken == "match")
-						OperatorToken = "doesnotmatch";
-					else if (Token == "not" && NextToken == "like")
-						OperatorToken = "notlike";
-					else if (Token == "like")
-						OperatorToken = "like";
-					else if (Token == "starts")
-						OperatorToken = "starts";
-					else if (Token == "doesnotstart")
-						OperatorToken = "doesnotstart";
-					else if (Token == "ends")
-						OperatorToken = "ends";
-					else if (Token == "doesnotend")
-						OperatorToken = "doesnotend";
-					else if (Token == "tags")
-					{
-						if (Context.GetChild(0).GetText() == "any")
-							OperatorToken = "anytags";
-						else if (Context.GetChild(0).GetText() == "no")
-							OperatorToken = "notags";
-						else
-							throw new NotImplementedException("VisitStoryConstraint");
-					}
-
-					i++;
-				}
-
-				if (OperatorToken == "=")
-				{
-					Constraint.Operator = StoryConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "!=")
-				{
-					Constraint.Operator = StoryConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "notin")
-				{
-					Constraint.Operator = StoryConstraintOperator.NotIn;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.RegexList;
-					}
-					else
-						throw new NotImplementedException("");
-				}
-				else if (OperatorToken == "in")
-				{
-					Constraint.Operator = StoryConstraintOperator.In;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.RegexList;
-					}
-					else
-						throw new NotImplementedException("VisitStoryConstraint");
-				}
-				else if (OperatorToken == "matches")
-				{
-					Constraint.Operator = StoryConstraintOperator.MatchesRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (OperatorToken == "doesnotmatch")
-				{
-					Constraint.Operator = StoryConstraintOperator.DoesNotMatchRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (OperatorToken == "notlike")
-				{
-					Constraint.Operator = StoryConstraintOperator.NotLike;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "like")
-				{
-					Constraint.Operator = StoryConstraintOperator.Like;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "starts")
-				{
-					Constraint.Operator = StoryConstraintOperator.StartsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "doesnotstart")
-				{
-					Constraint.Operator = StoryConstraintOperator.DoesNotStartWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "ends")
-				{
-					Constraint.Operator = StoryConstraintOperator.EndsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "doesnotend")
-				{
-					Constraint.Operator = StoryConstraintOperator.DoesNotEndWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "notags")
-				{
-					Constraint.Operator = StoryConstraintOperator.NoTags;
-				}
-				else if (OperatorToken == "anytags")
-				{
-					Constraint.Operator = StoryConstraintOperator.AnyTags;
-				}
-				else
-					throw new NotImplementedException("VisitStoryConstraint");
-			}
-			else if (Context.GetChild(0).GetText() == "all" || Context.GetChild(0).GetText() == "tags")
-			{
-				Constraint.Field = StoryConstraintField.AllTags;
-
-				string OperatorToken = null;
-				int i = 1;
-
-				while (OperatorToken == null)
-				{
-					string Token = Context.GetChild(i).GetText();
-					string NextToken = Context.GetChild(i + 1) != null ? Context.GetChild(i + 1).GetText() : null;
-					string NexterToken = Context.GetChild(i + 2) != null ? Context.GetChild(i + 2).GetText() : null;
-
-					if (Token == "=")
-						OperatorToken = "=";
-					else if (Token == "!=")
-						OperatorToken = "!=";
-					else if (Token == "not" && NextToken == "in")
-						OperatorToken = "notin";
-					else if (Token == "in")
-						OperatorToken = "in";
-					else if (Token == "match")
-						OperatorToken = "match";
-					else if (Token == "do" && NextToken == "not" && NexterToken == "match")
-						OperatorToken = "donotmatch";
-					else if (Token == "not" && NextToken == "like")
-						OperatorToken = "notlike";
-					else if (Token == "like")
-						OperatorToken = "like";
-					else if (Token == "start")
-						OperatorToken = "startwith";
-					else if (Token == "do" && NextToken == "not" && NexterToken == "start")
-						OperatorToken = "donotstartwith";
-					else if (Token == "end")
-						OperatorToken = "endwith";
-					else if (Token == "do" && NextToken == "not" && NexterToken == "end")
-						OperatorToken = "donotendwith";
-
-					i++;
-				}
-
-				if (OperatorToken == "=")
-				{
-					Constraint.Operator = StoryConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "!=")
-				{
-					Constraint.Operator = StoryConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "notin")
-				{
-					Constraint.Operator = StoryConstraintOperator.NotIn;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.RegexList;
-					}
-					else
-						throw new NotImplementedException("");
-				}
-				else if (OperatorToken == "in")
-				{
-					Constraint.Operator = StoryConstraintOperator.In;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = StoryConstraintDataType.RegexList;
-					}
-					else
-						throw new NotImplementedException("");
-				}
-				else if (OperatorToken == "match")
-				{
-					Constraint.Operator = StoryConstraintOperator.MatchesRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (OperatorToken == "donotmatch")
-				{
-					Constraint.Operator = StoryConstraintOperator.DoesNotMatchRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (OperatorToken == "notlike")
-				{
-					Constraint.Operator = StoryConstraintOperator.NotLike;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "like")
-				{
-					Constraint.Operator = StoryConstraintOperator.Like;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "startwith")
-				{
-					Constraint.Operator = StoryConstraintOperator.StartsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "donotstartwith")
-				{
-					Constraint.Operator = StoryConstraintOperator.DoesNotStartWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "endwith")
-				{
-					Constraint.Operator = StoryConstraintOperator.EndsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (OperatorToken == "donotendwith")
-				{
-					Constraint.Operator = StoryConstraintOperator.DoesNotEndWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else
-					throw new NotImplementedException("VisitStoryConstraint");
-			}
+			if (Context.generalExpr() != null)
+				Constraint.ConstraintData = VisitGeneralExpr(Context.generalExpr());
+			else if (Context.generalExprList() != null)
+				Constraint.ConstraintData = VisitGeneralExprList(Context.generalExprList());
 
 			return Constraint;
 		}
@@ -2771,151 +2445,76 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
+		public DatasourceConstraintOperator GetDatasourceConstraintOperatorFromContext ([NotNull] BlokScriptGrammarParser.DatasourceConstraintContext Context)
+		{
+			/*
+			datasourceConstraint: VARID ('=' | '!=') generalExpr
+				| VARID 'not'? 'in' '(' generalExprList ')'
+				| VARID ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
+				| VARID 'not'? 'like' stringExpr
+				| VARID ('starts' | 'does' 'not' 'start') 'with' stringExpr
+				| VARID ('ends' | 'does' 'not' 'end') 'with' stringExpr
+				;
+			*/
+			if (Context.GetChild(1).GetText() == "=")
+				return DatasourceConstraintOperator.Equals;
+			else if (Context.GetChild(1).GetText() == "!=")
+				return DatasourceConstraintOperator.NotEquals;
+			else if (Context.GetChild(1).GetText() == "in")
+				return DatasourceConstraintOperator.In;
+			else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
+				return DatasourceConstraintOperator.NotIn;
+			else if (Context.GetChild(1).GetText() == "matches")
+				return DatasourceConstraintOperator.MatchesRegex;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "match")
+				return DatasourceConstraintOperator.DoesNotMatchRegex;
+			else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "like")
+				return DatasourceConstraintOperator.NotLike;
+			else if (Context.GetChild(1).GetText() == "like")
+				return DatasourceConstraintOperator.Like;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "start")
+				return DatasourceConstraintOperator.DoesNotStartWith;
+			else if (Context.GetChild(1).GetText() == "starts")
+				return DatasourceConstraintOperator.StartsWith;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "end")
+				return DatasourceConstraintOperator.DoesNotEndWith;
+			else if (Context.GetChild(1).GetText() == "ends")
+				return DatasourceConstraintOperator.EndsWith;
+
+			throw new NotImplementedException();
+		}
+
+		public DatasourceConstraintField GetDatasourceConstraintFieldFromSymbolName (string SymbolName)
+		{
+			if (SymbolName == "id")
+				return DatasourceConstraintField.Id;
+			else if (SymbolName == "name")
+				return DatasourceConstraintField.Name;
+			else if (SymbolName == "slug")
+				return DatasourceConstraintField.Slug;
+
+			throw new NotImplementedException();
+		}
+
 		public override object VisitDatasourceConstraint ([NotNull] BlokScriptGrammarParser.DatasourceConstraintContext Context)
 		{
 			/*
-			datasourceConstraint: 'id' ('=' | '!=') intExpr
-				| 'id' 'not'? 'in' '(' intExprList ')'
-				| ('name' | 'slug') ('=' | '!=') stringExpr
-				| ('name' | 'slug') 'not'? 'in' '(' stringExprList ')'
-				| ('name' | 'slug') ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
-				| ('name' | 'slug') 'not'? 'in' '(' regexExprList ')'
-				| ('name' | 'slug') 'not'? 'like' stringExpr
-				| ('name' | 'slug') ('starts' | 'does' 'not' 'start') 'with' stringExpr
-				| ('name' | 'slug') ('ends' | 'does' 'not' 'end') 'with' (stringExpr)
+			datasourceConstraint: VARID ('=' | '!=') generalExpr
+				| VARID 'not'? 'in' '(' generalExprList ')'
+				| VARID ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
+				| VARID 'not'? 'like' stringExpr
+				| VARID ('starts' | 'does' 'not' 'start') 'with' stringExpr
+				| VARID ('ends' | 'does' 'not' 'end') 'with' stringExpr
 				;
 			*/
 			DatasourceConstraint Constraint = new DatasourceConstraint();
+			Constraint.Field = GetDatasourceConstraintFieldFromSymbolName(Context.VARID().GetText());
+			Constraint.Operator = GetDatasourceConstraintOperatorFromContext(Context);
 
-			if (Context.GetChild(0).GetText() == "id")
-			{
-				//
-				// CONSTRAIN BY ID
-				//
-				Constraint.Field = DatasourceConstraintField.Id;
-
-				if (Context.GetChild(1).GetText() == "=")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "!=")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "in")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.In;
-					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.NotIn;
-					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
-				}
-				else
-					throw new NotImplementedException("VisitDatasourceConstraint");
-			}
-			else if (Context.GetChild(0).GetText() == "name" || Context.GetChild(0).GetText() == "slug")
-			{
-				//
-				// CONSTRAIN BY NAME OR SLUG.
-				//
-				if (Context.GetChild(0).GetText() == "name")
-					Constraint.Field = DatasourceConstraintField.Name;
-				else if (Context.GetChild(0).GetText() == "slug")
-					Constraint.Field = DatasourceConstraintField.Slug;
-				else
-					throw new NotImplementedException();
-
-				if (Context.GetChild(1).GetText() == "=")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "!=")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.NotIn;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = DatasourceConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = DatasourceConstraintDataType.RegexList;
-					}
-					else
-						throw new NotImplementedException("");
-				}
-				else if (Context.GetChild(1).GetText() == "in")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.In;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = DatasourceConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = DatasourceConstraintDataType.RegexList;
-					}
-					else
-						throw new NotImplementedException("");
-				}
-				else if (Context.GetChild(1).GetText() == "matches")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.MatchesRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "match")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.DoesNotMatchRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "like")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.NotLike;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "like")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.Like;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "start")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.DoesNotStartWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "starts")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.StartsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "end")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.DoesNotEndWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "ends")
-				{
-					Constraint.Operator = DatasourceConstraintOperator.EndsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else
-					throw new NotImplementedException();
-			}
+			if (Context.generalExpr() != null)
+				Constraint.ConstraintData = VisitGeneralExpr(Context.generalExpr());
+			else if (Context.generalExprList() != null)
+				Constraint.ConstraintData = VisitGeneralExprList(Context.generalExprList());
 
 			return Constraint;
 		}
@@ -3591,11 +3190,9 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitRegexExpr ([NotNull] BlokScriptGrammarParser.RegexExprContext Context)
 		{
 			/*
-			regexExpr: STRINGLITERAL | REGEXLITERAL | VARID;
+			regexExpr: REGEXLITERAL | VARID;
 			*/
-			if (Context.STRINGLITERAL() != null)
-				return new Regex(StringLiteralTrimmer.Trim(Context.STRINGLITERAL().GetText()));
-			else if (Context.REGEXLITERAL() != null)
+			if (Context.REGEXLITERAL() != null)
 				return new Regex(RegexLiteralTrimmer.Trim(Context.REGEXLITERAL().GetText()));
 			else if (Context.VARID() != null)
 			{
@@ -4253,151 +3850,76 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
+		public DatasourceEntryConstraintOperator GetDatasourceEntryConstraintOperatorFromContext ([NotNull] BlokScriptGrammarParser.DatasourceEntryConstraintContext Context)
+		{
+			/*
+			datasourceEntryConstraint: VARID ('=' | '!=') generalExpr
+				| VARID 'not'? 'in' '(' generalExprList ')'
+				| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+				| VARID 'not'? 'like' stringExpr
+				| VARID ('starts' | 'does' 'not' 'start') 'with' stringExpr
+				| VARID ('ends' | 'does' 'not' 'end') 'with' stringExpr
+				;
+			*/
+			if (Context.GetChild(1).GetText() == "=")
+				return DatasourceEntryConstraintOperator.Equals;
+			else if (Context.GetChild(1).GetText() == "!=")
+				return DatasourceEntryConstraintOperator.NotEquals;
+			else if (Context.GetChild(1).GetText() == "in")
+				return DatasourceEntryConstraintOperator.In;
+			else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
+				return DatasourceEntryConstraintOperator.NotIn;
+			else if (Context.GetChild(1).GetText() == "matches")
+				return DatasourceEntryConstraintOperator.MatchesRegex;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "match")
+				return DatasourceEntryConstraintOperator.DoesNotMatchRegex;
+			else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "like")
+				return DatasourceEntryConstraintOperator.NotLike;
+			else if (Context.GetChild(1).GetText() == "like")
+				return DatasourceEntryConstraintOperator.Like;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "start")
+				return DatasourceEntryConstraintOperator.DoesNotStartWith;
+			else if (Context.GetChild(1).GetText() == "starts")
+				return DatasourceEntryConstraintOperator.StartsWith;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "end")
+				return DatasourceEntryConstraintOperator.DoesNotEndWith;
+			else if (Context.GetChild(1).GetText() == "ends")
+				return DatasourceEntryConstraintOperator.EndsWith;
+
+			throw new NotImplementedException();
+		}
+
+		public DatasourceEntryConstraintField GetDatasourceEntryConstraintFieldFromSymbolName (string SymbolName)
+		{
+			if (SymbolName == "id")
+				return DatasourceEntryConstraintField.Id;
+			else if (SymbolName == "name")
+				return DatasourceEntryConstraintField.Name;
+			else if (SymbolName == "value")
+				return DatasourceEntryConstraintField.Value;
+
+			throw new NotImplementedException();
+		}
+
 		public override object VisitDatasourceEntryConstraint ([NotNull] BlokScriptGrammarParser.DatasourceEntryConstraintContext Context)
 		{
 			/*
-			datasourceEntryConstraint: 'id' ('=' | '!=') intExpr
-				| 'id' 'not'? 'in' '(' intExprList ')'
-				| ('name' | 'value') ('=' | '!=') stringExpr
-				| ('name' | 'value') 'not'? 'in' '(' stringExprList ')'
-				| ('name' | 'value') ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
-				| ('name' | 'value') 'not'? 'in' '(' stringExprList ')'
-				| ('name' | 'value') 'not'? 'like' stringExpr
-				| ('name' | 'value') ('starts' | 'does' 'not' 'start') 'with' stringExpr
-				| ('name' | 'value') ('ends' | 'does' 'not' 'end') 'with' stringExpr
+			datasourceEntryConstraint: VARID ('=' | '!=') generalExpr
+				| VARID 'not'? 'in' '(' generalExprList ')'
+				| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+				| VARID 'not'? 'like' stringExpr
+				| VARID ('starts' | 'does' 'not' 'start') 'with' stringExpr
+				| VARID ('ends' | 'does' 'not' 'end') 'with' stringExpr
 				;
 			*/
 			DatasourceEntryConstraint Constraint = new DatasourceEntryConstraint();
+			Constraint.Field = GetDatasourceEntryConstraintFieldFromSymbolName(Context.VARID().GetText());
+			Constraint.Operator = GetDatasourceEntryConstraintOperatorFromContext(Context);
 
-			if (Context.GetChild(0).GetText() == "id")
-			{
-				//
-				// CONSTRAIN BY ID
-				//
-				Constraint.Field = DatasourceEntryConstraintField.Id;
-
-				if (Context.GetChild(1).GetText() == "=")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "!=")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "in")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.In;
-					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.NotIn;
-					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
-				}
-				else
-					throw new NotImplementedException("VisitDatasourceEntryConstraint");
-			}
-			else if (Context.GetChild(0).GetText() == "name" || Context.GetChild(0).GetText() == "value")
-			{
-				//
-				// CONTRAIN BY NAME OR VALUE
-				//
-				if (Context.GetChild(0).GetText() == "name")
-					Constraint.Field = DatasourceEntryConstraintField.Name;
-				else if (Context.GetChild(0).GetText() == "value")
-					Constraint.Field = DatasourceEntryConstraintField.Value;
-				else
-					throw new NotImplementedException("VisitDatasourceEntryConstraint");
-
-				if (Context.GetChild(1).GetText() == "=")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "!=")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.NotIn;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = DatasourceEntryConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = DatasourceEntryConstraintDataType.RegexList;
-					}
-					else
-						throw new NotImplementedException("");
-				}
-				else if (Context.GetChild(1).GetText() == "in")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.In;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = DatasourceEntryConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = DatasourceEntryConstraintDataType.RegexList;
-					}
-					else
-						throw new NotImplementedException("");
-				}
-				else if (Context.GetChild(1).GetText() == "matches")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.MatchesRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "match")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.DoesNotMatchRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "like")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.NotLike;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "like")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.Like;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "start")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.DoesNotStartWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "starts")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.StartsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "end")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.DoesNotEndWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "ends")
-				{
-					Constraint.Operator = DatasourceEntryConstraintOperator.EndsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else
-					throw new NotImplementedException("VisitDatasourceEntryConstraint");
-			}
+			if (Context.generalExpr() != null)
+				Constraint.ConstraintData = VisitGeneralExpr(Context.generalExpr());
+			else if (Context.generalExprList() != null)
+				Constraint.ConstraintData = VisitGeneralExprList(Context.generalExprList());
 
 			return Constraint;
 		}
@@ -5078,12 +4600,10 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitDatasourceUpdate ([NotNull] BlokScriptGrammarParser.DatasourceUpdateContext Context)
 		{
 			/*
-			datasourceUpdate: 'name' '=' stringExpr
-				| 'slug' '=' stringExpr
-				;
+			datasourceUpdate: VARID '=' stringExpr;
 			*/
 			UpdateModel Update = new UpdateModel();
-			Update.Name = Context.GetChild(0).GetText();
+			Update.Name = Context.VARID().GetText();
 			Update.Value = (string)VisitStringExpr(Context.stringExpr());
 			return Update;
 		}
@@ -5173,12 +4693,10 @@ namespace BlokScript.BlokScriptApp
 		public override object VisitDatasourceEntryUpdate ([NotNull] BlokScriptGrammarParser.DatasourceEntryUpdateContext Context)
 		{
 			/*
-			datasourceEntryUpdate: 'name' '=' stringExpr
-				| 'value' '=' stringExpr
-				;
+			datasourceEntryUpdate: VARID '=' stringExpr;
 			*/
 			DatasourceEntryUpdate Update = new DatasourceEntryUpdate();
-			Update.Name = Context.GetChild(0).GetText();
+			Update.Name = Context.VARID(	).GetText();
 			Update.Value = (string)VisitStringExpr(Context.stringExpr());
 			return Update;
 		}
@@ -6239,9 +5757,9 @@ namespace BlokScript.BlokScriptApp
 				string OperatorToken = Context.GetChild(1).GetText();
 
 				if (OperatorToken == "and")
-					RootConstraint.Operator = SpaceConstraintOperator.Intersect;
+					RootConstraint.Operator = ConstraintOperator.Intersect;
 				else if (OperatorToken == "or")
-					RootConstraint.Operator = SpaceConstraintOperator.Union;
+					RootConstraint.Operator = ConstraintOperator.Union;
 				else
 					throw new NotImplementedException();
 
@@ -6250,7 +5768,7 @@ namespace BlokScript.BlokScriptApp
 			}
 			else
 			{
-				RootConstraint.Operator = SpaceConstraintOperator.Root;
+				RootConstraint.Operator = ConstraintOperator.Root;
 				RootConstraint.ChildConstraint = (SpaceConstraint)VisitSpaceConstraintExpr(Context.spaceConstraintExpr());
 			}
 
@@ -6268,7 +5786,7 @@ namespace BlokScript.BlokScriptApp
 			if (Context.GetChild(0).GetText() == "(")
 			{
 				SpaceConstraint RootConstraint = new SpaceConstraint();
-				RootConstraint.Operator = SpaceConstraintOperator.Root;
+				RootConstraint.Operator = ConstraintOperator.Root;
 
 				if (Context.spaceConstraint() != null)
 				{
@@ -6283,9 +5801,9 @@ namespace BlokScript.BlokScriptApp
 						string OperatorToken = Context.GetChild(2).GetText();
 
 						if (OperatorToken == "and")
-							OpConstraint.Operator = SpaceConstraintOperator.Intersect;
+							OpConstraint.Operator = ConstraintOperator.Intersect;
 						else if (OperatorToken == "or")
-							OpConstraint.Operator = SpaceConstraintOperator.Union;
+							OpConstraint.Operator = ConstraintOperator.Union;
 						else
 							throw new NotImplementedException();
 
@@ -6305,9 +5823,9 @@ namespace BlokScript.BlokScriptApp
 					string OperatorToken = Context.GetChild(2).GetText();
 
 					if (OperatorToken == "and")
-						OpConstraint.Operator = SpaceConstraintOperator.Intersect;
+						OpConstraint.Operator = ConstraintOperator.Intersect;
 					else if (OperatorToken == "or")
-						OpConstraint.Operator = SpaceConstraintOperator.Union;
+						OpConstraint.Operator = ConstraintOperator.Union;
 					else
 						throw new NotImplementedException();
 
@@ -6331,9 +5849,9 @@ namespace BlokScript.BlokScriptApp
 					OpConstraint.RightChildConstraint = (SpaceConstraint)VisitSpaceConstraintExpr(Context.spaceConstraintExpr(0));
 
 					if (OperatorToken == "and")
-						OpConstraint.Operator = SpaceConstraintOperator.Intersect;
+						OpConstraint.Operator = ConstraintOperator.Intersect;
 					else if (OperatorToken == "or")
-						OpConstraint.Operator = SpaceConstraintOperator.Union;
+						OpConstraint.Operator = ConstraintOperator.Union;
 					else
 						throw new NotImplementedException();
 
@@ -6344,144 +5862,114 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
+		public ConstraintOperator GetConstraintOperatorFromContext ([NotNull] BlokScriptGrammarParser.SpaceConstraintContext Context)
+		{
+			/*
+			spaceConstraint: VARID ('=' | '!=') generalExpr
+				| VARID 'not'? 'in' '(' generalExprList ')'
+				| VARID ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
+				| VARID 'not'? 'like' stringExpr
+				| VARID ('starts' | 'does' 'not' 'start') 'with' stringExpr
+				| VARID ('ends' | 'does' 'not' 'end') 'with' (stringExpr)
+				;
+			*/
+			if (Context.GetChild(1).GetText() == "=")
+				return ConstraintOperator.Equals;
+			else if (Context.GetChild(1).GetText() == "!=")
+				return ConstraintOperator.NotEquals;
+			else if (Context.GetChild(1).GetText() == "in")
+				return ConstraintOperator.In;
+			else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
+				return ConstraintOperator.NotIn;
+			else if (Context.GetChild(1).GetText() == "matches")
+				return ConstraintOperator.MatchesRegex;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "match")
+				return ConstraintOperator.DoesNotMatchRegex;
+			else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "like")
+				return ConstraintOperator.NotLike;
+			else if (Context.GetChild(1).GetText() == "like")
+				return ConstraintOperator.Like;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "start")
+				return ConstraintOperator.DoesNotStartWith;
+			else if (Context.GetChild(1).GetText() == "starts")
+				return ConstraintOperator.StartsWith;
+			else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "end")
+				return ConstraintOperator.DoesNotEndWith;
+			else if (Context.GetChild(1).GetText() == "ends")
+				return ConstraintOperator.EndsWith;
+
+			throw new NotImplementedException();
+		}
+
 		public override object VisitSpaceConstraint ([NotNull] BlokScriptGrammarParser.SpaceConstraintContext Context)
 		{
 			/*
-			spaceConstraint: 'id' ('=' | '!=') intExpr
-				| 'id' 'not'? 'in' '(' intExprList ')'
-				| 'name' ('=' | '!=') stringExpr
-				| 'name' 'not'? 'in' '(' stringExprList ')'
-				| 'name' ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
-				| 'name' 'not'? 'in' '(' regexExprList ')'
-				| 'name' 'not'? 'like' stringExpr
-				| 'name' ('starts' | 'does' 'not' 'start') 'with' stringExpr
-				| 'name' ('ends' | 'does' 'not' 'end') 'with' (stringExpr)
+			spaceConstraint: VARID ('=' | '!=') generalExpr
+				| VARID 'not'? 'in' '(' generalExprList ')'
+				| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+				| VARID 'not'? 'like' generalExpr
+				| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
+				| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
 				;
 			*/
 			SpaceConstraint Constraint = new SpaceConstraint();
+			Constraint.FieldName = Context.VARID().GetText();
+			Constraint.Operator = GetConstraintOperatorFromContext(Context);
 
-			if (Context.GetChild(0).GetText() == "id")
-			{
-				//
-				// CONSTRAIN BY ID.
-				//
-				Constraint.Field = SpaceConstraintField.Id;
-
-				if (Context.GetChild(1).GetText() == "=")
-				{
-					Constraint.Operator = SpaceConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "!=")
-				{
-					Constraint.Operator = SpaceConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitIntExpr(Context.intExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "in")
-				{
-					Constraint.Operator = SpaceConstraintOperator.In;
-					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
-				{
-					Constraint.Operator = SpaceConstraintOperator.NotIn;
-					Constraint.ConstraintData = VisitIntExprList(Context.intExprList());
-				}
-				else
-					throw new NotImplementedException("VisitSpaceConstraint");
-			}
-			if (Context.GetChild(0).GetText() == "name")
-			{
-				//
-				// CONSTRAIN BY NAME.
-				//
-				Constraint.Field = SpaceConstraintField.Name;
-
-				if (Context.GetChild(1).GetText() == "=")
-				{
-					Constraint.Operator = SpaceConstraintOperator.Equals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "!=")
-				{
-					Constraint.Operator = SpaceConstraintOperator.NotEquals;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "in")
-				{
-					Constraint.Operator = SpaceConstraintOperator.NotIn;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = SpaceConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = SpaceConstraintDataType.RegexList;
-					}
-				}
-				else if (Context.GetChild(1).GetText() == "in")
-				{
-					Constraint.Operator = SpaceConstraintOperator.In;
-
-					if (Context.stringExprList() != null)
-					{
-						Constraint.ConstraintData = VisitStringExprList(Context.stringExprList());
-						Constraint.ConstraintDataType = SpaceConstraintDataType.StringList;
-					}
-					else if (Context.regexExprList() != null)
-					{
-						Constraint.ConstraintData = VisitRegexExprList(Context.regexExprList());
-						Constraint.ConstraintDataType = SpaceConstraintDataType.RegexList;
-					}
-				}
-				else if (Context.GetChild(1).GetText() == "matches")
-				{
-					Constraint.Operator = SpaceConstraintOperator.MatchesRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "match")
-				{
-					Constraint.Operator = SpaceConstraintOperator.DoesNotMatchRegex;
-					Constraint.ConstraintData = VisitRegexExpr(Context.regexExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "not" && Context.GetChild(2).GetText() == "like")
-				{
-					Constraint.Operator = SpaceConstraintOperator.NotLike;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "like")
-				{
-					Constraint.Operator = SpaceConstraintOperator.Like;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "start")
-				{
-					Constraint.Operator = SpaceConstraintOperator.DoesNotStartWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "starts")
-				{
-					Constraint.Operator = SpaceConstraintOperator.StartsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "does" && Context.GetChild(2).GetText() == "not" && Context.GetChild(3).GetText() == "end")
-				{
-					Constraint.Operator = SpaceConstraintOperator.DoesNotEndWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else if (Context.GetChild(1).GetText() == "ends")
-				{
-					Constraint.Operator = SpaceConstraintOperator.EndsWith;
-					Constraint.ConstraintData = VisitStringExpr(Context.stringExpr());
-				}
-				else
-					throw new NotImplementedException();
-			}
+			if (Context.generalExpr() != null)
+				Constraint.ConstraintData = VisitGeneralExpr(Context.generalExpr());
+			else if (Context.generalExprList() != null)
+				Constraint.ConstraintData = VisitGeneralExprList(Context.generalExprList());
 
 			return Constraint;
+		}
+
+		public override object VisitGeneralExpr ([NotNull] BlokScriptGrammarParser.GeneralExprContext Context)
+		{
+			/*
+			generalExpr: VARID | regexExpr | stringExpr | intExpr;
+			*/
+			if (Context.VARID() != null)
+			{
+				return _SymbolTableManager.GetSymbol(Context.VARID().GetText());
+			}
+			else if (Context.regexExpr() != null)
+			{
+				BlokScriptSymbol Symbol = new BlokScriptSymbol();
+				Symbol.Type = BlokScriptSymbolType.Regex;
+				Symbol.Value = VisitRegexExpr(Context.regexExpr());
+				return Symbol;
+			}
+			else if (Context.stringExpr() != null)
+			{
+				BlokScriptSymbol Symbol = new BlokScriptSymbol();
+				Symbol.Type = BlokScriptSymbolType.String;
+				Symbol.Value = VisitStringExpr(Context.stringExpr());
+				return Symbol;
+			}
+			else if (Context.intExpr() != null)
+			{
+				BlokScriptSymbol Symbol = new BlokScriptSymbol();
+				Symbol.Type = BlokScriptSymbolType.Int32;
+				Symbol.Value = VisitIntExpr(Context.intExpr());
+				return Symbol;
+			}
+
+			throw new NotImplementedException();
+		}
+
+		public override object VisitGeneralExprList ([NotNull] BlokScriptGrammarParser.GeneralExprListContext Context)
+		{
+			/*
+			generalExprList: generalExpr (',' generalExprList)?;
+			*/
+			List<BlokScriptSymbol> SymbolList = new List<BlokScriptSymbol>();
+			SymbolList.Add((BlokScriptSymbol)VisitGeneralExpr(Context.generalExpr()));
+
+			if (Context.generalExprList() != null)
+				SymbolList.AddRange((BlokScriptSymbol[])VisitGeneralExprList(Context.generalExprList()));
+
+			return SymbolList.ToArray();
 		}
 
 		public override object VisitStoryFileSpec ([NotNull] BlokScriptGrammarParser.StoryFileSpecContext Context)
@@ -6616,13 +6104,79 @@ namespace BlokScript.BlokScriptApp
 			/*
 			selectSpacesStatement: 'select' selectFieldList 'from' constrainedSpaceList ('to' spacesOutputLocation)?;
 			*/
-			string[] Fields = (string[])VisitSelectFieldList(Context.selectFieldList());
+			SelectFieldExpr[] FieldExprs = (SelectFieldExpr[])VisitSelectFieldList(Context.selectFieldList());
+
 			SpaceEntity[] Spaces = (SpaceEntity[])VisitConstrainedSpaceList(Context.constrainedSpaceList());
+			SelectTable Table = CreateSelectTable(Spaces, FieldExprs);
 
-
-
+			if (Context.spacesOutputLocation() != null)
+				OutputSelectTableToLocation(Table, (SpacesOutputLocation)VisitSpacesOutputLocation(Context.spacesOutputLocation()));
+			else
+				OutputSelectTableToConsole(Table);
 
 			return null;
+		}
+
+		public void OutputSelectTableToLocation (SelectTable Table, SpacesOutputLocation Location)
+		{
+			if (Location.ToFile)
+				OutputSelectTableToFile(Table, Location.FilePath);
+			else
+				OutputSelectTableToConsole(Table);
+		}
+
+		public void OutputSelectTableToFile (SelectTable Table, string FilePath)
+		{
+			SelectTableFileWriter.Write(Table, FilePath);
+		}
+
+		public void OutputSelectTableToConsole (SelectTable Table)
+		{
+			SelectTableConsoleWriter.Write(Table);
+		}
+
+		public SelectTable CreateSelectTable (SpaceEntity[] Spaces, SelectFieldExpr[] FieldExprs)
+		{
+			SelectTable CreatedTable = new SelectTable();
+			CreatedTable.Columns = CreateSelectColumns(FieldExprs);
+
+			foreach (SpaceEntity Space in Spaces)
+			{
+				CreatedTable.AddRow(CreateSelectRow(Space, CreatedTable.Columns));
+			}
+
+			return CreatedTable;
+		}
+
+		public SelectColumn[] CreateSelectColumns (SelectFieldExpr[] FieldExprs)
+		{
+			List<SelectColumn> SelectColumnList = new List<SelectColumn>();
+
+			foreach (SelectFieldExpr FieldExpr in FieldExprs)
+			{
+				SelectColumnList.AddRange(CreateSelectColumns(FieldExpr));
+			}
+
+			return SelectColumnList.ToArray();
+		}
+
+		public SelectColumn[] CreateSelectColumns (SelectFieldExpr FieldExpr)
+		{
+			List<SelectColumn> SelectColumnList = new List<SelectColumn>();
+			SelectColumnList.AddRange(SpaceSelectColumnFactory.CreateSelectColumns(FieldExpr));
+			return SelectColumnList.ToArray();
+		}
+
+		public SelectField[] CreateSelectRow (SpaceEntity Space, SelectColumn[] Columns)
+		{
+			List<SelectField> SelectFieldList = new List<SelectField>();
+
+			foreach (SelectColumn Column in Columns)
+			{
+				SelectFieldList.Add(SpaceSelectFieldFactory.CreateSelectField(Space, Column));
+			}
+
+			return SelectFieldList.ToArray();
 		}
 
 		public override object VisitConstrainedSpaceList ([NotNull] BlokScriptGrammarParser.ConstrainedSpaceListContext Context)
@@ -6652,25 +6206,46 @@ namespace BlokScript.BlokScriptApp
 			return GetSpacesFromServer();
 		}
 
-		public override object VisitSelectFieldList([NotNull] BlokScriptGrammarParser.SelectFieldListContext Context)
+		public override object VisitSelectFieldList ([NotNull] BlokScriptGrammarParser.SelectFieldListContext Context)
 		{
 			/*
-			selectFieldList: '*' (',' selectFieldList)?
-				| VARID (',' selectFieldList)?
-				| VARID
-				;
+			selectFieldList: ('*' | VARID selectFieldAlias? | 'name' selectFieldAlias? | 'id' selectFieldAlias? | selectFnExpr selectFieldAlias?) (',' selectFieldList)?;
 			*/
-			List<string> FieldList = new List<string>();
+			List<SelectFieldExpr> FieldList = new List<SelectFieldExpr>();
+
+			SelectFieldExpr Expr = new SelectFieldExpr();
 
 			if (Context.VARID() != null)
-				FieldList.Add(Context.VARID().GetText());
+				Expr.Name = Context.VARID().GetText();
 			else if (Context.GetChild(0).GetText() == "*")
-				FieldList.Add("*");
+				Expr.Name = "*";
+			else if (Context.selectFnExpr() != null)
+			{
+				//
+				// OH BOY, HOW DO WE DO THIS?
+				//
+				Expr.SelectFnExpr = (SelectFnExpr)VisitSelectFnExpr(Context.selectFnExpr());
+			}
+			else
+				Expr.Name = StringLiteralTrimmer.Trim(Context.GetChild(0).GetText());
+
+			if (Context.selectFieldAlias() != null)
+				Expr.DisplayName = (string)VisitSelectFieldAlias(Context.selectFieldAlias());
+
+			FieldList.Add(Expr);
 
 			if (Context.selectFieldList() != null)
-				FieldList.AddRange((string[])VisitSelectFieldList(Context.selectFieldList()));
+				FieldList.AddRange((SelectFieldExpr[])VisitSelectFieldList(Context.selectFieldList()));
 
 			return FieldList.ToArray();
+		}
+
+		public override object VisitSelectFieldAlias ([NotNull] BlokScriptGrammarParser.SelectFieldAliasContext Context)
+		{
+			/*
+			selectFieldAlias: 'as' VARID;
+			*/
+			return Context.VARID().GetText();
 		}
 
 		public BlockSchemaEntity GetBlockUsingVariableName (string SymbolName)

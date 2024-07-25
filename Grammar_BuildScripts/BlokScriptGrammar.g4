@@ -27,6 +27,7 @@ statement: loginStatement STATEMENTEND
 	| copySpaceStatement STATEMENTEND
 	| updateSpaceStatement STATEMENTEND
 	| deleteSpaceStatement STATEMENTEND
+	| selectSpacesStatement STATEMENTEND
 
 	| copySpacesStatement STATEMENTEND
 
@@ -72,18 +73,19 @@ copySpaceStatement: 'copy' 'space' longOrShortSpaceSpec 'to' spaceOutputLocation
 updateSpaceStatement: 'update' 'space' longOrShortSpaceSpec 'set' spaceUpdateList;
 deleteSpaceStatement: 'delete' 'space' longOrShortSpaceSpec;
 spaceUpdateList: spaceUpdate (',' spaceUpdateList)?;
-spaceUpdate: 'name' '=' stringExpr
-	| 'server' 'location' '=' stringExpr
-	| 'default' 'content' 'type' '=' stringExpr
-	;
+spaceUpdate: VARID '=' stringExpr;
 
 copySpacesStatement: 'copy' 'spaces' ('from' spacesInputLocation)? 'to' spacesOutputLocation;
-selectSpacesStatement: 'select' selectFieldList 'from' constrainedSpaceList ('to' spacesOutputLocation)?;
 
-selectFieldList: '*' (',' selectFieldList)?
-	| VARID (',' selectFieldList)?
-	| VARID
-	;
+selectSpacesStatement: 'select' selectFieldList 'from' constrainedSpaceList ('to' spacesOutputLocation)?;
+selectFieldList: ('*' | VARID selectFieldAlias? | selectFnExpr selectFieldAlias?) (',' selectFieldList)?;
+selectFieldAlias: 'as' VARID;
+
+selectFnExpr: VARID '(' selectFnCallActualArgList? ')';
+selectFnCallActualArgList: selectFnActualArg (',' selectFnCallActualArgList)?;
+selectFnActualArg: generalExpr;
+generalExpr: VARID | regexExpr | stringExpr | intExpr;
+generalExprList: generalExpr (',' generalExprList)?;
 
 constrainedSpaceList: completeSpaceList ('where' spaceConstraintExprList)?;
 completeSpaceList: 'spaces' (('from' | 'in') spacesInputLocation)?;
@@ -105,10 +107,7 @@ deleteDatasourceStatement: 'delete' 'datasource' (datasourceShortSpec | datasour
 updateDatasourceStatement: 'update' 'datasource' (datasourceShortSpec | datasourceSpec) 'set' datasourceUpdateList;
 
 datasourceUpdateList: datasourceUpdate (',' datasourceUpdateList)?;
-
-datasourceUpdate: 'name' '=' stringExpr
-	| 'slug' '=' stringExpr
-	;
+datasourceUpdate: VARID '=' stringExpr;
 
 createDatasourceEntryStatement: 'create' 'datasource' 'entry' (stringExpr | datasourceEntryUpdateList) ('for' | 'in') (datasourceSpec | datasourceShortSpec);
 copyDatasourceEntryStatement: 'copy' 'datasource' 'entry' longOrShortDatasourceEntrySpec 'to' datasourceEntryOutputLocation;
@@ -130,10 +129,7 @@ datasourceEntryCopyOptionList: datasourceEntryCopyOption (',' datasourceEntryCop
 datasourceEntryCopyOption: 'skip' ('update' | 'updates' | 'create' | 'creates');
 
 datasourceEntryUpdateList: datasourceEntryUpdate (',' datasourceEntryUpdateList)?;
-
-datasourceEntryUpdate: 'name' '=' stringExpr
-	| 'value' '=' stringExpr
-	;
+datasourceEntryUpdate: VARID '=' stringExpr;
 
 datasourceEntriesSourceLocation: longOrShortDatasourceSpec | completeFileSpec;
 
@@ -148,17 +144,13 @@ datasourceEntryConstraintExpr: datasourceEntryConstraint (('and' | 'or') datasou
 	| '(' datasourceEntryConstraintExpr (('and' | 'or') datasourceEntryConstraintExpr)? ')'
 	;
 
-datasourceEntryConstraint: 'id' ('=' | '!=') intExpr
-	| 'id' 'not'? 'in' '(' intExprList ')'
-	| ('name' | 'value') ('=' | '!=') stringExpr
-	| ('name' | 'value') 'not'? 'in' '(' (stringExprList | regexExprList) ')'
-	| ('name' | 'value') ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
-	| ('name' | 'value') 'not'? 'in' '(' stringExprList ')'
-	| ('name' | 'value') 'not'? 'like' stringExpr
-	| ('name' | 'value') ('starts' | 'does' 'not' 'start') 'with' stringExpr
-	| ('name' | 'value') ('ends' | 'does' 'not' 'end') 'with' stringExpr
+datasourceEntryConstraint: VARID ('=' | '!=') generalExpr
+	| VARID 'not'? 'in' '(' generalExprList ')'
+	| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+	| VARID 'not'? 'like' stringExpr
+	| VARID ('starts' | 'does' 'not' 'start') 'with' stringExpr
+	| VARID ('ends' | 'does' 'not' 'end') 'with' stringExpr
 	;
-
 
 loginStatement: loginOnlyStatement 
 	| loginWithGlobalUserNameStatement
@@ -279,28 +271,17 @@ blockConstraintExpr: blockConstraint (('and' | 'or') blockConstraintExpr)?
 	| '(' blockConstraintExpr (('and' | 'or') blockConstraintExpr)? ')'
 	;
 
-blockConstraint: 'id' ('=' | '!=') intExpr
-	| 'id' 'not'? 'in' '(' intExprList ')'
-	| 'name' ('=' | '!=') stringExpr
-	| 'name' 'not'? 'in' '(' stringExprList ')'
-	| 'name' ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
-	| 'name' 'not'? 'in' '(' regexExprList ')'
-	| 'name' 'not'? 'like' stringExpr
-	| 'name' ('starts' | 'does' 'not' 'start') 'with' stringExpr
-	| 'name' ('ends' | 'does' 'not' 'end') 'with' stringExpr
+blockConstraint: VARID ('=' | '!=') generalExpr
+	| VARID 'not'? 'in' '(' generalExprList ')'
+	| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+	| VARID 'not'? 'like' generalExpr
+	| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
+	| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
 	;
 
 blockUpdateList: blockUpdate (',' blockUpdateList)?;
 
-blockUpdate: 'technical' 'name' '=' stringExpr
-	| 'display' 'name' '=' stringExpr
-	| 'type' '=' ('nestable' | 'content' | 'universal')
-	| 'add' 'tag' stringExpr
-	| 'remove' 'tag' stringExpr
-	| 'preview' 'field' '=' stringExpr
-	| 'preview' 'template' '=' stringExpr
-	| 'preview' 'screenshot' '=' stringExpr
-	;
+blockUpdate: VARID '=' generalExpr;
 
 intExprList: intExpr (',' intExprList)?;
 
@@ -331,30 +312,27 @@ storyConstraintExpr: storyConstraint (('and' | 'or') storyConstraintExpr)?
 	| '(' storyConstraintExpr (('and' | 'or') storyConstraintExpr)? ')'
 	;
 
-storyConstraint: 'id' ('=' | '!=') intExpr
-	| 'id' 'not'? 'in' '(' intExprList ')'
-	| ('name' | 'url') ('=' | '!=') stringExpr
-	| ('name' | 'url') 'not'? 'in' '(' stringExprList ')'
-	| ('name' | 'url') ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
-	| ('name' | 'url') 'not'? 'in' '(' stringExprList ')'
-	| ('name' | 'url') 'not'? 'like' stringExpr
-	| ('name' | 'url') ('starts' | 'does' 'not' 'start') 'with' stringExpr
-	| ('name' | 'url') ('ends' | 'does' 'not' 'end') 'with' stringExpr
-	| (('any'? 'tag') | ('all'? 'tags')) ('=' | '!=') stringExpr
-	| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'in' '(' stringExprList ')'
-	| 'any'? 'tag' ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
-	| 'any'? 'tag' ('starts' | 'does' 'not' 'start') 'with' stringExpr
-	| 'any'? 'tag' ('ends' | 'does' 'not' 'end') 'with' stringExpr
-	| 'all'? 'tags' ('match' | 'do' 'not' 'match') 'regex'? regexExpr
-	| 'all'? 'tags' ('start' | 'do' 'not' 'start') 'with' stringExpr
-	| 'all'? 'tags' ('end' | 'do' 'not' 'end') 'with' stringExpr
-	| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'in' '(' regexExprList ')'
-	| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'like' stringExpr
+storyConstraint: VARID ('=' | '!=') generalExpr
+	| VARID 'not'? 'in' '(' generalExprList ')'
+	| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+	| VARID 'not'? 'like' generalExpr
+	| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
+	| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
+	| (('any'? 'tag') | ('all'? 'tags')) ('=' | '!=') generalExpr
+	| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'in' '(' generalExprList ')'
+	| 'any'? 'tag' ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+	| 'any'? 'tag' ('starts' | 'does' 'not' 'start') 'with' generalExpr
+	| 'any'? 'tag' ('ends' | 'does' 'not' 'end') 'with' generalExpr
+	| 'all'? 'tags' ('match' | 'do' 'not' 'match') 'regex'? generalExpr
+	| 'all'? 'tags' ('start' | 'do' 'not' 'start') 'with' generalExpr
+	| 'all'? 'tags' ('end' | 'do' 'not' 'end') 'with' generalExpr
+	| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'in' '(' generalExprList ')'
+	| (('any'? 'tag') | ('all'? 'tags')) 'not'? 'like' generalExpr
 	| 'no' 'tags'
 	| 'any' 'tags'
 	;
 
-regexExpr: STRINGLITERAL | REGEXLITERAL | VARID;
+regexExpr: REGEXLITERAL | VARID;
 
 regexExprList: regexExpr (',' regexExprList)?;
 
@@ -375,15 +353,12 @@ datasourceConstraintExpr: datasourceConstraint (('and' | 'or') datasourceConstra
 	| '(' datasourceConstraintExpr (('and' | 'or') datasourceConstraintExpr)? ')'
 	;
 
-datasourceConstraint: 'id' ('=' | '!=') intExpr
-	| 'id' 'not'? 'in' '(' intExprList ')'
-	| ('name' | 'slug') ('=' | '!=') stringExpr
-	| ('name' | 'slug') 'not'? 'in' '(' stringExprList ')'
-	| ('name' | 'slug') ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
-	| ('name' | 'slug') 'not'? 'in' '(' regexExprList ')'
-	| ('name' | 'slug') 'not'? 'like' stringExpr
-	| ('name' | 'slug') ('starts' | 'does' 'not' 'start') 'with' stringExpr
-	| ('name' | 'slug') ('ends' | 'does' 'not' 'end') 'with' (stringExpr)
+datasourceConstraint: VARID ('=' | '!=') generalExpr
+	| VARID 'not'? 'in' '(' generalExprList ')'
+	| VARID ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
+	| VARID 'not'? 'like' stringExpr
+	| VARID ('starts' | 'does' 'not' 'start') 'with' stringExpr
+	| VARID ('ends' | 'does' 'not' 'end') 'with' stringExpr
 	;
 
 stringExprList: stringExpr (',' stringExprList)?;
@@ -408,15 +383,12 @@ spaceConstraintExpr: spaceConstraint (('and' | 'or') spaceConstraintExpr)?
 	| '(' spaceConstraintExpr (('and' | 'or') spaceConstraintExpr)? ')'
 	;
 
-spaceConstraint: 'id' ('=' | '!=') intExpr
-	| 'id' 'not'? 'in' '(' intExprList ')'
-	| 'name' ('=' | '!=') stringExpr
-	| 'name' 'not'? 'in' '(' stringExprList ')'
-	| 'name' ('matches' | 'does' 'not' 'match') 'regex'? regexExpr
-	| 'name' 'not'? 'in' '(' regexExprList ')'
-	| 'name' 'not'? 'like' stringExpr
-	| 'name' ('starts' | 'does' 'not' 'start') 'with' stringExpr
-	| 'name' ('ends' | 'does' 'not' 'end') 'with' (stringExpr)
+spaceConstraint: VARID ('=' | '!=') generalExpr
+	| VARID 'not'? 'in' '(' generalExprList ')'
+	| VARID ('matches' | 'does' 'not' 'match') 'regex'? generalExpr
+	| VARID 'not'? 'like' generalExpr
+	| VARID ('starts' | 'does' 'not' 'start') 'with' generalExpr
+	| VARID ('ends' | 'does' 'not' 'end') 'with' generalExpr
 	;
 
 datasourcesInputLocation: fileSpec | longOrShortSpaceSpec;

@@ -1,8 +1,10 @@
 ﻿using System;
-using BlokScript.Entities;
-using BlokScript.Common;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+
+using BlokScript.Entities;
+using BlokScript.Common;
+using BlokScript.ConstraintOperators;
 
 namespace BlokScript.Filters
 {
@@ -10,11 +12,7 @@ namespace BlokScript.Filters
 	{
 		public SpaceEntity[] Evaluate (SpaceEntity[] Spaces)
 		{
-			List<SpaceEntity> InList = new List<SpaceEntity>();
-			InList.AddRange(Spaces);
-			List<SpaceEntity> OutList = new List<SpaceEntity>();
-
-			if (Operator == SpaceConstraintOperator.Root)
+			if (Operator == ConstraintOperator.Root)
 			{
 				//
 				// THE ROOT OPERATOR IS SPECIAL.
@@ -22,48 +20,24 @@ namespace BlokScript.Filters
 				//
 				return ChildConstraint.Evaluate(Spaces);
 			}
-			else if (Operator == SpaceConstraintOperator.Intersect)
+			else if (Operator == ConstraintOperator.Intersect)
 			{
 				//
 				// THE INTERSECTION OPERATOR PERFORMS AN "AND" OPERATION BETWEEN SIBLINGS.
 				//
 				return Intersect(LeftChildConstraint.Evaluate(Spaces), RightChildConstraint.Evaluate(Spaces));
 			}
-			else if (Operator == SpaceConstraintOperator.Union)
+			else if (Operator == ConstraintOperator.Union)
 			{
 				//
 				// THE UNION OPERATOR PERFORMS AN "OR" OPERATION BETWEEN SIBLINGS.
 				//
 				return Union(LeftChildConstraint.Evaluate(Spaces), RightChildConstraint.Evaluate(Spaces));
 			}
-			else if (Field == SpaceConstraintField.Id)
-			{
-				//
-				// CONSTRAIN BY ID.
-				//
-				if (Operator == SpaceConstraintOperator.Equals)
-				{
-					int ContraintValue = (int)ConstraintData;
 
-					foreach (SpaceEntity Space in InList)
-					{
-						if (Space.SpaceId != null && Int32.Parse(Space.SpaceId) == ContraintValue)
-						{
-							OutList.Add(Space);
-						}
-					}
-				}
-				else if (Operator == SpaceConstraintOperator.NotEquals)
-				{
-					int ContraintValue = (int)ConstraintData;
+			return ContraintOperatorProvider.Apply<SpaceEntity>(Spaces, Operator, FieldName, ConstraintData);
 
-					foreach (SpaceEntity Space in InList)
-					{
-						if (Space.SpaceId != null && Int32.Parse(Space.SpaceId) != ContraintValue)
-						{
-							OutList.Add(Space);
-						}
-					}
+			/*
 				}
 				else if (Operator == SpaceConstraintOperator.In)
 				{
@@ -100,6 +74,8 @@ namespace BlokScript.Filters
 				else
 					throw new NotImplementedException("SpaceConstraint");
 			}
+
+
 			if (Field == SpaceConstraintField.Name)
 			{
 				//
@@ -324,8 +300,7 @@ namespace BlokScript.Filters
 				else
 					throw new NotImplementedException();
 			}
-
-			return OutList.ToArray();
+			*/
 		}
 
 		public static SpaceEntity[] Intersect (SpaceEntity[] LeftSpaceEntries, SpaceEntity[] RightSpaceEntries)
@@ -372,10 +347,10 @@ namespace BlokScript.Filters
 			return OutList.ToArray();
 		}
 
-		public SpaceConstraintField Field;
-		public SpaceConstraintOperator Operator;
+		public string FieldName;
+		public ConstraintOperator Operator;
 		public object ConstraintData;
-		public SpaceConstraintDataType ConstraintDataType;
+		//public SpaceConstraintDataType ConstraintDataType;
 
 		public SpaceConstraint ChildConstraint;
 		public SpaceConstraint LeftChildConstraint;

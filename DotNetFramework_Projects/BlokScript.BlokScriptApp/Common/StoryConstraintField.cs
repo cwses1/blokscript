@@ -6,6 +6,7 @@
 		Name,
 		Url,
 		AnyTag,
-		AllTags
+		AllTags,
+		TagExistence
 	}
 }

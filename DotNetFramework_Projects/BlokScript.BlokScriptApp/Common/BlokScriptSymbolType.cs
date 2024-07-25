@@ -11,6 +11,8 @@
 		Int32,
 		Datasource,
 		DatasourceEntry,
-		VerbosityEnum
+		VerbosityEnum,
+		Boolean,
+		DateTime
 	}
 }

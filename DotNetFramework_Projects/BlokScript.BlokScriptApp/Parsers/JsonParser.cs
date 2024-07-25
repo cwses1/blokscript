@@ -12,12 +12,10 @@ namespace BlokScript.Parsers
 			return (dynamic)JsonConvert.DeserializeObject(JsonString);
 		}
 
-
 		public static Hashtable ParseAsHashtable (string JsonString)
 		{
 			return (Hashtable)JsonConvert.DeserializeObject(JsonString, typeof(Hashtable));
 		}
-
 
 		public static object Parse (string JsonString)
 		{
