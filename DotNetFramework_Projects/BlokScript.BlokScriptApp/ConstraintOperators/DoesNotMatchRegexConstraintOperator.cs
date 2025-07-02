@@ -9,7 +9,7 @@ using BlokScript.Comparators;
 
 namespace BlokScript.ConstraintOperators
 {
-	public class MatchesRegexConstraintOperator
+	public class DoesNotMatchRegexConstraintOperator
 	{
 		public static T[] Apply<T> (T[] Entities, string FieldName, object ConstraintData)
 		{
@@ -24,7 +24,7 @@ namespace BlokScript.ConstraintOperators
 			{
 				BlokScriptSymbol FieldSymbol = EntityValueExtractor.ExtractSymbolFromEntity(Entity, FieldName);
 
-				if (BlokScriptSymbolConstraintRegexMatchComparator.IsMatch(FieldSymbol, ConstraintSymbol))
+				if (!BlokScriptSymbolConstraintRegexMatchComparator.IsMatch(FieldSymbol, ConstraintSymbol))
 					OutList.Add(Entity);
 			}
 

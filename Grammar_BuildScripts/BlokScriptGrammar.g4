@@ -81,11 +81,13 @@ selectSpacesStatement: 'select' selectFieldList 'from' constrainedSpaceList ('to
 selectFieldList: ('*' | VARID selectFieldAlias? | selectFnExpr selectFieldAlias?) (',' selectFieldList)?;
 selectFieldAlias: 'as' VARID;
 
-selectFnExpr: VARID '(' selectFnCallActualArgList? ')';
-selectFnCallActualArgList: selectFnActualArg (',' selectFnCallActualArgList)?;
-selectFnActualArg: generalExpr;
-generalExpr: VARID | regexExpr | stringExpr | intExpr;
+selectFnExpr: VARID '(' selectFnArgList? ')';
+selectFnArgList: selectFnArg (',' selectFnArgList)?;
+selectFnArg: VARID | selectGeneralExpr | selectFnExpr;
+selectGeneralExpr: regexExpr | stringExpr | intExpr;
+
 generalExprList: generalExpr (',' generalExprList)?;
+generalExpr: VARID | regexExpr | stringExpr | intExpr;
 
 constrainedSpaceList: completeSpaceList ('where' spaceConstraintExprList)?;
 completeSpaceList: 'spaces' (('from' | 'in') spacesInputLocation)?;

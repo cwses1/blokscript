@@ -26,7 +26,15 @@ namespace BlokScript.ConstraintOperators
 				{
 					BlokScriptSymbol FieldSymbol = EntityValueExtractor.ExtractSymbolFromEntity(Entity, FieldName);
 
-					if (!BlokScriptSymbolConstraintComparator.AreEqual(FieldSymbol, ConstraintSymbol))
+					if (ConstraintSymbol.Type == BlokScriptSymbolType.Regex)
+					{
+						if (!BlokScriptSymbolConstraintRegexMatchComparator.IsMatch(FieldSymbol, ConstraintSymbol))
+						{
+							OutList.Add(Entity);
+							break;
+						}
+					}
+					else if (!BlokScriptSymbolConstraintEqualsComparator.AreEqual(FieldSymbol, ConstraintSymbol))
 					{
 						OutList.Add(Entity);
 						break;

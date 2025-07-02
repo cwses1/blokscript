@@ -1,4 +1,5 @@
 ﻿using BlokScript.Common;
+using BlokScript.BlokScriptApp;
 
 namespace BlokScript.Models
 {
@@ -10,9 +11,6 @@ namespace BlokScript.Models
 		}
 
 		public string Name;
-		public object[] Args;
-		public SelectFnExpr OnlyChildSelectFnExpr;
-		public SelectFnExpr LeftSelectFnExpr;
-		public SelectFnExpr RightSelectFnExpr;
+		public SelectFnExpr[] Args;
 	}
 }

@@ -118,29 +118,35 @@ public interface IBlokScriptGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitSelectFnExpr([NotNull] BlokScriptGrammarParser.SelectFnExprContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.selectFnCallActualArgList"/>.
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.selectFnArgList"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitSelectFnCallActualArgList([NotNull] BlokScriptGrammarParser.SelectFnCallActualArgListContext context);
+	Result VisitSelectFnArgList([NotNull] BlokScriptGrammarParser.SelectFnArgListContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.selectFnActualArg"/>.
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.selectFnArg"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitSelectFnActualArg([NotNull] BlokScriptGrammarParser.SelectFnActualArgContext context);
+	Result VisitSelectFnArg([NotNull] BlokScriptGrammarParser.SelectFnArgContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.generalExpr"/>.
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.selectGeneralExpr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitGeneralExpr([NotNull] BlokScriptGrammarParser.GeneralExprContext context);
+	Result VisitSelectGeneralExpr([NotNull] BlokScriptGrammarParser.SelectGeneralExprContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.generalExprList"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitGeneralExprList([NotNull] BlokScriptGrammarParser.GeneralExprListContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.generalExpr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitGeneralExpr([NotNull] BlokScriptGrammarParser.GeneralExprContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="BlokScriptGrammarParser.constrainedSpaceList"/>.
 	/// </summary>

@@ -6297,12 +6297,7 @@ namespace BlokScript.BlokScriptApp
 			else if (Context.GetChild(0).GetText() == "*")
 				Expr.Name = "*";
 			else if (Context.selectFnExpr() != null)
-			{
-				//
-				// OH BOY, HOW DO WE DO THIS?
-				//
 				Expr.SelectFnExpr = (SelectFnExpr)VisitSelectFnExpr(Context.selectFnExpr());
-			}
 			else
 				Expr.Name = StringLiteralTrimmer.Trim(Context.GetChild(0).GetText());
 
@@ -6315,6 +6310,44 @@ namespace BlokScript.BlokScriptApp
 				FieldList.AddRange((SelectFieldExpr[])VisitSelectFieldList(Context.selectFieldList()));
 
 			return FieldList.ToArray();
+		}
+
+		public override object VisitSelectFnExpr ([NotNull] BlokScriptGrammarParser.SelectFnExprContext Context)
+		{
+			/*
+			selectFnExpr: VARID '(' selectFnArgList? ')';
+			*/
+			SelectFnExpr CreatedSelectFnExpr = new SelectFnExpr();
+			CreatedSelectFnExpr.Name = Context.VARID().GetText();
+
+			if (Context.selectFnArgList() != null)
+				CreatedSelectFnExpr.Args = (SelectFnExpr[])VisitSelectFnArgList(Context.selectFnArgList());
+			
+			return CreatedSelectFnExpr;
+		}
+
+		public override object VisitSelectFnArgList ([NotNull] BlokScriptGrammarParser.SelectFnArgListContext Context)
+		{ 
+			/*
+			selectFnArgList: selectFnArg (',' selectFnArgList)?;
+			*/
+			return VisitChildren(Context);
+		}
+
+		public override object VisitSelectFnArg ([NotNull] BlokScriptGrammarParser.SelectFnArgContext Context)
+		{ 
+			/*
+			selectFnArg: VARID | selectGeneralExpr | selectFnExpr;
+			*/
+			return VisitChildren(Context);
+		}
+
+		public override object VisitSelectGeneralExpr ([NotNull] BlokScriptGrammarParser.SelectGeneralExprContext Context)
+		{
+			/*
+			selectGeneralExpr: regexExpr | stringExpr | intExpr;
+			*/
+			return VisitChildren(Context);
 		}
 
 		public override object VisitSelectFieldAlias ([NotNull] BlokScriptGrammarParser.SelectFieldAliasContext Context)

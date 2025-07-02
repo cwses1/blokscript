@@ -7,7 +7,7 @@ using BlokScript.BlokScriptApp;
 
 namespace BlokScript.ConstraintOperators
 {
-	public class EndsWithContraintOperator
+	public class DoesNotEndWithContraintOperator
 	{
 		public static T[] Apply<T> (T[] Entities, string FieldName, object ConstraintData)
 		{
@@ -16,8 +16,8 @@ namespace BlokScript.ConstraintOperators
 
 			BlokScriptSymbol ConstraintSymbol = (BlokScriptSymbol)ConstraintData;
 
-			if (ConstraintSymbol.Type != BlokScriptSymbolType.String && ConstraintSymbol.Type != BlokScriptSymbolType.Regex)
-				throw new NotImplementedException("The ends with constraint operator accepts a string or regex argument only.");
+			if (ConstraintSymbol.Type != BlokScriptSymbolType.String)
+				throw new NotImplementedException("The 'does not end with' constraint operator accepts a string argument only.");
 
 			BlokScriptSymbol RegexSymbol = new BlokScriptSymbol();
 			RegexSymbol.Type = BlokScriptSymbolType.Regex;
@@ -30,7 +30,7 @@ namespace BlokScript.ConstraintOperators
 				EndsWithRegex = (Regex)ConstraintSymbol.Value;
 
 			RegexSymbol.Value = EndsWithRegex;
-			return MatchesRegexConstraintOperator.Apply<T>(Entities, FieldName, RegexSymbol);
+			return DoesNotMatchRegexConstraintOperator.Apply<T>(Entities, FieldName, RegexSymbol);
 		}
 	}
 }

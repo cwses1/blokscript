@@ -11,12 +11,10 @@ namespace BlokScript.Extractors
 			return JsonExtractor.ExtractNativeValue(Entity.Data, FieldName);
 		}
 
-
 		public static string ExtractString (dynamic Entity, string FieldName)
 		{
 			return JsonExtractor.ExtractNativeValue(Entity.Data, FieldName).ToString();
 		}
-
 
 		public static BlokScriptSymbol ExtractSymbolFromEntity (dynamic Entity, string FieldName)
 		{

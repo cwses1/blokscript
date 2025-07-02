@@ -8,7 +8,7 @@ using BlokScript.Common;
 
 namespace BlokScript.Comparators
 {
-	public class BlokScriptSymbolConstraintComparator
+	public class BlokScriptSymbolConstraintEqualsComparator
 	{
 		public static bool AreEqual (BlokScriptSymbol LeftSymbol, BlokScriptSymbol RightSymbol)
 		{

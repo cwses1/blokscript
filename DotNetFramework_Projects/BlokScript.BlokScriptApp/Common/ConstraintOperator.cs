@@ -5,7 +5,6 @@
 		Root,
 		Intersect,
 		Union,
-
 		Equals,
 		NotEquals,
 		In,

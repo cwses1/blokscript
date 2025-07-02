@@ -42,6 +42,18 @@ namespace BlokScript.ConstraintOperators
 			if (Operator == ConstraintOperator.IsNotJsonUndefined)
 				return IsNotJsonUndefinedContraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
 
+			if (Operator == ConstraintOperator.MatchesRegex)
+				return MatchesRegexConstraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
+
+			if (Operator == ConstraintOperator.DoesNotMatchRegex)
+				return DoesNotMatchRegexConstraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
+
+			if (Operator == ConstraintOperator.Like)
+				return LikeConstraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
+
+			if (Operator == ConstraintOperator.NotLike)
+				return NotLikeConstraintOperator.Apply<T>(Entities, FieldName, ConstraintData);
+
 			throw new NotImplementedException();
 		}
 	}

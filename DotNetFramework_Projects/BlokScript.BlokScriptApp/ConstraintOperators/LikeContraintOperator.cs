@@ -7,7 +7,7 @@ using BlokScript.BlokScriptApp;
 
 namespace BlokScript.ConstraintOperators
 {
-	public class StartsWithContraintOperator
+	public class LikeContraintOperator
 	{
 		public static T[] Apply<T> (T[] Entities, string FieldName, object ConstraintData)
 		{
