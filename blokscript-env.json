@@ -1,0 +1,9 @@
+{
+    "managementApiBaseUrl": "https://api-us.storyblok.com",
+    "contentDeliveryApiBaseUrl": "https://api-us.storyblok.com/v2/cdn",
+    "personalAccessToken": "_put_your_personal_access_key_Here",
+    "verbosity": "verbose",
+    "managementApiTimeoutMs": 10000,
+    "managementApiThrottleMs": 2000,
+    "managementApiRetryCount": 2
+}
