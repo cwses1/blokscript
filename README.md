@@ -7,6 +7,8 @@
 BlokScript is written in C#.  Install the following:
 * [.NET 9.0](https://dotnet.microsoft.com/en-us/download).
 
+Summary of commands:
+
 ```
 % git clone https://github.com/cwses1/blokscript.git
 % cd blokscript/blokscript
@@ -25,8 +27,9 @@ Generate the lexer and parser files:
 
 ```
 % cd grammar
-% java -jar antlr-4.13.1-complete.jar -o BlokScript.Parser -no-listener -visitor -Dlanguage=CSharp -package BlokScript.Parser BlokScriptGrammar.g4
+% ./buildDevGrammar
 ```
 
-* The generated lexer and parser files are output to the `grammar/BlokScript.Parser` directory.
-* Install these files by copying them to the `blokscript/BlokScript.Parser` directory.
+The generated lexer, parser, and visitors files are written to `blokscript/BlokScript.Parser` directory.
+Everything in the `blokscript/BlokScript.Parser` directory should be generated.
+Do not modify those files outside of using the `buildDevGrammar` script, which uses ANTLR to generate the files.

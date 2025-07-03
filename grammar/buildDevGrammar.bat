@@ -1,0 +1,1 @@
+java -jar antlr-4.13.2-complete.jar -o ..\blokscript\Parser -no-listener -visitor -Dlanguage=CSharp -package BlokScript.Parser BlokScriptGrammar.g4

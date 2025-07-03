@@ -13,7 +13,7 @@ BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 
 script: statementList;
 
-statementList: statement*;
+statementList: statement+;
 
 statement: loginStatement STATEMENTEND
 	| varStatement STATEMENTEND
