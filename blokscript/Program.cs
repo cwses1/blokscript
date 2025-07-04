@@ -35,12 +35,11 @@ namespace BlokScript.BlokScriptApp
 
 		public static void MainInternal (string[] Args)
 		{
-			string BlokScriptEnvFilePath = Directory.GetCurrentDirectory() + "\\blokscript-env.json";
-			Console.WriteLine(BlokScriptEnvFilePath);
+			string BlokScriptEnvFilePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "blokscript-env.json";
 
 			if (!File.Exists(BlokScriptEnvFilePath))
 			{
-				Console.WriteLine("blokscript-env.json not found.");
+				Console.WriteLine($"{BlokScriptEnvFilePath} not found.");
 				return;
 			}
 

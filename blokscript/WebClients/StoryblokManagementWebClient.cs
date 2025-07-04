@@ -11,254 +11,133 @@ namespace BlokScript.WebClients
 {
 	public class StoryblokManagementWebClient
 	{
-		public string GetString (string RequestPath)
+		private static HttpClient _HttpClient;
+
+		static StoryblokManagementWebClient()
 		{
-			HttpWebRequest Request = (HttpWebRequest)WebRequest.Create(BaseUrl + RequestPath);
-			Request.Method = "GET";
-			Request.Headers["Authorization"] = Token;
-			Request.ContentType = "application/json";
-			Request.Timeout = TimeoutMs;
-			HttpWebResponse Response = Response = (HttpWebResponse)Request.GetResponse();
+			_HttpClient = new HttpClient();
+			//_HttpClient.DefaultRequestHeaders.Add("Content-Type", "application/json");
+		}
 
-			using (MemoryStream TargetStream = new MemoryStream())
+		private HttpRequestMessage CreateHttpRequestMessage(string RequestPath)
+		{
+			/* https://api-us.storyblok.com/v1/spaces/1019179
+				curl "https://mapi.storyblok.com/v1/spaces/606/" \
+				-X GET \
+				-H "Authorization: YOUR_OAUTH_TOKEN" \
+				-H "Content-Type: application/json"
+			*/
+			HttpRequestMessage CreatedRequestMessage = new HttpRequestMessage();
+			CreatedRequestMessage.RequestUri = new Uri(BaseUrl + RequestPath);
+			CreatedRequestMessage.Headers.Add("Authorization", Token);
+			return CreatedRequestMessage;
+		}
+
+		private HttpRequestMessage CreateHttpRequestMessage (string RequestPath, byte[] RequestBodyBytes)
+		{
+			/* https://api-us.storyblok.com/v1/spaces/1019179
+				curl "https://mapi.storyblok.com/v1/spaces/606/" \
+				-X GET \
+				-H "Authorization: YOUR_OAUTH_TOKEN" \
+				-H "Content-Type: application/json"
+			*/
+			HttpRequestMessage CreatedRequestMessage = CreateHttpRequestMessage(RequestPath);
+			CreatedRequestMessage.Content = new ByteArrayContent(RequestBodyBytes);
+			CreatedRequestMessage.Content.Headers.ContentType.MediaType = "application/json";
+			CreatedRequestMessage.Content.Headers.ContentLength = RequestBodyBytes.Length;
+			return CreatedRequestMessage;
+		}
+
+		private HttpRequestMessage CreateHttpRequestMessage (string RequestPath, string RequestBody)
+		{
+			return CreateHttpRequestMessage(RequestPath, Encoding.UTF8.GetBytes(RequestBody));
+		}
+
+		public string GetString(string RequestPath)
+		{
+			_HttpClient.Timeout = TimeSpan.FromMilliseconds(TimeoutMs);
+
+			HttpRequestMessage CreatedRequestMessage = CreateHttpRequestMessage(RequestPath);
+			CreatedRequestMessage.Method = HttpMethod.Get;
+
+			Task<HttpResponseMessage> RequestTask = Task.Run<HttpResponseMessage>(async () => await _HttpClient.SendAsync(CreatedRequestMessage));
+			RequestTask.Wait();
+
+			using (Stream ResponseStream = RequestTask.Result.Content.ReadAsStream())
 			{
-				using (Stream ResponseStream = Response.GetResponseStream())
-				{
-					StreamCopier.Copy(ResponseStream, TargetStream);
-					ResponseStream.Close();
-				}
-
-				return Encoding.UTF8.GetString(TargetStream.ToArray());
+				return StreamCopier.CopyStreamToString(ResponseStream);
 			}
 		}
 
 		public bool GetOK (string RequestPath)
 		{
-			/*
-			 * https://api-us.storyblok.com/v1/spaces/1019179
-			 * 
-			curl "https://mapi.storyblok.com/v1/spaces/606/" \
-			  -X GET \
-			  -H "Authorization: YOUR_OAUTH_TOKEN" \
-			  -H "Content-Type: application/json"
-			*/
+			_HttpClient.Timeout = TimeSpan.FromMilliseconds(TimeoutMs);
 
-			//
-			// CREATE THE REQUEST.
-			//
-			HttpWebRequest Request = (HttpWebRequest)WebRequest.Create(BaseUrl + RequestPath);
-			Request.Method = "GET";
-			Request.Headers["Authorization"] = Token;
-			Request.ContentType = "application/json";
+			HttpRequestMessage CreatedRequestMessage = CreateHttpRequestMessage(RequestPath);
+			CreatedRequestMessage.Method = HttpMethod.Get;
 
-			//
-			// SEND THE REQUEST AND READ THE RESPONSE.
-			//
-			try
-			{
-				HttpWebResponse Response = (HttpWebResponse)Request.GetResponse();
-				return Response.StatusCode == HttpStatusCode.OK;
-			}
-			catch (WebException)
-			{
-				return false;
-			}
+			Task<HttpResponseMessage> RequestTask = Task.Run<HttpResponseMessage>(async () => await _HttpClient.SendAsync(CreatedRequestMessage));
+			RequestTask.Wait();
+			HttpResponseMessage ResponseMessage = RequestTask.Result;
+
+			return ResponseMessage.StatusCode == HttpStatusCode.OK;
 		}
 
 		public string PostJson (string RequestPath, string RequestBody)
 		{
-			//
-			// CREATE THE REQUEST BODY.
-			//
-			byte[] RequestBodyBytes = Encoding.UTF8.GetBytes(RequestBody);
+			_HttpClient.Timeout = TimeSpan.FromMilliseconds(TimeoutMs);
 
-			//
-			// CREATE THE REQUEST.
-			//
-			HttpWebRequest Request = (HttpWebRequest)WebRequest.Create(BaseUrl + RequestPath);
-			Request.Method = "POST";
-			Request.Headers["Authorization"] = Token;
-			Request.ContentType = "application/json";
-			Request.ContentLength = RequestBodyBytes.Length;
+			HttpRequestMessage CreatedRequestMessage = CreateHttpRequestMessage(RequestPath, RequestBody);
+			CreatedRequestMessage.Method = HttpMethod.Post;
 
-			//
-			// SEND THE REQUEST.
-			//
-			using (MemoryStream RequestBodyStream = new MemoryStream(RequestBodyBytes))
+			Task<HttpResponseMessage> RequestTask = Task.Run<HttpResponseMessage>(async () => await _HttpClient.SendAsync(CreatedRequestMessage));
+			RequestTask.Wait();
+
+			using (Stream ResponseStream = RequestTask.Result.Content.ReadAsStream())
 			{
-				using (Stream RequestStream = Request.GetRequestStream())
-				{
-					StreamCopier.Copy(RequestBodyStream, RequestStream);
-					RequestStream.Close();
-				}
-			}
-
-			//
-			// SEND THE REQUEST AND READ THE RESPONSE.
-			//
-			HttpWebResponse Response = (HttpWebResponse)Request.GetResponse();
-
-			using (MemoryStream TargetStream = new MemoryStream())
-			{
-				using (Stream ResponseStream = Response.GetResponseStream())
-				{
-					StreamCopier.Copy(ResponseStream, TargetStream);
-					ResponseStream.Close();
-				}
-
-				return Encoding.UTF8.GetString(TargetStream.ToArray());
+				return StreamCopier.CopyStreamToString(ResponseStream);
 			}
 		}
 
-		public void PutJson (string RequestPath, string RequestBody)
+		public string PutJson (string RequestPath, string RequestBody)
 		{
-			//
-			// CREATE THE REQUEST BODY.
-			//
-			byte[] RequestBodyBytes = Encoding.UTF8.GetBytes(RequestBody);
+			_HttpClient.Timeout = TimeSpan.FromMilliseconds(TimeoutMs);
 
-			//
-			// CREATE THE REQUEST.
-			//
-			HttpWebRequest Request = (HttpWebRequest)WebRequest.Create(BaseUrl + RequestPath);
-			Request.Method = "PUT";
-			Request.Headers["Authorization"] = Token;
-			Request.ContentType = "application/json";
-			Request.ContentLength = RequestBodyBytes.Length;
+			HttpRequestMessage CreatedRequestMessage = CreateHttpRequestMessage(RequestPath, RequestBody);
+			CreatedRequestMessage.Method = HttpMethod.Put;
 
-			//
-			// SEND THE REQUEST.
-			//
-			using (MemoryStream RequestBodyStream = new MemoryStream(RequestBodyBytes))
+			Task<HttpResponseMessage> RequestTask = Task.Run<HttpResponseMessage>(async () => await _HttpClient.SendAsync(CreatedRequestMessage));
+			RequestTask.Wait();
+
+			using (Stream ResponseStream = RequestTask.Result.Content.ReadAsStream())
 			{
-				using (Stream RequestStream = Request.GetRequestStream())
-				{
-					StreamCopier.Copy(RequestBodyStream, RequestStream);
-					RequestStream.Close();
-				}
-			}
-
-			//
-			// SEND THE REQUEST AND READ THE RESPONSE.
-			//
-			HttpWebResponse Response = (HttpWebResponse)Request.GetResponse();
-
-			using (MemoryStream TargetStream = new MemoryStream())
-			{
-				using (Stream ResponseStream = Response.GetResponseStream())
-				{
-					StreamCopier.Copy(ResponseStream, TargetStream);
-					ResponseStream.Close();
-				}
-
-				string ResponseString = Encoding.UTF8.GetString(TargetStream.ToArray());
-
-				/*
-				using (StringReader ResponseStringReader = new StringReader(ResponseString))
-				{
-					return (VonageSendSmsResponseModel)JsonSerializer.CreateDefault().Deserialize(ResponseStringReader, typeof(VonageSendSmsResponseModel));
-				}
-				*/
+				return StreamCopier.CopyStreamToString(ResponseStream);
 			}
 		}
 
 		public bool TryPostJson (string RequestPath, string RequestBody)
 		{
-			//
-			// CREATE THE REQUEST BODY.
-			//
-			byte[] RequestBodyBytes = Encoding.UTF8.GetBytes(RequestBody);
+			_HttpClient.Timeout = TimeSpan.FromMilliseconds(TimeoutMs);
 
-			//
-			// CREATE THE REQUEST.
-			//
-			HttpWebRequest Request = (HttpWebRequest)WebRequest.Create(BaseUrl + RequestPath);
-			Request.Method = "POST";
-			Request.Headers["Authorization"] = Token;
-			Request.ContentType = "application/json";
-			Request.ContentLength = RequestBodyBytes.Length;
+			HttpRequestMessage CreatedRequestMessage = CreateHttpRequestMessage(RequestPath, RequestBody);
+			CreatedRequestMessage.Method = HttpMethod.Post;
 
-			//
-			// WRITE THE REQUEST BODY.
-			//
-			using (MemoryStream RequestBodyStream = new MemoryStream(RequestBodyBytes))
-			{
-				using (Stream RequestStream = Request.GetRequestStream())
-				{
-					StreamCopier.Copy(RequestBodyStream, RequestStream);
-					RequestStream.Close();
-				}
-			}
+			Task<HttpResponseMessage> RequestTask = Task.Run<HttpResponseMessage>(async () => await _HttpClient.SendAsync(CreatedRequestMessage));
+			RequestTask.Wait();
+			HttpResponseMessage ResponseMessage = RequestTask.Result;
 
-			//
-			// SEND THE REQUEST AND READ THE RESPONSE.
-			//
-			try
-			{
-				HttpWebResponse Response = (HttpWebResponse)Request.GetResponse();
-				return true;
-			}
-			catch (WebException E)
-			{
-				HttpWebResponse Response = (HttpWebResponse)E.Response;
-
-				if (((int)Response.StatusCode) == 422)
-					return false;
-
-				throw;
-			}
+			return ResponseMessage.StatusCode == HttpStatusCode.OK;
 		}
 
 		public void Delete (string RequestPath, string RequestBody)
 		{
-			//
-			// CREATE THE REQUEST BODY.
-			//
-			byte[] RequestBodyBytes = Encoding.UTF8.GetBytes(RequestBody);
+			_HttpClient.Timeout = TimeSpan.FromMilliseconds(TimeoutMs);
 
-			//
-			// CREATE THE REQUEST.
-			//
-			HttpWebRequest Request = (HttpWebRequest)WebRequest.Create(BaseUrl + RequestPath);
-			Request.Method = "DELETE";
-			Request.Headers["Authorization"] = Token;
-			Request.ContentType = "application/json";
-			Request.ContentLength = RequestBodyBytes.Length;
+			HttpRequestMessage CreatedRequestMessage = CreateHttpRequestMessage(RequestPath, RequestBody);
+			CreatedRequestMessage.Method = HttpMethod.Delete;
 
-			//
-			// SEND THE REQUEST.
-			//
-			using (MemoryStream RequestBodyStream = new MemoryStream(RequestBodyBytes))
-			{
-				using (Stream RequestStream = Request.GetRequestStream())
-				{
-					StreamCopier.Copy(RequestBodyStream, RequestStream);
-					RequestStream.Close();
-				}
-			}
-
-			//
-			// SEND THE REQUEST AND READ THE RESPONSE.
-			//
-			HttpWebResponse Response = (HttpWebResponse)Request.GetResponse();
-
-			using (MemoryStream TargetStream = new MemoryStream())
-			{
-				using (Stream ResponseStream = Response.GetResponseStream())
-				{
-					StreamCopier.Copy(ResponseStream, TargetStream);
-					ResponseStream.Close();
-				}
-
-				string ResponseString = Encoding.UTF8.GetString(TargetStream.ToArray());
-
-				/*
-				using (StringReader ResponseStringReader = new StringReader(ResponseString))
-				{
-					return (VonageSendSmsResponseModel)JsonSerializer.CreateDefault().Deserialize(ResponseStringReader, typeof(VonageSendSmsResponseModel));
-				}
-				*/
-			}
+			Task<HttpResponseMessage> RequestTask = Task.Run<HttpResponseMessage>(async () => await _HttpClient.SendAsync(CreatedRequestMessage));
+			RequestTask.Wait();
 		}
 
 		public string BaseUrl;

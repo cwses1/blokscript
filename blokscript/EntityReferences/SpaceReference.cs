@@ -173,7 +173,7 @@ namespace BlokScript.EntityReferences
 		public static BlokScriptSymbolType GetTypeForFieldName (string FieldName)
 		{
 			if (!_FieldTypesDict.ContainsKey(FieldName))
-				throw new KeyNotFoundException(FieldName);
+					throw new KeyNotFoundException(FieldName);
 
 			return _FieldTypesDict[FieldName];
 		}

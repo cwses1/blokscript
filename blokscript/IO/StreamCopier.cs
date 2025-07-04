@@ -1,10 +1,11 @@
 ﻿using System.IO;
+using System.Text;
 
 namespace BlokScript.IO
 {
 	public class StreamCopier
 	{
-		public static void Copy (Stream SourceStream, Stream TargetStream)
+		public static void Copy(Stream SourceStream, Stream TargetStream)
 		{
 			int BytesRead;
 			byte[] Buffer = new byte[1024];
@@ -13,8 +14,7 @@ namespace BlokScript.IO
 				TargetStream.Write(Buffer, 0, BytesRead);
 		}
 
-
-		public static byte[] CopyToNewByteArray (Stream SourceStream)
+		public static byte[] CopyToNewByteArray(Stream SourceStream)
 		{
 			using (MemoryStream TargetStream = new MemoryStream())
 			{
@@ -23,13 +23,17 @@ namespace BlokScript.IO
 			}
 		}
 
-
-		public static void CopyByteArrayToStream (byte[] SourceBytes, Stream TargetStream)
+		public static void CopyByteArrayToStream(byte[] SourceBytes, Stream TargetStream)
 		{
 			using (MemoryStream SourceStream = new MemoryStream(SourceBytes))
 			{
 				Copy(SourceStream, TargetStream);
 			}
+		}
+		
+		public static string CopyStreamToString (Stream SourceStream)
+		{
+			return Encoding.UTF8.GetString(CopyToNewByteArray(SourceStream));
 		}
 	}
 }

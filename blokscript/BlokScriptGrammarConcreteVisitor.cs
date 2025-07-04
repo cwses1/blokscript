@@ -118,7 +118,7 @@ namespace BlokScript.BlokScriptApp
 			//
 			// READ THE blokscript-env.json FILE.
 			//
-			string BlokScriptEnvFilePath = _WorkingDir + "\\blokscript-env.json";
+			string BlokScriptEnvFilePath = _WorkingDir + Path.DirectorySeparatorChar + "blokscript-env.json";
 
 			if (File.Exists(BlokScriptEnvFilePath))
 			{
@@ -5862,7 +5862,18 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public ConstraintOperator GetConstraintOperatorFromContext ([NotNull] BlokScriptGrammarParser.SpaceConstraintContext Context)
+		public override object VisitCreateSpaceStatement ([NotNull] BlokScriptGrammarParser.CreateSpaceStatementContext Context)
+		{
+			/*
+			createSpaceStatement: 'create' 'space' (stringExpr | '(' spaceUpdateList ')');
+			*/
+
+
+
+			return null;
+		}
+
+		public ConstraintOperator GetConstraintOperatorFromContext([NotNull] BlokScriptGrammarParser.SpaceConstraintContext Context)
 		{
 			/*
 			spaceConstraint: VARID ('=' | '!=') generalExpr
