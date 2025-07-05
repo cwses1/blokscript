@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Text;
-using System.IO;
 using System.Text.RegularExpressions;
 
-using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
 using Newtonsoft.Json.Linq;
 
 using BlokScript.Common;
@@ -28,25 +22,28 @@ using BlokScript.Filters;
 using BlokScript.Serializers;
 using BlokScript.FileWriters;
 using BlokScript.EntityDataFactories;
-using BlokScript.BlokScriptApp;
 using BlokScript.IO;
 using BlokScript.EntityCloners;
 using BlokScript.SymbolFactories;
 using BlokScript.NativeFunctions;
 using BlokScript.EntitySelectFactories;
 using BlokScript.ConsoleWriters;
+using BlokScript.RequestModelFactories;
+using BlokScript.RequestModels;
+using BlokScript.ServiceProxies;
+using System.Collections;
 
 namespace BlokScript.BlokScriptApp
 {
 	public class BlokScriptGrammarConcreteVisitor : BlokScriptGrammarBaseVisitor<object>
 	{
-		public BlokScriptGrammarConcreteVisitor ()
+		public BlokScriptGrammarConcreteVisitor()
 		{
 			_LastWebClientCallDateTime = DateTime.Now;
 			_ShouldThrottle = false;
 		}
 
-		public override object VisitScript ([NotNull] BlokScriptGrammarParser.ScriptContext context)
+		public override object VisitScript([NotNull] BlokScriptGrammarParser.ScriptContext context)
 		{
 			//
 			// CREATE THE GLOBAL SYMBOL TABLE.
@@ -149,7 +146,7 @@ namespace BlokScript.BlokScriptApp
 			return VisitChildren(context);
 		}
 
-		public override object VisitScriptBlockDef ([NotNull] BlokScriptGrammarParser.ScriptBlockDefContext Context)
+		public override object VisitScriptBlockDef([NotNull] BlokScriptGrammarParser.ScriptBlockDefContext Context)
 		{
 			_SymbolTableManager.CreateAndPushNewSymbolTable();
 			object ReturnValue = VisitChildren(Context);
@@ -189,7 +186,7 @@ namespace BlokScript.BlokScriptApp
 			return VisitChildren(Context);
 		}
 
-		public override object VisitVarStatement ([NotNull] BlokScriptGrammarParser.VarStatementContext Context)
+		public override object VisitVarStatement([NotNull] BlokScriptGrammarParser.VarStatementContext Context)
 		{
 			/*
 			varStatement: spaceVarStatement
@@ -282,7 +279,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitSpaceVarStatement ([NotNull] BlokScriptGrammarParser.SpaceVarStatementContext Context)
+		public override object VisitSpaceVarStatement([NotNull] BlokScriptGrammarParser.SpaceVarStatementContext Context)
 		{
 			/*
 			spaceVarStatement: 'space' VARID ('=' spaceSpec)?;
@@ -305,7 +302,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitBlockVarStatement ([NotNull] BlokScriptGrammarParser.BlockVarStatementContext Context)
+		public override object VisitBlockVarStatement([NotNull] BlokScriptGrammarParser.BlockVarStatementContext Context)
 		{
 			//
 			// EXAMPLES:
@@ -330,7 +327,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitStringVarStatement ([NotNull] BlokScriptGrammarParser.StringVarStatementContext Context)
+		public override object VisitStringVarStatement([NotNull] BlokScriptGrammarParser.StringVarStatementContext Context)
 		{
 			/*
 			stringVarStatement: 'string' VARID ('=' stringExpr)?;
@@ -349,7 +346,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitSpaceSpec ([NotNull] BlokScriptGrammarParser.SpaceSpecContext Context) 
+		public override object VisitSpaceSpec([NotNull] BlokScriptGrammarParser.SpaceSpecContext Context)
 		{
 			//
 			// RETURNS A SPACE ENTITY.
@@ -573,7 +570,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public SpaceEntity LoadSpaceFromFile (string SpaceId, string SpaceName, string FilePath)
+		public SpaceEntity LoadSpaceFromFile(string SpaceId, string SpaceName, string FilePath)
 		{
 			string EffectiveFilePath = FilePath;
 
@@ -599,7 +596,7 @@ namespace BlokScript.BlokScriptApp
 			return Space;
 		}
 
-		public override object VisitBlockSpec ([NotNull] BlokScriptGrammarParser.BlockSpecContext Context) 
+		public override object VisitBlockSpec([NotNull] BlokScriptGrammarParser.BlockSpecContext Context)
 		{
 			/*
 			blockSpec: 'block' STRINGLITERAL 'in' (spaceSpec | fileSpec)
@@ -625,8 +622,8 @@ namespace BlokScript.BlokScriptApp
 
 					if (SourceSpaceCache.ContainsBlock(BlockComponentName))
 						return SourceSpaceCache.GetBlock(BlockComponentName);
-				
-					throw new BlockNotFoundException(BlockComponentName, Space.SpaceId);				
+
+					throw new BlockNotFoundException(BlockComponentName, Space.SpaceId);
 				}
 				else if (Context.fileSpec() != null)
 				{
@@ -649,7 +646,7 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException("VisitBlockSpec");
 		}
 
-		public override object VisitAssignmentStatement ([NotNull] BlokScriptGrammarParser.AssignmentStatementContext Context) 
+		public override object VisitAssignmentStatement([NotNull] BlokScriptGrammarParser.AssignmentStatementContext Context)
 		{
 			//
 			// sourceSpaceId = sourceSpaceId;
@@ -676,7 +673,7 @@ namespace BlokScript.BlokScriptApp
 			return VisitChildren(Context);
 		}
 
-		public override object VisitSpaceAssignmentStatement ([NotNull] BlokScriptGrammarParser.SpaceAssignmentStatementContext Context) 
+		public override object VisitSpaceAssignmentStatement([NotNull] BlokScriptGrammarParser.SpaceAssignmentStatementContext Context)
 		{
 			//
 			// sourceSpace = sourceSpaceId;
@@ -706,7 +703,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitBlockAssignmentStatement ([NotNull] BlokScriptGrammarParser.BlockAssignmentStatementContext Context) 
+		public override object VisitBlockAssignmentStatement([NotNull] BlokScriptGrammarParser.BlockAssignmentStatementContext Context)
 		{
 			//
 			// blockAssignmentStatement: VARID '=' blockSpec;
@@ -737,7 +734,7 @@ namespace BlokScript.BlokScriptApp
 			return new NotImplementedException("VisitBlockAssignmentStatement");
 		}
 
-		public override object VisitStringAssignmentStatement ([NotNull] BlokScriptGrammarParser.StringAssignmentStatementContext Context) 
+		public override object VisitStringAssignmentStatement([NotNull] BlokScriptGrammarParser.StringAssignmentStatementContext Context)
 		{
 			//
 			// sourceSpaceId = '1019179';
@@ -758,7 +755,7 @@ namespace BlokScript.BlokScriptApp
 			return VisitChildren(Context);
 		}
 
-		public override object VisitVarGetFrom ([NotNull] BlokScriptGrammarParser.VarGetFromContext Context)
+		public override object VisitVarGetFrom([NotNull] BlokScriptGrammarParser.VarGetFromContext Context)
 		{
 			/*                    1              1   
 			varGetFrom: ('on' 'server' | 'in' fileSpec);
@@ -780,7 +777,7 @@ namespace BlokScript.BlokScriptApp
 			return GetFrom;
 		}
 
-		public override object VisitCopySpacesStatement ([NotNull] BlokScriptGrammarParser.CopySpacesStatementContext Context)
+		public override object VisitCopySpacesStatement([NotNull] BlokScriptGrammarParser.CopySpacesStatementContext Context)
 		{
 			/*
 			copySpacesStatement: 'copy' 'spaces' ('from' spacesInputLocation)? 'to' spacesOutputLocation;
@@ -794,7 +791,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public SpaceEntity[] GetSpacesFromLocation (SpacesInputLocation Location)
+		public SpaceEntity[] GetSpacesFromLocation(SpacesInputLocation Location)
 		{
 			if (Location.FromFile)
 				return GetSpacesFromFile(Location.FilePath);
@@ -802,7 +799,7 @@ namespace BlokScript.BlokScriptApp
 			return GetSpacesFromServer();
 		}
 
-		public SpaceEntity[] GetSpacesFromLocalCache ()
+		public SpaceEntity[] GetSpacesFromLocalCache()
 		{
 			List<SpaceEntity> SpaceEntityList = new List<SpaceEntity>();
 
@@ -814,13 +811,13 @@ namespace BlokScript.BlokScriptApp
 			return SpaceEntityList.ToArray();
 		}
 
-		public SpaceEntity[] GetSpacesFromServer ()
+		public SpaceEntity[] GetSpacesFromServer()
 		{
 			EnsureSpaceDictsLoaded();
 			return GetSpacesFromLocalCache();
 		}
 
-		public void OutputSpacesToLocation (SpaceEntity[] Spaces, SpacesOutputLocation TargetLocation)
+		public void OutputSpacesToLocation(SpaceEntity[] Spaces, SpacesOutputLocation TargetLocation)
 		{
 			if (TargetLocation.ToFile)
 				OutputSpacesToFile(Spaces, TargetLocation.FilePath);
@@ -828,7 +825,7 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException();
 		}
 
-		public void OutputSpacesToFile (SpaceEntity[] Spaces, string FilePath)
+		public void OutputSpacesToFile(SpaceEntity[] Spaces, string FilePath)
 		{
 			string EffectiveFilePath = FilePath;
 
@@ -850,17 +847,17 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public override object VisitPrintStatement ([NotNull] BlokScriptGrammarParser.PrintStatementContext Context)
+		public override object VisitPrintStatement([NotNull] BlokScriptGrammarParser.PrintStatementContext Context)
 		{
 			return VisitChildren(Context);
 		}
 
-		public override object VisitPrintSpacesStatement ([NotNull] BlokScriptGrammarParser.PrintSpacesStatementContext Context)
+		public override object VisitPrintSpacesStatement([NotNull] BlokScriptGrammarParser.PrintSpacesStatementContext Context)
 		{
 			return VisitChildren(Context);
 		}
 
-		public override object VisitPrintVarStatement ([NotNull] BlokScriptGrammarParser.PrintVarStatementContext Context)
+		public override object VisitPrintVarStatement([NotNull] BlokScriptGrammarParser.PrintVarStatementContext Context)
 		{
 			/*
 			printVarStatement: 'print' VARID;
@@ -913,7 +910,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitPrintSpaceStatement ([NotNull] BlokScriptGrammarParser.PrintSpaceStatementContext Context)
+		public override object VisitPrintSpaceStatement([NotNull] BlokScriptGrammarParser.PrintSpaceStatementContext Context)
 		{
 			/*
 			printSpaceStatement: 'print' 'space' (VARID | STRINGLITERAL);
@@ -934,7 +931,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitRealDataLocation ([NotNull] BlokScriptGrammarParser.RealDataLocationContext Context)
+		public override object VisitRealDataLocation([NotNull] BlokScriptGrammarParser.RealDataLocationContext Context)
 		{
 			/*
 			realDataLocation: ('server' | 'local' 'cache');
@@ -942,7 +939,7 @@ namespace BlokScript.BlokScriptApp
 			return StringLiteralTrimmer.Trim(Context.GetChild(0).GetText()) == "server" ? RealDataLocation.Server : RealDataLocation.LocalCache;
 		}
 
-		public override object VisitFileSpec ([NotNull] BlokScriptGrammarParser.FileSpecContext Context)
+		public override object VisitFileSpec([NotNull] BlokScriptGrammarParser.FileSpecContext Context)
 		{
 			/*
 			fileSpec: 'file' stringExpr;
@@ -950,7 +947,7 @@ namespace BlokScript.BlokScriptApp
 			return VisitStringExpr(Context.stringExpr());
 		}
 
-		public override object VisitCompleteFileSpec ([NotNull] BlokScriptGrammarParser.CompleteFileSpecContext Context)
+		public override object VisitCompleteFileSpec([NotNull] BlokScriptGrammarParser.CompleteFileSpecContext Context)
 		{
 			/*
 			completeFileSpec: ('csv' | 'json')? 'file' stringExpr;
@@ -967,7 +964,7 @@ namespace BlokScript.BlokScriptApp
 			return CreatedFileSpec;
 		}
 
-		public override object VisitCopyBlocksStatement ([NotNull] BlokScriptGrammarParser.CopyBlocksStatementContext Context)
+		public override object VisitCopyBlocksStatement([NotNull] BlokScriptGrammarParser.CopyBlocksStatementContext Context)
 		{
 			/*
 			copyBlocksStatement: 'copy' 'blocks' ('in' | 'from') longOrShortSpaceSpec 'to' blocksOutputLocation ('where' blockConstraintExprList)?;
@@ -995,7 +992,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitCopyBlockStatement ([NotNull] BlokScriptGrammarParser.CopyBlockStatementContext Context)
+		public override object VisitCopyBlockStatement([NotNull] BlokScriptGrammarParser.CopyBlockStatementContext Context)
 		{
 			/*
 			copyBlockStatement: 'copy' 'block' longOrShortBlockSpec 'to' blockOutputLocation;
@@ -1006,7 +1003,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public void CopyBlockToLocation (BlockSchemaEntity Block, BlockOutputLocation TargetLocation)
+		public void CopyBlockToLocation(BlockSchemaEntity Block, BlockOutputLocation TargetLocation)
 		{
 			if (TargetLocation.ToFile)
 				CopyBlockToFile(Block, TargetLocation.FilePath);
@@ -1016,12 +1013,12 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException();
 		}
 
-		public void CopyBlockToFile (BlockSchemaEntity Block, string FilePath)
+		public void CopyBlockToFile(BlockSchemaEntity Block, string FilePath)
 		{
 			BlockJsonFileWriter.Write(Block, FilePath);
 		}
 
-		public void CopyBlockToSpace (BlockSchemaEntity SourceBlock, string SpaceId)
+		public void CopyBlockToSpace(BlockSchemaEntity SourceBlock, string SpaceId)
 		{
 			SpaceCache TargetSpaceCache = GetSpaceCacheWithBlocksLoaded(SpaceId);
 
@@ -1035,7 +1032,7 @@ namespace BlokScript.BlokScriptApp
 				UpdateBlockInSpace(SourceBlock, SpaceId);
 		}
 
-		public void CreateBlockInSpace (BlockSchemaEntity SourceBlock, string SpaceId)
+		public void CreateBlockInSpace(BlockSchemaEntity SourceBlock, string SpaceId)
 		{
 			SpaceCache TargetSpaceCache = GetSpaceCacheWithBlocksLoaded(SpaceId);
 			SpaceEntity TargetSpace = TargetSpaceCache.Space;
@@ -1054,14 +1051,14 @@ namespace BlokScript.BlokScriptApp
 
 			RecordLastWebClientCall();
 
-			BlockSchemaEntity CreatedBlock =  CreateComponentResponseReader.ReadResponseString(ResponseString);
+			BlockSchemaEntity CreatedBlock = CreateComponentResponseReader.ReadResponseString(ResponseString);
 			CreatedBlock.SpaceId = SpaceId;
 			CreatedBlock.DataLocation = BlokScriptEntityDataLocation.Server;
 			CreatedBlock.ServerPath = RequestPath;
 			TargetSpaceCache.InsertBlock(CreatedBlock);
 		}
 
-		public void UpdateBlockInSpace (BlockSchemaEntity SourceBlock, string SpaceId)
+		public void UpdateBlockInSpace(BlockSchemaEntity SourceBlock, string SpaceId)
 		{
 			SpaceCache TargetSpaceCache = GetSpaceCacheWithBlocksLoaded(SpaceId);
 			SpaceEntity TargetSpace = TargetSpaceCache.Space;
@@ -1083,7 +1080,7 @@ namespace BlokScript.BlokScriptApp
 			RecordLastWebClientCall();
 		}
 
-		public void CopyBlocksToLocation (BlockSchemaEntity[] Blocks, BlocksOutputLocation TargetLocation)
+		public void CopyBlocksToLocation(BlockSchemaEntity[] Blocks, BlocksOutputLocation TargetLocation)
 		{
 			if (TargetLocation.ToFile)
 				CopyBlocksToFile(Blocks, TargetLocation.FilePath);
@@ -1093,7 +1090,7 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException("CopyBlocksToLocation");
 		}
 
-		public void CopyBlocksToFile (BlockSchemaEntity[] Blocks, string FilePath)
+		public void CopyBlocksToFile(BlockSchemaEntity[] Blocks, string FilePath)
 		{
 			List<object> BlockDataList = new List<object>();
 
@@ -1108,7 +1105,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void CopyBlocksToFiles (BlockSchemaEntity[] Blocks)
+		public void CopyBlocksToFiles(BlockSchemaEntity[] Blocks)
 		{
 			foreach (BlockSchemaEntity CurrentBlock in Blocks)
 			{
@@ -1123,7 +1120,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void CopyBlocksToSpace (BlockSchemaEntity[] Blocks, string SpaceId)
+		public void CopyBlocksToSpace(BlockSchemaEntity[] Blocks, string SpaceId)
 		{
 			//
 			// THE SOURCE BLOCKS ARE BEING COPIED TO ANOTHER SPACE.
@@ -1158,7 +1155,7 @@ namespace BlokScript.BlokScriptApp
 
 					RecordLastWebClientCall();
 
-					BlockSchemaEntity CreatedBlock =  CreateComponentResponseReader.ReadResponseString(ResponseString);
+					BlockSchemaEntity CreatedBlock = CreateComponentResponseReader.ReadResponseString(ResponseString);
 					CreatedBlock.SpaceId = SpaceId;
 					CreatedBlock.DataLocation = BlokScriptEntityDataLocation.Server;
 					CreatedBlock.ServerPath = RequestPath;
@@ -1221,7 +1218,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitCompareSpacesStatement ([NotNull] BlokScriptGrammarParser.CompareSpacesStatementContext Context)
+		public override object VisitCompareSpacesStatement([NotNull] BlokScriptGrammarParser.CompareSpacesStatementContext Context)
 		{
 			/*
 			compareSpacesStatement: 'compare' spaceSpec 'and' spaceSpec;
@@ -1254,7 +1251,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitCompareBlocksStatement ([NotNull] BlokScriptGrammarParser.CompareBlocksStatementContext Context)
+		public override object VisitCompareBlocksStatement([NotNull] BlokScriptGrammarParser.CompareBlocksStatementContext Context)
 		{
 			/*
 			compareBlocksStatement: 'compare' blockSpec 'and' blockSpec;
@@ -1267,7 +1264,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitCompareAllBlocksStatement ([NotNull] BlokScriptGrammarParser.CompareAllBlocksStatementContext Context)
+		public override object VisitCompareAllBlocksStatement([NotNull] BlokScriptGrammarParser.CompareAllBlocksStatementContext Context)
 		{
 			/*
 			compareAllBlocksStatement: 'compare' 'all' 'blocks' 'in' spaceSpec 'and' spaceSpec;
@@ -1278,7 +1275,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitStringExpr ([NotNull] BlokScriptGrammarParser.StringExprContext Context)
+		public override object VisitStringExpr([NotNull] BlokScriptGrammarParser.StringExprContext Context)
 		{
 			/*
 			stringExpr: (STRINGLITERAL | VARID | varFieldExpr | fnCallExpr) ('+' stringExpr)?
@@ -1388,7 +1385,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public string CoerceSymbolValueToString (BlokScriptSymbol Symbol)
+		public string CoerceSymbolValueToString(BlokScriptSymbol Symbol)
 		{
 			if (Symbol.Type == BlokScriptSymbolType.String)
 				return (string)Symbol.Value;
@@ -1398,7 +1395,7 @@ namespace BlokScript.BlokScriptApp
 				throw new SymbolTypeException($"Cannot convert symbol of type {Symbol.Type} to string.");
 		}
 
-		public override object VisitVarFieldExpr ([NotNull] BlokScriptGrammarParser.VarFieldExprContext Context)
+		public override object VisitVarFieldExpr([NotNull] BlokScriptGrammarParser.VarFieldExprContext Context)
 		{
 			/*
 			varFieldExpr: VARID '[' stringExpr ']';
@@ -1413,7 +1410,7 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException();
 		}
 
-		public override object VisitFnCallExpr ([NotNull] BlokScriptGrammarParser.FnCallExprContext Context)
+		public override object VisitFnCallExpr([NotNull] BlokScriptGrammarParser.FnCallExprContext Context)
 		{
 			/*
 			fnCallExpr: VARID '(' fnCallActualArgList? ')';
@@ -1427,7 +1424,7 @@ namespace BlokScript.BlokScriptApp
 			return CallFn(FnName, FnArgs);
 		}
 
-		public BlokScriptSymbol CallFn (string FnName, BlokScriptSymbol[] FnArgs)
+		public BlokScriptSymbol CallFn(string FnName, BlokScriptSymbol[] FnArgs)
 		{
 			if (FnName == "sluggify")
 				return SluggifyFunction.Call(FnArgs);
@@ -1449,7 +1446,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException(FnName);
 		}
 
-		public override object VisitFnCallActualArgList ([NotNull] BlokScriptGrammarParser.FnCallActualArgListContext Context)
+		public override object VisitFnCallActualArgList([NotNull] BlokScriptGrammarParser.FnCallActualArgListContext Context)
 		{
 			/*
 			fnCallActualArgList: fnActualArg (',' fnCallActualArgList)?;
@@ -1463,7 +1460,7 @@ namespace BlokScript.BlokScriptApp
 			return SymbolList.ToArray();
 		}
 
-		public override object VisitFnActualArg ([NotNull] BlokScriptGrammarParser.FnActualArgContext Context)
+		public override object VisitFnActualArg([NotNull] BlokScriptGrammarParser.FnActualArgContext Context)
 		{
 			/*
 			fnActualArg: (VARID '=') stringExpr;
@@ -1484,7 +1481,7 @@ namespace BlokScript.BlokScriptApp
 			return Symbol;
 		}
 
-		public BlokScriptSymbol GetSpaceFieldValueAsSymbol (SpaceEntity Space, string FieldName)
+		public BlokScriptSymbol GetSpaceFieldValueAsSymbol(SpaceEntity Space, string FieldName)
 		{
 			//return JsonExtractor.ExtractSymbol(((dynamic)Space.Data).space, FieldName);
 
@@ -1587,7 +1584,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public BlockConstraintOperator GetBlockConstraintOperatorFromContext ([NotNull] BlokScriptGrammarParser.BlockConstraintContext Context)
+		public BlockConstraintOperator GetBlockConstraintOperatorFromContext([NotNull] BlokScriptGrammarParser.BlockConstraintContext Context)
 		{
 			/*
 			blockConstraint: VARID ('=' | '!=') generalExpr
@@ -1626,7 +1623,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException();
 		}
 
-		public BlockConstraintField GetBlockConstraintFieldFromSymbolName (string SymbolName)
+		public BlockConstraintField GetBlockConstraintFieldFromSymbolName(string SymbolName)
 		{
 			if (SymbolName == "id")
 				return BlockConstraintField.Id;
@@ -1636,7 +1633,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException();
 		}
 
-		public override object VisitBlockConstraint ([NotNull] BlokScriptGrammarParser.BlockConstraintContext Context)
+		public override object VisitBlockConstraint([NotNull] BlokScriptGrammarParser.BlockConstraintContext Context)
 		{
 			/*
 			blockConstraint: VARID ('=' | '!=') generalExpr
@@ -1678,7 +1675,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitStoryVarStatement ([NotNull] BlokScriptGrammarParser.StoryVarStatementContext Context)
+		public override object VisitStoryVarStatement([NotNull] BlokScriptGrammarParser.StoryVarStatementContext Context)
 		{
 			/*
 			storyVarStatement: 'story' VARID ('=' storySpec)?;
@@ -1699,7 +1696,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitStorySpec ([NotNull] BlokScriptGrammarParser.StorySpecContext Context)
+		public override object VisitStorySpec([NotNull] BlokScriptGrammarParser.StorySpecContext Context)
 		{
 			/*
 			storySpec: (VARID | INTLITERAL | STRINGLITERAL) ('in' | 'from') (spaceSpec | fileSpec)
@@ -1722,9 +1719,9 @@ namespace BlokScript.BlokScriptApp
 
 						if (CurrentSpaceCache.ContainsStory(StoryUrl))
 							return CurrentSpaceCache.GetStory(StoryUrl);
-				
+
 						EchoError($"Story '{StoryUrl}' not found in Space '{Space.SpaceId}'.");
-						throw new StoryNotFoundException(StoryUrl, Space.SpaceId);				
+						throw new StoryNotFoundException(StoryUrl, Space.SpaceId);
 					}
 					else if (Context.INTLITERAL() != null)
 					{
@@ -1734,7 +1731,7 @@ namespace BlokScript.BlokScriptApp
 							return CurrentSpaceCache.GetStory(StoryId);
 
 						EchoError($"Story '{StoryId}' not found in Space '{Space.SpaceId}'.");
-						throw new StoryNotFoundException(StoryId, Space.SpaceId);				
+						throw new StoryNotFoundException(StoryId, Space.SpaceId);
 					}
 					else if (Context.VARID() != null)
 					{
@@ -1814,7 +1811,7 @@ namespace BlokScript.BlokScriptApp
 			StoryEntity[] TargetStories = TargetSpaceCache.GetStories();
 
 			if (Context.storyConstraintExprList() != null)
-				TargetStories =  ((StoryConstraint)VisitStoryConstraintExprList(Context.storyConstraintExprList())).Evaluate(TargetStories);
+				TargetStories = ((StoryConstraint)VisitStoryConstraintExprList(Context.storyConstraintExprList())).Evaluate(TargetStories);
 
 			int ConstrainedStoryCount = TargetStories.Length;
 			EchoVerbose($"Publishing {ConstrainedStoryCount} stories in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
@@ -1886,7 +1883,7 @@ namespace BlokScript.BlokScriptApp
 			StoryEntity[] TargetStories = TargetSpaceCache.GetStories();
 
 			if (Context.storyConstraintExprList() != null)
-				TargetStories =  ((StoryConstraint)VisitStoryConstraintExprList(Context.storyConstraintExprList())).Evaluate(TargetStories);
+				TargetStories = ((StoryConstraint)VisitStoryConstraintExprList(Context.storyConstraintExprList())).Evaluate(TargetStories);
 
 			int ConstrainedStoryCount = TargetStories.Length;
 			EchoVerbose($"Unpublishing {ConstrainedStoryCount} stories in space {SpaceFormatter.FormatHumanFriendly(TargetSpace)}.");
@@ -1963,7 +1960,7 @@ namespace BlokScript.BlokScriptApp
 			int TotalStoryCount = TargetStories.Length;
 
 			if (Context.storyConstraintExprList() != null)
-				TargetStories =  ((StoryConstraint)VisitStoryConstraintExprList(Context.storyConstraintExprList())).Evaluate(TargetStories);
+				TargetStories = ((StoryConstraint)VisitStoryConstraintExprList(Context.storyConstraintExprList())).Evaluate(TargetStories);
 
 			int ConstrainedStoryCount = TargetStories.Length;
 
@@ -1995,7 +1992,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public StoryConstraintOperator GetStoryConstraintOperatorFromContext ([NotNull] BlokScriptGrammarParser.StoryConstraintContext Context)
+		public StoryConstraintOperator GetStoryConstraintOperatorFromContext([NotNull] BlokScriptGrammarParser.StoryConstraintContext Context)
 		{
 			/*
 			storyConstraint: VARID ('=' | '!=') generalExpr
@@ -2018,7 +2015,7 @@ namespace BlokScript.BlokScriptApp
 				| 'any' 'tags'
 				;
 			*/
-			for (int i = 0;; i++)
+			for (int i = 0; ; i++)
 			{
 				string Token = Context.GetChild(i).GetText();
 				string NextToken = Context.GetChild(i + 1) != null ? Context.GetChild(i + 1).GetText() : null;
@@ -2060,7 +2057,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException();
 		}
 
-		public StoryConstraintField GetStoryConstraintFieldFromContext ([NotNull] BlokScriptGrammarParser.StoryConstraintContext Context)
+		public StoryConstraintField GetStoryConstraintFieldFromContext([NotNull] BlokScriptGrammarParser.StoryConstraintContext Context)
 		{
 			/*
 			storyConstraint: VARID ('=' | '!=') generalExpr
@@ -2087,7 +2084,7 @@ namespace BlokScript.BlokScriptApp
 				return GetStoryConstraintFieldFromSymbolName(Context.VARID().GetText());
 			else
 			{
-				for (int i = 0;; i++)
+				for (int i = 0; ; i++)
 				{
 					string Token = Context.GetChild(i).GetText();
 					string NextToken = Context.GetChild(i + 1) != null ? Context.GetChild(i + 1).GetText() : null;
@@ -2113,7 +2110,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException();
 		}
 
-		public StoryConstraintField GetStoryConstraintFieldFromSymbolName (string SymbolName)
+		public StoryConstraintField GetStoryConstraintFieldFromSymbolName(string SymbolName)
 		{
 			if (SymbolName == "id")
 				return StoryConstraintField.Id;
@@ -2123,7 +2120,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException();
 		}
 
-		public override object VisitStoryConstraint ([NotNull] BlokScriptGrammarParser.StoryConstraintContext Context)
+		public override object VisitStoryConstraint([NotNull] BlokScriptGrammarParser.StoryConstraintContext Context)
 		{
 			/*
 			storyConstraint: VARID ('=' | '!=') generalExpr
@@ -2221,7 +2218,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitShortFileSpec ([NotNull] BlokScriptGrammarParser.ShortFileSpecContext Context)
+		public override object VisitShortFileSpec([NotNull] BlokScriptGrammarParser.ShortFileSpecContext Context)
 		{
 			/*
 			shortFileSpec: stringExpr;
@@ -2229,7 +2226,7 @@ namespace BlokScript.BlokScriptApp
 			return VisitStringExpr(Context.stringExpr());
 		}
 
-		public void CopyDatasourcesToSpace (DatasourceEntity[] SourceDatasources, SpaceEntity TargetSpace, DatasourceCopyOptionSet CopyOptionSet)
+		public void CopyDatasourcesToSpace(DatasourceEntity[] SourceDatasources, SpaceEntity TargetSpace, DatasourceCopyOptionSet CopyOptionSet)
 		{
 			foreach (DatasourceEntity SourceDatasource in SourceDatasources)
 			{
@@ -2237,14 +2234,14 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void CopyDatasourceToSpace (DatasourceEntity SourceDatasource, SpaceEntity TargetSpace, DatasourceCopyOptionSet CopyOptionSet)
+		public void CopyDatasourceToSpace(DatasourceEntity SourceDatasource, SpaceEntity TargetSpace, DatasourceCopyOptionSet CopyOptionSet)
 		{
 			//
 			// CHECK IF THE DATASOURCE IS ALREADY IN THE TARGET SPACE.
 			//
 			SpaceCache TargetSpaceCache = GetSpaceCacheById(TargetSpace.SpaceId);
 			string DatasourceName = SourceDatasource.Name;
-			
+
 			if (TargetSpaceCache.ContainsDatasourceByName(DatasourceName))
 			{
 				//
@@ -2290,7 +2287,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void CreateDatasourceInSpace (DatasourceEntity SourceDatasource, SpaceEntity TargetSpace, DatasourceCopyOptionSet CopyOptionSet)
+		public void CreateDatasourceInSpace(DatasourceEntity SourceDatasource, SpaceEntity TargetSpace, DatasourceCopyOptionSet CopyOptionSet)
 		{
 			DatasourceEntity TargetDatasource = new DatasourceEntity();
 			TargetDatasource.Name = SourceDatasource.Name;
@@ -2367,7 +2364,7 @@ namespace BlokScript.BlokScriptApp
 				CopyDatasourceEntriesFromDatasourceToDatasource(SourceDatasource, TargetDatasource);
 		}
 
-		public void CopyDatasourceEntriesFromDatasourceToDatasource (DatasourceEntity SourceDatasource, DatasourceEntity TargetDatasource)
+		public void CopyDatasourceEntriesFromDatasourceToDatasource(DatasourceEntity SourceDatasource, DatasourceEntity TargetDatasource)
 		{
 			DatasourceEntryEntity[] SourceEntries = GetDatasourceEntriesFromDatasource(SourceDatasource);
 
@@ -2416,7 +2413,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void PersistDatasource (DatasourceEntity Datasource)
+		public void PersistDatasource(DatasourceEntity Datasource)
 		{
 			SpaceEntity Space = GetSpaceCacheById(Datasource.SpaceId).Space;
 
@@ -2445,7 +2442,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public DatasourceConstraintOperator GetDatasourceConstraintOperatorFromContext ([NotNull] BlokScriptGrammarParser.DatasourceConstraintContext Context)
+		public DatasourceConstraintOperator GetDatasourceConstraintOperatorFromContext([NotNull] BlokScriptGrammarParser.DatasourceConstraintContext Context)
 		{
 			/*
 			datasourceConstraint: VARID ('=' | '!=') generalExpr
@@ -2484,7 +2481,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException();
 		}
 
-		public DatasourceConstraintField GetDatasourceConstraintFieldFromSymbolName (string SymbolName)
+		public DatasourceConstraintField GetDatasourceConstraintFieldFromSymbolName(string SymbolName)
 		{
 			if (SymbolName == "id")
 				return DatasourceConstraintField.Id;
@@ -2496,7 +2493,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException();
 		}
 
-		public override object VisitDatasourceConstraint ([NotNull] BlokScriptGrammarParser.DatasourceConstraintContext Context)
+		public override object VisitDatasourceConstraint([NotNull] BlokScriptGrammarParser.DatasourceConstraintContext Context)
 		{
 			/*
 			datasourceConstraint: VARID ('=' | '!=') generalExpr
@@ -2519,12 +2516,12 @@ namespace BlokScript.BlokScriptApp
 			return Constraint;
 		}
 
-		public override object VisitCopyStoriesStatement ([NotNull] BlokScriptGrammarParser.CopyStoriesStatementContext Context)
+		public override object VisitCopyStoriesStatement([NotNull] BlokScriptGrammarParser.CopyStoriesStatementContext Context)
 		{
 			/*
 			copyStoriesStatement: 'copy' 'stories' ('with' 'content')? ('in' | 'from') storiesInputLocation 'to' storiesOutputLocation ('where' storyConstraintExprList)?;
 			*/
-			
+
 			//
 			// GET THE STORIES.
 			//
@@ -2570,7 +2567,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public void CopyStoriesToOutputLocation (StoryEntity[] SourceStories, StoriesOutputLocation OutLocation)
+		public void CopyStoriesToOutputLocation(StoryEntity[] SourceStories, StoriesOutputLocation OutLocation)
 		{
 			if (OutLocation.ToSpace)
 				CopyStoriesToSpace(SourceStories, OutLocation.Space);
@@ -2582,22 +2579,22 @@ namespace BlokScript.BlokScriptApp
 				CopyStoriesToFilePath(SourceStories, OutLocation.FilePath);
 		}
 
-		public StoryEntity[] GetStoriesFromInputLocation (StoriesInputLocation InputLocation)
+		public StoryEntity[] GetStoriesFromInputLocation(StoriesInputLocation InputLocation)
 		{
 			if (InputLocation.FromSpace)
 				return GetStoriesFromSpace(InputLocation.Space);
 			else if (InputLocation.FromFile)
 				return GetStoriesFromFile(InputLocation.FilePath);
 
-			return new StoryEntity[]{};
+			return new StoryEntity[] { };
 		}
 
-		public StoryEntity[] GetStoriesFromSpace (SpaceEntity SourceSpace)
+		public StoryEntity[] GetStoriesFromSpace(SpaceEntity SourceSpace)
 		{
 			return GetSpaceCacheWithStoriesLoaded(SourceSpace.SpaceId).GetStories();
 		}
 
-		public StoryEntity[] GetStoriesFromFile (string FilePath)
+		public StoryEntity[] GetStoriesFromFile(string FilePath)
 		{
 			string EffectiveFilePath = FilePath;
 
@@ -2631,7 +2628,7 @@ namespace BlokScript.BlokScriptApp
 			return Stories;
 		}
 
-		public SpaceEntity[] GetSpacesFromFile (string FilePath)
+		public SpaceEntity[] GetSpacesFromFile(string FilePath)
 		{
 			string EffectiveFilePath = FilePath;
 
@@ -2652,7 +2649,7 @@ namespace BlokScript.BlokScriptApp
 			return Spaces;
 		}
 
-		public BlockSchemaEntity[] GetBlocksFromFile (string FilePath)
+		public BlockSchemaEntity[] GetBlocksFromFile(string FilePath)
 		{
 			string EffectiveFilePath = FilePath;
 
@@ -2673,12 +2670,12 @@ namespace BlokScript.BlokScriptApp
 			return Blocks;
 		}
 
-		public BlockSchemaEntity[] GetBlocksInFile (string FilePath)
+		public BlockSchemaEntity[] GetBlocksInFile(string FilePath)
 		{
 			return GetBlocksFromFile(FilePath);
 		}
 
-		public DatasourceEntity[] GetDatasourcesFromFile (string FilePath)
+		public DatasourceEntity[] GetDatasourcesFromFile(string FilePath)
 		{
 			string EffectiveFilePath = FilePath;
 
@@ -2699,12 +2696,12 @@ namespace BlokScript.BlokScriptApp
 			return Datasources;
 		}
 
-		public DatasourceEntity[] GetDatasourcesInFile (string FilePath)
+		public DatasourceEntity[] GetDatasourcesInFile(string FilePath)
 		{
 			return GetDatasourcesFromFile(FilePath);
 		}
 
-		public String[] GetStringsFromFile (string FilePath)
+		public String[] GetStringsFromFile(string FilePath)
 		{
 			string EffectiveFilePath = FilePath;
 
@@ -2716,7 +2713,7 @@ namespace BlokScript.BlokScriptApp
 			return StringsFileReader.Read(EffectiveFilePath);
 		}
 
-		public Regex[] GetRegexesFromFile (string FilePath)
+		public Regex[] GetRegexesFromFile(string FilePath)
 		{
 			string EffectiveFilePath = FilePath;
 
@@ -2728,7 +2725,7 @@ namespace BlokScript.BlokScriptApp
 			return RegexesFileReader.Read(EffectiveFilePath);
 		}
 
-		public int[] GetInt32sFromFile (string FilePath)
+		public int[] GetInt32sFromFile(string FilePath)
 		{
 			string EffectiveFilePath = FilePath;
 
@@ -2740,7 +2737,7 @@ namespace BlokScript.BlokScriptApp
 			return Int32sFileReader.Read(EffectiveFilePath);
 		}
 
-		public void CopyStoriesToConsole (StoryEntity[] SourceStories)
+		public void CopyStoriesToConsole(StoryEntity[] SourceStories)
 		{
 			foreach (StoryEntity SourceStory in SourceStories)
 			{
@@ -2748,7 +2745,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void CopyStoriesToLocalCache (StoryEntity[] SourceStories)
+		public void CopyStoriesToLocalCache(StoryEntity[] SourceStories)
 		{
 			foreach (StoryEntity SourceStory in SourceStories)
 			{
@@ -2757,7 +2754,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void CopyStoriesToFilePath (StoryEntity[] SourceStories, string FilePath)
+		public void CopyStoriesToFilePath(StoryEntity[] SourceStories, string FilePath)
 		{
 			string EffectiveFilePath = FilePath;
 
@@ -2779,7 +2776,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void CopyStoriesToSpace (StoryEntity[] SourceStories, SpaceEntity TargetSpace)
+		public void CopyStoriesToSpace(StoryEntity[] SourceStories, SpaceEntity TargetSpace)
 		{
 			LoadSpaceCacheStories(GetSpaceCacheById(TargetSpace.SpaceId));
 			EnsureFolderStoriesExistInSpace(SourceStories, TargetSpace);
@@ -2791,7 +2788,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void CopyStoryToSpace (StoryEntity SourceStory, SpaceEntity TargetSpace)
+		public void CopyStoryToSpace(StoryEntity SourceStory, SpaceEntity TargetSpace)
 		{
 			SpaceCache TargetSpaceCache = GetSpaceCacheWithStoriesLoaded(TargetSpace.SpaceId);
 
@@ -2976,7 +2973,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void EnsureFolderStoriesExistInSpace (StoryEntity[] SourceStories, SpaceEntity TargetSpace)
+		public void EnsureFolderStoriesExistInSpace(StoryEntity[] SourceStories, SpaceEntity TargetSpace)
 		{
 			foreach (StoryEntity SourceStory in SourceStories)
 			{
@@ -2987,9 +2984,9 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void	EnsureStoryFoldersExistInSpace (StoryEntity Story, SpaceEntity Space)
+		public void EnsureStoryFoldersExistInSpace(StoryEntity Story, SpaceEntity Space)
 		{
-			string[] UrlComponents = Story.Url.Split(new char[]{'/'});
+			string[] UrlComponents = Story.Url.Split(new char[] { '/' });
 			string CurrentFolderUrl = "";
 
 			for (int i = 1; i < UrlComponents.Length; i++)
@@ -2999,11 +2996,11 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void	EnsureStoryFolderExistsInSpace (string FolderUrl, SpaceEntity TargetSpace, StoryEntity SourceContextStory)
+		public void EnsureStoryFolderExistsInSpace(string FolderUrl, SpaceEntity TargetSpace, StoryEntity SourceContextStory)
 		{
 			EchoDebug("FolderUrl", FolderUrl);
 			SpaceCache TargetSpaceCache = GetSpaceCacheById(TargetSpace.SpaceId);
-			
+
 			if (!TargetSpaceCache.ContainsStoryByUrl(FolderUrl))
 			{
 				string TargetParentUrl = UrlUtil.GetParentUrl(FolderUrl);
@@ -3038,7 +3035,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void	CreateFolderStoryInSpace (StoryEntity SourceStory, SpaceEntity TargetSpace)
+		public void CreateFolderStoryInSpace(StoryEntity SourceStory, SpaceEntity TargetSpace)
 		{
 			SpaceCache TargetSpaceCache = GetSpaceCacheById(TargetSpace.SpaceId);
 
@@ -3075,7 +3072,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public override object VisitIntExpr ([NotNull] BlokScriptGrammarParser.IntExprContext Context)
+		public override object VisitIntExpr([NotNull] BlokScriptGrammarParser.IntExprContext Context)
 		{
 			/*
 			intExpr: (INTLITERAL | VARID) (('+' | '-' | '*' | '%') intExpr)?;
@@ -3112,7 +3109,7 @@ namespace BlokScript.BlokScriptApp
 				return LeftOperand;
 		}
 
-		public override object VisitIntExprList ([NotNull] BlokScriptGrammarParser.IntExprListContext Context)
+		public override object VisitIntExprList([NotNull] BlokScriptGrammarParser.IntExprListContext Context)
 		{
 			/*
 			intExprList: intExpr ('+' intExprList)?;
@@ -3126,7 +3123,7 @@ namespace BlokScript.BlokScriptApp
 			return IntList.ToArray();
 		}
 
-		public override object VisitStoriesInputLocation ([NotNull] BlokScriptGrammarParser.StoriesInputLocationContext Context)
+		public override object VisitStoriesInputLocation([NotNull] BlokScriptGrammarParser.StoriesInputLocationContext Context)
 		{
 			/*
 			storiesInputLocation: fileSpec | longOrShortSpaceSpec;
@@ -3150,7 +3147,7 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException();
 		}
 
-		public override object VisitStoriesOutputLocation ([NotNull] BlokScriptGrammarParser.StoriesOutputLocationContext Context)
+		public override object VisitStoriesOutputLocation([NotNull] BlokScriptGrammarParser.StoriesOutputLocationContext Context)
 		{
 			/*
 			storiesOutputLocation: fileSpec | longOrShortSpaceSpec;
@@ -3173,21 +3170,21 @@ namespace BlokScript.BlokScriptApp
 			return Location;
 		}
 
-		public override object VisitRegexExprList ([NotNull] BlokScriptGrammarParser.RegexExprListContext Context)
+		public override object VisitRegexExprList([NotNull] BlokScriptGrammarParser.RegexExprListContext Context)
 		{
 			/*
 			regexExprList: regexExpr (',' regexExprList)?;
 			*/
 			List<Regex> RegexList = new List<Regex>();
 			RegexList.Add((Regex)VisitRegexExpr(Context.regexExpr()));
-			
+
 			if (Context.regexExprList() != null)
 				RegexList.AddRange((Regex[])VisitRegexExprList(Context.regexExprList()));
 
 			return RegexList.ToArray();
 		}
 
-		public override object VisitRegexExpr ([NotNull] BlokScriptGrammarParser.RegexExprContext Context)
+		public override object VisitRegexExpr([NotNull] BlokScriptGrammarParser.RegexExprContext Context)
 		{
 			/*
 			regexExpr: REGEXLITERAL | VARID;
@@ -3209,21 +3206,21 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException("VisitRegexExpr");
 		}
 
-		public override object VisitStringExprList ([NotNull] BlokScriptGrammarParser.StringExprListContext Context)
+		public override object VisitStringExprList([NotNull] BlokScriptGrammarParser.StringExprListContext Context)
 		{
 			/*
 			stringExprList: stringExpr (',' stringExprList)?;
 			*/
 			List<string> RegexList = new List<string>();
 			RegexList.Add((string)VisitStringExpr(Context.stringExpr()));
-			
+
 			if (Context.stringExprList() != null)
 				RegexList.AddRange((string[])VisitStringExprList(Context.stringExprList()));
 
 			return RegexList.ToArray();
 		}
 
-		public override object VisitDatasourceEntryVarStatement ([NotNull] BlokScriptGrammarParser.DatasourceEntryVarStatementContext Context)
+		public override object VisitDatasourceEntryVarStatement([NotNull] BlokScriptGrammarParser.DatasourceEntryVarStatementContext Context)
 		{
 			/*
 			datasourceEntryVarStatement: 'datasource entry' VARID ('=' datasourceEntrySpec)?;
@@ -3246,7 +3243,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitDatasourceEntrySpec ([NotNull] BlokScriptGrammarParser.DatasourceEntrySpecContext Context)
+		public override object VisitDatasourceEntrySpec([NotNull] BlokScriptGrammarParser.DatasourceEntrySpecContext Context)
 		{
 			/*
 			datasourceEntrySpec: 'datasource' 'entry' (intExpr | stringExpr | VARID) ('from' | 'in') datasourceSpec
@@ -3340,7 +3337,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public override object VisitDatasourceSpec ([NotNull] BlokScriptGrammarParser.DatasourceSpecContext Context)
+		public override object VisitDatasourceSpec([NotNull] BlokScriptGrammarParser.DatasourceSpecContext Context)
 		{
 			/*
 			datasourceSpec: 'datasource' (VARID | INTLITERAL | STRINGLITERAL) ('from' | 'in') (spaceSpec | shortSpaceSpec)
@@ -3441,7 +3438,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public override object VisitCreateDatasourceEntryStatement ([NotNull] BlokScriptGrammarParser.CreateDatasourceEntryStatementContext Context)
+		public override object VisitCreateDatasourceEntryStatement([NotNull] BlokScriptGrammarParser.CreateDatasourceEntryStatementContext Context)
 		{
 			/*
 			createDatasourceEntryStatement: 'create' 'datasource' 'entry' (stringExpr | datasourceEntryUpdateList) ('for' | 'in') (datasourceSpec | datasourceShortSpec);
@@ -3555,7 +3552,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitDatasourceEntryFullSpec ([NotNull] BlokScriptGrammarParser.DatasourceEntryFullSpecContext Context)
+		public override object VisitDatasourceEntryFullSpec([NotNull] BlokScriptGrammarParser.DatasourceEntryFullSpecContext Context)
 		{
 			/*
 			datasourceEntryFullSpec: 'datasource' 'entry' datasourceEntryIdentifier 'in' datasourceSpec;
@@ -3571,7 +3568,7 @@ namespace BlokScript.BlokScriptApp
 
 				if (Datasource.HasEntryById(DatasourceEntryId))
 					return Datasource.GetEntryById(DatasourceEntryId);
-				
+
 				string ErrorMessage = $"Datasource entry with id '{DatasourceEntryId}' not found in datasource {DatasourceFormatter.FormatHumanFriendly(Datasource)} in space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Datasource.SpaceId))}";
 				EchoError(ErrorMessage);
 				throw new SpaceObjectNotFoundException(ErrorMessage);
@@ -3607,7 +3604,7 @@ namespace BlokScript.BlokScriptApp
 
 				if (Datasource.HasEntryById(DatasourceEntryId))
 					return Datasource.GetEntryById(DatasourceEntryId);
-				
+
 				string ErrorMessage = $"Datasource entry with id '{DatasourceEntryId}' not found in datasource {DatasourceFormatter.FormatHumanFriendly(Datasource)} in space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Datasource.SpaceId))}";
 				EchoError(ErrorMessage);
 				throw new SpaceObjectNotFoundException(ErrorMessage);
@@ -3670,7 +3667,7 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException();
 		}
 
-		public override object VisitUpdateDatasourceEntriesStatement ([NotNull] BlokScriptGrammarParser.UpdateDatasourceEntriesStatementContext Context)
+		public override object VisitUpdateDatasourceEntriesStatement([NotNull] BlokScriptGrammarParser.UpdateDatasourceEntriesStatementContext Context)
 		{
 			/*
 			updateDatasourceEntriesStatement: 'update' 'datasource' 'entries' 'in' datasourceSpec 'set' datasourceEntryUpdateList ('where' datasourceEntryConstraintExprList)?;
@@ -3727,7 +3724,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitDeleteDatasourceEntriesStatement ([NotNull] BlokScriptGrammarParser.DeleteDatasourceEntriesStatementContext Context)
+		public override object VisitDeleteDatasourceEntriesStatement([NotNull] BlokScriptGrammarParser.DeleteDatasourceEntriesStatementContext Context)
 		{
 			/*
 			deleteDatasourceEntriesStatement: 'delete' 'datasource' 'entries' ('from' | 'in') (datasourceSpec | datasourceShortSpec) ('where' datasourceEntryConstraintExprList)?;
@@ -3763,7 +3760,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitDatasourceEntryConstraintExpr ([NotNull] BlokScriptGrammarParser.DatasourceEntryConstraintExprContext Context)
+		public override object VisitDatasourceEntryConstraintExpr([NotNull] BlokScriptGrammarParser.DatasourceEntryConstraintExprContext Context)
 		{
 			/*
 			datasourceEntryConstraintExpr: datasourceEntryConstraint (('and' | 'or') datasourceEntryConstraintExpr)?
@@ -3850,7 +3847,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public DatasourceEntryConstraintOperator GetDatasourceEntryConstraintOperatorFromContext ([NotNull] BlokScriptGrammarParser.DatasourceEntryConstraintContext Context)
+		public DatasourceEntryConstraintOperator GetDatasourceEntryConstraintOperatorFromContext([NotNull] BlokScriptGrammarParser.DatasourceEntryConstraintContext Context)
 		{
 			/*
 			datasourceEntryConstraint: VARID ('=' | '!=') generalExpr
@@ -3889,7 +3886,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException();
 		}
 
-		public DatasourceEntryConstraintField GetDatasourceEntryConstraintFieldFromSymbolName (string SymbolName)
+		public DatasourceEntryConstraintField GetDatasourceEntryConstraintFieldFromSymbolName(string SymbolName)
 		{
 			if (SymbolName == "id")
 				return DatasourceEntryConstraintField.Id;
@@ -3901,7 +3898,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException();
 		}
 
-		public override object VisitDatasourceEntryConstraint ([NotNull] BlokScriptGrammarParser.DatasourceEntryConstraintContext Context)
+		public override object VisitDatasourceEntryConstraint([NotNull] BlokScriptGrammarParser.DatasourceEntryConstraintContext Context)
 		{
 			/*
 			datasourceEntryConstraint: VARID ('=' | '!=') generalExpr
@@ -3924,7 +3921,7 @@ namespace BlokScript.BlokScriptApp
 			return Constraint;
 		}
 
-		public override object VisitCopyDatasourceEntriesStatement ([NotNull] BlokScriptGrammarParser.CopyDatasourceEntriesStatementContext Context)
+		public override object VisitCopyDatasourceEntriesStatement([NotNull] BlokScriptGrammarParser.CopyDatasourceEntriesStatementContext Context)
 		{
 			/*
 			copyDatasourceEntriesStatement: 'copy' 'datasource' 'entries' ('from' | 'in') datasourceEntriesSourceLocation 'to' datasourceEntriesTargetLocation ('where' datasourceEntryConstraintExprList)? datasourceEntryCopyOptionList?;
@@ -3976,7 +3973,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public void CopyEntriesToFile (DatasourceEntryEntity[] SourceEntries, FileSpec TargetFileSpec, DatasourceEntryCopyOptionSet CopyOptionSet)
+		public void CopyEntriesToFile(DatasourceEntryEntity[] SourceEntries, FileSpec TargetFileSpec, DatasourceEntryCopyOptionSet CopyOptionSet)
 		{
 			if (TargetFileSpec.ForcedMediaType != null)
 			{
@@ -4000,17 +3997,17 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void CopyEntriesToCsvFile (DatasourceEntryEntity[] SourceEntries, string FilePath, DatasourceEntryCopyOptionSet CopyOptionSet)
+		public void CopyEntriesToCsvFile(DatasourceEntryEntity[] SourceEntries, string FilePath, DatasourceEntryCopyOptionSet CopyOptionSet)
 		{
 			DatasourceEntriesCsvFileWriter.Write(SourceEntries, FilePath);
 		}
 
-		public void CopyEntriesToJsonFile (DatasourceEntryEntity[] SourceEntries, string FilePath, DatasourceEntryCopyOptionSet CopyOptionSet)
+		public void CopyEntriesToJsonFile(DatasourceEntryEntity[] SourceEntries, string FilePath, DatasourceEntryCopyOptionSet CopyOptionSet)
 		{
 			DatasourceEntriesJsonFileWriter.Write(SourceEntries, FilePath);
 		}
 
-		public DatasourceEntryEntity[] GetDatasourceEntriesFromLocation (DatasourceEntriesSourceLocation SourceLocation)
+		public DatasourceEntryEntity[] GetDatasourceEntriesFromLocation(DatasourceEntriesSourceLocation SourceLocation)
 		{
 			if (SourceLocation.FromDatasource)
 				return GetDatasourceEntriesFromDatasource(SourceLocation.Datasource);
@@ -4022,13 +4019,13 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException();
 		}
 
-		public DatasourceEntryEntity[] GetDatasourceEntriesFromDatasource (DatasourceEntity SourceDatasource)
+		public DatasourceEntryEntity[] GetDatasourceEntriesFromDatasource(DatasourceEntity SourceDatasource)
 		{
 			EnsureDatasourceHasEntriesLoaded(SourceDatasource);
 			return SourceDatasource.GetEntries();
 		}
 
-		public DatasourceEntryEntity[] GetDatasourceEntriesFromFileSpec (FileSpec SourceFileSpec)
+		public DatasourceEntryEntity[] GetDatasourceEntriesFromFileSpec(FileSpec SourceFileSpec)
 		{
 			if (SourceFileSpec.ForcedMediaType != null)
 			{
@@ -4052,7 +4049,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public DatasourceEntryEntity[] GetDatasourceEntriesFromFile (string FilePath)
+		public DatasourceEntryEntity[] GetDatasourceEntriesFromFile(string FilePath)
 		{
 			string EffectiveFilePath = FilePath;
 
@@ -4071,7 +4068,7 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException("Unsupported media type for file '{EffectiveFilePath}'.");
 		}
 
-		public override object VisitDatasourceEntriesSourceLocation ([NotNull] BlokScriptGrammarParser.DatasourceEntriesSourceLocationContext Context)
+		public override object VisitDatasourceEntriesSourceLocation([NotNull] BlokScriptGrammarParser.DatasourceEntriesSourceLocationContext Context)
 		{
 			/*
 			datasourceEntriesSourceLocation: longOrShortDatasourceSpec | completeFileSpec;
@@ -4094,7 +4091,7 @@ namespace BlokScript.BlokScriptApp
 			return Location;
 		}
 
-		public override object VisitDatasourceEntriesTargetLocation ([NotNull] BlokScriptGrammarParser.DatasourceEntriesTargetLocationContext Context)
+		public override object VisitDatasourceEntriesTargetLocation([NotNull] BlokScriptGrammarParser.DatasourceEntriesTargetLocationContext Context)
 		{
 			/*
 			datasourceEntriesTargetLocation: longOrShortDatasourceSpec | completeFileSpec;
@@ -4117,7 +4114,7 @@ namespace BlokScript.BlokScriptApp
 			return Location;
 		}
 
-		public override object VisitDatasourceEntryConstraintExprList ([NotNull] BlokScriptGrammarParser.DatasourceEntryConstraintExprListContext Context)
+		public override object VisitDatasourceEntryConstraintExprList([NotNull] BlokScriptGrammarParser.DatasourceEntryConstraintExprListContext Context)
 		{
 			/*
 			datasourceEntryConstraintExprList: datasourceEntryConstraintExpr (('and' | 'or') datasourceEntryConstraintExprList)?;
@@ -4142,7 +4139,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public override object VisitUrlSpec ([NotNull] BlokScriptGrammarParser.UrlSpecContext Context)
+		public override object VisitUrlSpec([NotNull] BlokScriptGrammarParser.UrlSpecContext Context)
 		{
 			/*
 			urlSpec: ('csv' | 'json')? 'url' stringExpr;
@@ -4498,8 +4495,8 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public override object VisitDeleteBlocksStatement ([NotNull] BlokScriptGrammarParser.DeleteBlocksStatementContext Context)
-		{ 
+		public override object VisitDeleteBlocksStatement([NotNull] BlokScriptGrammarParser.DeleteBlocksStatementContext Context)
+		{
 			/*
 			deleteBlocksStatement: 'delete' 'blocks' ('in' | 'from') longOrShortSpaceSpec ('where' blockConstraintExprList)?;
 			*/
@@ -4543,7 +4540,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitCreateDatasourceStatement ([NotNull] BlokScriptGrammarParser.CreateDatasourceStatementContext Context)
+		public override object VisitCreateDatasourceStatement([NotNull] BlokScriptGrammarParser.CreateDatasourceStatementContext Context)
 		{
 			/*
 			createDatasourceStatement: 'create' 'datasource' (stringExpr | '(' datasourceUpdateList ')') ('for' | 'in') (spaceSpec | shortSpaceSpec);
@@ -4593,11 +4590,11 @@ namespace BlokScript.BlokScriptApp
 
 			if (Context.datasourceUpdateList() != null)
 				UpdateModelList.AddRange((UpdateModel[])VisitDatasourceUpdateList(Context.datasourceUpdateList()));
-			
+
 			return UpdateModelList.ToArray();
 		}
 
-		public override object VisitDatasourceUpdate ([NotNull] BlokScriptGrammarParser.DatasourceUpdateContext Context)
+		public override object VisitDatasourceUpdate([NotNull] BlokScriptGrammarParser.DatasourceUpdateContext Context)
 		{
 			/*
 			datasourceUpdate: VARID '=' stringExpr;
@@ -4629,7 +4626,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public void DeleteDatasource (DatasourceEntity Datasource)
+		public void DeleteDatasource(DatasourceEntity Datasource)
 		{
 			string DatasourceId = Datasource.DatasourceId;
 			string SpaceId = Datasource.SpaceId;
@@ -4642,7 +4639,7 @@ namespace BlokScript.BlokScriptApp
 			NotifyDatasourceDeleted(Datasource);
 		}
 
-		public void NotifyDatasourceDeleted (DatasourceEntity Datasource)
+		public void NotifyDatasourceDeleted(DatasourceEntity Datasource)
 		{
 			string SpaceId = Datasource.SpaceId;
 			GetSpaceCacheById(SpaceId).RemoveDatasource(Datasource);
@@ -4671,12 +4668,12 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public object CreateDatasourceEntryData (DatasourceEntryEntity Entry)
+		public object CreateDatasourceEntryData(DatasourceEntryEntity Entry)
 		{
 			return DatasourceEntryEntityDataFactory.CreateData(Entry);
 		}
 
-		public override object VisitDatasourceEntryUpdateList ([NotNull] BlokScriptGrammarParser.DatasourceEntryUpdateListContext Context)
+		public override object VisitDatasourceEntryUpdateList([NotNull] BlokScriptGrammarParser.DatasourceEntryUpdateListContext Context)
 		{
 			/*
 			datasourceEntryUpdateList: datasourceEntryUpdate (',' datasourceEntryUpdateList)?;
@@ -4686,22 +4683,22 @@ namespace BlokScript.BlokScriptApp
 
 			if (Context.datasourceEntryUpdateList() != null)
 				UpdateList.AddRange((DatasourceEntryUpdate[])VisitDatasourceEntryUpdateList(Context.datasourceEntryUpdateList()));
-			
+
 			return UpdateList.ToArray();
 		}
 
-		public override object VisitDatasourceEntryUpdate ([NotNull] BlokScriptGrammarParser.DatasourceEntryUpdateContext Context)
+		public override object VisitDatasourceEntryUpdate([NotNull] BlokScriptGrammarParser.DatasourceEntryUpdateContext Context)
 		{
 			/*
 			datasourceEntryUpdate: VARID '=' stringExpr;
 			*/
 			DatasourceEntryUpdate Update = new DatasourceEntryUpdate();
-			Update.Name = Context.VARID(	).GetText();
+			Update.Name = Context.VARID().GetText();
 			Update.Value = (string)VisitStringExpr(Context.stringExpr());
 			return Update;
 		}
 
-		public override object VisitDatasourceShortSpec ([NotNull] BlokScriptGrammarParser.DatasourceShortSpecContext Context)
+		public override object VisitDatasourceShortSpec([NotNull] BlokScriptGrammarParser.DatasourceShortSpecContext Context)
 		{
 			/*
 			datasourceShortSpec: (VARID | INTLITERAL | STRINGLITERAL) 'in' (spaceSpec | shortSpaceSpec);
@@ -4783,7 +4780,7 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException();
 		}
 
-		public override object VisitShortSpaceSpec ([NotNull] BlokScriptGrammarParser.ShortSpaceSpecContext Context)
+		public override object VisitShortSpaceSpec([NotNull] BlokScriptGrammarParser.ShortSpaceSpecContext Context)
 		{
 			/*
 			shortSpaceSpec: INTLITERAL | STRINGLITERAL;
@@ -4868,7 +4865,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitDatasourceEntryCopyOptionList ([NotNull] BlokScriptGrammarParser.DatasourceEntryCopyOptionListContext Context)
+		public override object VisitDatasourceEntryCopyOptionList([NotNull] BlokScriptGrammarParser.DatasourceEntryCopyOptionListContext Context)
 		{
 			/*
 			datasourceEntryCopyOptionList: datasourceEntryCopyOption (',' datasourceEntryCopyOptionList);
@@ -4882,7 +4879,7 @@ namespace BlokScript.BlokScriptApp
 			return CopyOptionList.ToArray();
 		}
 
-		public override object VisitDatasourceEntryCopyOption ([NotNull] BlokScriptGrammarParser.DatasourceEntryCopyOptionContext Context)
+		public override object VisitDatasourceEntryCopyOption([NotNull] BlokScriptGrammarParser.DatasourceEntryCopyOptionContext Context)
 		{
 			/*
 			datasourceEntryCopyOption: 'skip' ('update' | 'updates' | 'create' | 'creates');
@@ -4893,7 +4890,7 @@ namespace BlokScript.BlokScriptApp
 			return CopyOption;
 		}
 
-		public override object VisitUpdateDatasourcesStatement ([NotNull] BlokScriptGrammarParser.UpdateDatasourcesStatementContext Context)
+		public override object VisitUpdateDatasourcesStatement([NotNull] BlokScriptGrammarParser.UpdateDatasourcesStatementContext Context)
 		{
 			/*
 			updateDatasourcesStatement: 'update' 'datasources' ('from' | 'in') longOrShortSpaceSpec 'set' datasourceUpdateList ('where' datasourceConstraintExprList)?;
@@ -4927,7 +4924,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitDatasourceCopyOptionList ([NotNull] BlokScriptGrammarParser.DatasourceCopyOptionListContext Context)
+		public override object VisitDatasourceCopyOptionList([NotNull] BlokScriptGrammarParser.DatasourceCopyOptionListContext Context)
 		{
 			/*
 			datasourceCopyOptionList: datasourceCopyOption (',' datasourceCopyOptionList)?;
@@ -4941,7 +4938,7 @@ namespace BlokScript.BlokScriptApp
 			return CopyOptionList.ToArray();
 		}
 
-		public override object VisitDatasourceCopyOption ([NotNull] BlokScriptGrammarParser.DatasourceCopyOptionContext Context)
+		public override object VisitDatasourceCopyOption([NotNull] BlokScriptGrammarParser.DatasourceCopyOptionContext Context)
 		{
 			/*
 			datasourceCopyOption: 'skip' ('update' | 'updates' | 'create' | 'creates');
@@ -5070,7 +5067,7 @@ namespace BlokScript.BlokScriptApp
 			return Location;
 		}
 
-		public override object VisitBlockOutputLocation ([NotNull] BlokScriptGrammarParser.BlockOutputLocationContext Context)
+		public override object VisitBlockOutputLocation([NotNull] BlokScriptGrammarParser.BlockOutputLocationContext Context)
 		{
 			/*
 			blockOutputLocation: fileSpec | longOrShortSpaceSpec;
@@ -5138,7 +5135,7 @@ namespace BlokScript.BlokScriptApp
 
 			return Location;
 		}
-	
+
 		public override object VisitDatasourcesInputLocation([NotNull] BlokScriptGrammarParser.DatasourcesInputLocationContext Context)
 		{
 			/*
@@ -5231,7 +5228,7 @@ namespace BlokScript.BlokScriptApp
 			return Location;
 		}
 
-		public override object VisitDirSpec ([NotNull] BlokScriptGrammarParser.DirSpecContext Context)
+		public override object VisitDirSpec([NotNull] BlokScriptGrammarParser.DirSpecContext Context)
 		{
 			/*
 			dirSpec: 'directory' (STRINGLITERAL | VARID);
@@ -5248,7 +5245,7 @@ namespace BlokScript.BlokScriptApp
 				return null;
 		}
 
-		public override object VisitForEachStatement ([NotNull] BlokScriptGrammarParser.ForEachStatementContext Context)
+		public override object VisitForEachStatement([NotNull] BlokScriptGrammarParser.ForEachStatementContext Context)
 		{
 			/*
 			forEachStatement: 'foreach' '(' typedVarDecl 'in' foreachEntityListForTypedVarDecl ')' scriptBlockDef
@@ -5271,7 +5268,7 @@ namespace BlokScript.BlokScriptApp
 			// IN THIS CONTEXT, AN ENTITY COULD BE ANY VALID SYMBOL.
 			//
 			BlokScriptSymbol[] Symbols;
-			
+
 			if (Context.foreachEntityListForTypedVarDecl() != null)
 				Symbols = (BlokScriptSymbol[])VisitForeachEntityListForTypedVarDecl(Context.foreachEntityListForTypedVarDecl());
 			else
@@ -5287,7 +5284,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public void PerformSymbolAssignment (BlokScriptSymbol LeftSymbol, BlokScriptSymbol RightSymbol)
+		public void PerformSymbolAssignment(BlokScriptSymbol LeftSymbol, BlokScriptSymbol RightSymbol)
 		{
 			if (LeftSymbol.Type == BlokScriptSymbolType.NotAssigned || LeftSymbol.Type == RightSymbol.Type)
 			{
@@ -5636,7 +5633,7 @@ namespace BlokScript.BlokScriptApp
 			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
 		}
 
-		public override object VisitDatasourceEntriesInputLocation ([NotNull] BlokScriptGrammarParser.DatasourceEntriesInputLocationContext Context)
+		public override object VisitDatasourceEntriesInputLocation([NotNull] BlokScriptGrammarParser.DatasourceEntriesInputLocationContext Context)
 		{
 			/*
 			datasourceEntriesInputLocation: fileSpec | datasourceSpec;
@@ -5657,7 +5654,7 @@ namespace BlokScript.BlokScriptApp
 			return Location;
 		}
 
-		public override object VisitSpaceVarDecl ([NotNull] BlokScriptGrammarParser.SpaceVarDeclContext Context)
+		public override object VisitSpaceVarDecl([NotNull] BlokScriptGrammarParser.SpaceVarDeclContext Context)
 		{
 			/*
 			spaceVarDecl: 'space' VARID;
@@ -5668,7 +5665,7 @@ namespace BlokScript.BlokScriptApp
 			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
 		}
 
-		public override object VisitBlockVarDecl ([NotNull] BlokScriptGrammarParser.BlockVarDeclContext Context)
+		public override object VisitBlockVarDecl([NotNull] BlokScriptGrammarParser.BlockVarDeclContext Context)
 		{
 			/*
 			blockVarDecl: 'block' VARID;
@@ -5679,7 +5676,7 @@ namespace BlokScript.BlokScriptApp
 			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
 		}
 
-		public override object VisitDatasourceVarDecl ([NotNull] BlokScriptGrammarParser.DatasourceVarDeclContext Context)
+		public override object VisitDatasourceVarDecl([NotNull] BlokScriptGrammarParser.DatasourceVarDeclContext Context)
 		{
 			/*
 			datasourceVarDecl: 'datasource' VARID;
@@ -5690,7 +5687,7 @@ namespace BlokScript.BlokScriptApp
 			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
 		}
 
-		public override object VisitDatasourceEntryVarDecl ([NotNull] BlokScriptGrammarParser.DatasourceEntryVarDeclContext Context)
+		public override object VisitDatasourceEntryVarDecl([NotNull] BlokScriptGrammarParser.DatasourceEntryVarDeclContext Context)
 		{
 			/*
 			datasourceEntryVarDecl: 'datasource' 'entry' VARID;
@@ -5701,7 +5698,7 @@ namespace BlokScript.BlokScriptApp
 			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
 		}
 
-		public override object VisitStoryVarDecl ([NotNull] BlokScriptGrammarParser.StoryVarDeclContext Context)
+		public override object VisitStoryVarDecl([NotNull] BlokScriptGrammarParser.StoryVarDeclContext Context)
 		{
 			/*
 			storyVarDecl: 'story' VARID;
@@ -5712,7 +5709,7 @@ namespace BlokScript.BlokScriptApp
 			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
 		}
 
-		public override object VisitStringVarDecl ([NotNull] BlokScriptGrammarParser.StringVarDeclContext Context)
+		public override object VisitStringVarDecl([NotNull] BlokScriptGrammarParser.StringVarDeclContext Context)
 		{
 			/*
 			stringVarDecl: 'string' VARID;
@@ -5723,7 +5720,7 @@ namespace BlokScript.BlokScriptApp
 			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
 		}
 
-		public override object VisitRegexVarDecl ([NotNull] BlokScriptGrammarParser.RegexVarDeclContext Context)
+		public override object VisitRegexVarDecl([NotNull] BlokScriptGrammarParser.RegexVarDeclContext Context)
 		{
 			/*
 			regexVarDecl: 'regex' VARID;
@@ -5734,7 +5731,7 @@ namespace BlokScript.BlokScriptApp
 			return _SymbolTableManager.AddAndReturnSymbol(Symbol);
 		}
 
-		public override object VisitIntegerVarDecl ([NotNull] BlokScriptGrammarParser.IntegerVarDeclContext Context)
+		public override object VisitIntegerVarDecl([NotNull] BlokScriptGrammarParser.IntegerVarDeclContext Context)
 		{
 			/*
 			integerVarDecl: 'int' VARID;
@@ -5862,15 +5859,52 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public override object VisitCreateSpaceStatement ([NotNull] BlokScriptGrammarParser.CreateSpaceStatementContext Context)
+		public override object VisitCreateSpaceStatement([NotNull] BlokScriptGrammarParser.CreateSpaceStatementContext Context)
 		{
 			/*
 			createSpaceStatement: 'create' 'space' (stringExpr | '(' spaceUpdateList ')');
 			*/
+			Hashtable RequestModel;
 
+			if (Context.stringExpr() != null)
+				RequestModel = CreateSpaceRequestModelFactory.CreateRequestModel((string)VisitStringExpr(Context.stringExpr()));
+			else
+				RequestModel = CreateSpaceRequestModelFactory.CreateRequestModel((UpdateModel[])VisitSpaceUpdateList(Context.spaceUpdateList()));
 
+			return GetManagementServiceProxy().CreateSpace(RequestModel);
+		}
 
-			return null;
+		public StoryblokManagementServiceProxy GetManagementServiceProxy()
+		{
+			StoryblokManagementServiceProxy CreatedProxy = new StoryblokManagementServiceProxy();
+			CreatedProxy.WebClient = GetManagementWebClient();
+			return CreatedProxy;
+		}
+
+		public override object VisitSpaceUpdateList([NotNull] BlokScriptGrammarParser.SpaceUpdateListContext Context)
+		{
+			/*
+			spaceUpdateList: spaceUpdate (',' spaceUpdateList)?;
+			*/
+			List<UpdateModel> SpaceUpdateList = new List<UpdateModel>();
+			SpaceUpdateList.Add((UpdateModel)VisitSpaceUpdate(Context.spaceUpdate()));
+
+			if (Context.spaceUpdateList() != null)
+				SpaceUpdateList.AddRange((UpdateModel[])VisitSpaceUpdateList(Context.spaceUpdateList()));
+
+			return SpaceUpdateList.ToArray();
+		}
+
+		public override object VisitSpaceUpdate([NotNull] BlokScriptGrammarParser.SpaceUpdateContext Context)
+		{
+			/*
+			spaceUpdate: VARID '=' stringExpr;
+			*/
+			UpdateModel SpaceUpdate = new UpdateModel();
+			SpaceUpdate.Name = Context.VARID().GetText();
+			SpaceUpdate.Value = VisitStringExpr(Context.stringExpr());
+			SpaceUpdate.Type = BlokScriptSymbolType.String;
+			return SpaceUpdate;
 		}
 
 		public ConstraintOperator GetConstraintOperatorFromContext([NotNull] BlokScriptGrammarParser.SpaceConstraintContext Context)
@@ -5940,7 +5974,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException();
 		}
 
-		public override object VisitSpaceConstraint ([NotNull] BlokScriptGrammarParser.SpaceConstraintContext Context)
+		public override object VisitSpaceConstraint([NotNull] BlokScriptGrammarParser.SpaceConstraintContext Context)
 		{
 			/*
 			spaceConstraint: VARID ('=' | '!=') generalExpr
@@ -6012,7 +6046,7 @@ namespace BlokScript.BlokScriptApp
 			return Constraint;
 		}
 
-		public override object VisitGeneralExpr ([NotNull] BlokScriptGrammarParser.GeneralExprContext Context)
+		public override object VisitGeneralExpr([NotNull] BlokScriptGrammarParser.GeneralExprContext Context)
 		{
 			/*
 			generalExpr: VARID | regexExpr | stringExpr | intExpr;
@@ -6046,7 +6080,7 @@ namespace BlokScript.BlokScriptApp
 			throw new NotImplementedException();
 		}
 
-		public override object VisitGeneralExprList ([NotNull] BlokScriptGrammarParser.GeneralExprListContext Context)
+		public override object VisitGeneralExprList([NotNull] BlokScriptGrammarParser.GeneralExprListContext Context)
 		{
 			/*
 			generalExprList: generalExpr (',' generalExprList)?;
@@ -6060,7 +6094,7 @@ namespace BlokScript.BlokScriptApp
 			return SymbolList.ToArray();
 		}
 
-		public override object VisitStoryFileSpec ([NotNull] BlokScriptGrammarParser.StoryFileSpecContext Context)
+		public override object VisitStoryFileSpec([NotNull] BlokScriptGrammarParser.StoryFileSpecContext Context)
 		{
 			/*
 			storyFileSpec: 'story' fileSpec;
@@ -6068,7 +6102,7 @@ namespace BlokScript.BlokScriptApp
 			return VisitFileSpec(Context.fileSpec());
 		}
 
-		public override object VisitCopySpaceStatement ([NotNull] BlokScriptGrammarParser.CopySpaceStatementContext Context)
+		public override object VisitCopySpaceStatement([NotNull] BlokScriptGrammarParser.CopySpaceStatementContext Context)
 		{
 			/*
 			copySpaceStatement: 'copy' 'space' longOrShortSpaceSpec 'to' spaceOutputLocation;
@@ -6079,7 +6113,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public override object VisitShortBlockSpec ([NotNull] BlokScriptGrammarParser.ShortBlockSpecContext Context)
+		public override object VisitShortBlockSpec([NotNull] BlokScriptGrammarParser.ShortBlockSpecContext Context)
 		{
 			/*
 			shortBlockSpec: (stringExpr | VARID) 'in' longOrShortSpaceSpec
@@ -6163,7 +6197,7 @@ namespace BlokScript.BlokScriptApp
 				return GetBlockUsingVariableName(Context.VARID().GetText());
 		}
 
-		public override object VisitStringArrayLiteral ([NotNull] BlokScriptGrammarParser.StringArrayLiteralContext Context)
+		public override object VisitStringArrayLiteral([NotNull] BlokScriptGrammarParser.StringArrayLiteralContext Context)
 		{
 			/*
 			stringArrayLiteral: '[' stringExprList? ']';
@@ -6171,7 +6205,7 @@ namespace BlokScript.BlokScriptApp
 			return VisitStringExprList(Context.stringExprList());
 		}
 
-		public override object VisitRegexArrayLiteral ([NotNull] BlokScriptGrammarParser.RegexArrayLiteralContext Context)
+		public override object VisitRegexArrayLiteral([NotNull] BlokScriptGrammarParser.RegexArrayLiteralContext Context)
 		{
 			/*
 			regexArrayLiteral: '[' regexExprList? ']';
@@ -6179,7 +6213,7 @@ namespace BlokScript.BlokScriptApp
 			return VisitRegexExprList(Context.regexExprList());
 		}
 
-		public override object VisitIntArrayLiteral ([NotNull] BlokScriptGrammarParser.IntArrayLiteralContext Context)
+		public override object VisitIntArrayLiteral([NotNull] BlokScriptGrammarParser.IntArrayLiteralContext Context)
 		{
 			/*
 			intArrayLiteral: '[' intExprList? ']';
@@ -6187,7 +6221,7 @@ namespace BlokScript.BlokScriptApp
 			return VisitIntExprList(Context.intExprList());
 		}
 
-		public override object VisitSelectSpacesStatement ([NotNull] BlokScriptGrammarParser.SelectSpacesStatementContext Context)
+		public override object VisitSelectSpacesStatement([NotNull] BlokScriptGrammarParser.SelectSpacesStatementContext Context)
 		{
 			/*
 			selectSpacesStatement: 'select' selectFieldList 'from' constrainedSpaceList ('to' spacesOutputLocation)?;
@@ -6205,7 +6239,7 @@ namespace BlokScript.BlokScriptApp
 			return null;
 		}
 
-		public void OutputSelectTableToLocation (SelectTable Table, SpacesOutputLocation Location)
+		public void OutputSelectTableToLocation(SelectTable Table, SpacesOutputLocation Location)
 		{
 			if (Location.ToFile)
 				OutputSelectTableToFile(Table, Location.FilePath);
@@ -6213,17 +6247,17 @@ namespace BlokScript.BlokScriptApp
 				OutputSelectTableToConsole(Table);
 		}
 
-		public void OutputSelectTableToFile (SelectTable Table, string FilePath)
+		public void OutputSelectTableToFile(SelectTable Table, string FilePath)
 		{
 			SelectTableFileWriter.Write(Table, FilePath);
 		}
 
-		public void OutputSelectTableToConsole (SelectTable Table)
+		public void OutputSelectTableToConsole(SelectTable Table)
 		{
 			SelectTableConsoleWriter.Write(Table);
 		}
 
-		public SelectTable CreateSelectTable (SpaceEntity[] Spaces, SelectFieldExpr[] FieldExprs)
+		public SelectTable CreateSelectTable(SpaceEntity[] Spaces, SelectFieldExpr[] FieldExprs)
 		{
 			SelectTable CreatedTable = new SelectTable();
 			CreatedTable.Columns = CreateSelectColumns(FieldExprs);
@@ -6236,7 +6270,7 @@ namespace BlokScript.BlokScriptApp
 			return CreatedTable;
 		}
 
-		public SelectColumn[] CreateSelectColumns (SelectFieldExpr[] FieldExprs)
+		public SelectColumn[] CreateSelectColumns(SelectFieldExpr[] FieldExprs)
 		{
 			List<SelectColumn> SelectColumnList = new List<SelectColumn>();
 
@@ -6248,14 +6282,14 @@ namespace BlokScript.BlokScriptApp
 			return SelectColumnList.ToArray();
 		}
 
-		public SelectColumn[] CreateSelectColumns (SelectFieldExpr FieldExpr)
+		public SelectColumn[] CreateSelectColumns(SelectFieldExpr FieldExpr)
 		{
 			List<SelectColumn> SelectColumnList = new List<SelectColumn>();
 			SelectColumnList.AddRange(SpaceSelectColumnFactory.CreateSelectColumns(FieldExpr));
 			return SelectColumnList.ToArray();
 		}
 
-		public SelectField[] CreateSelectRow (SpaceEntity Space, SelectColumn[] Columns)
+		public SelectField[] CreateSelectRow(SpaceEntity Space, SelectColumn[] Columns)
 		{
 			List<SelectField> SelectFieldList = new List<SelectField>();
 
@@ -6267,7 +6301,7 @@ namespace BlokScript.BlokScriptApp
 			return SelectFieldList.ToArray();
 		}
 
-		public override object VisitConstrainedSpaceList ([NotNull] BlokScriptGrammarParser.ConstrainedSpaceListContext Context)
+		public override object VisitConstrainedSpaceList([NotNull] BlokScriptGrammarParser.ConstrainedSpaceListContext Context)
 		{
 			/*
 			constrainedSpaceList: completeSpaceList ('where' spaceConstraintExprList)?;
@@ -6294,7 +6328,7 @@ namespace BlokScript.BlokScriptApp
 			return GetSpacesFromServer();
 		}
 
-		public override object VisitSelectFieldList ([NotNull] BlokScriptGrammarParser.SelectFieldListContext Context)
+		public override object VisitSelectFieldList([NotNull] BlokScriptGrammarParser.SelectFieldListContext Context)
 		{
 			/*
 			selectFieldList: ('*' | VARID selectFieldAlias? | 'name' selectFieldAlias? | 'id' selectFieldAlias? | selectFnExpr selectFieldAlias?) (',' selectFieldList)?;
@@ -6323,7 +6357,7 @@ namespace BlokScript.BlokScriptApp
 			return FieldList.ToArray();
 		}
 
-		public override object VisitSelectFnExpr ([NotNull] BlokScriptGrammarParser.SelectFnExprContext Context)
+		public override object VisitSelectFnExpr([NotNull] BlokScriptGrammarParser.SelectFnExprContext Context)
 		{
 			/*
 			selectFnExpr: VARID '(' selectFnArgList? ')';
@@ -6333,27 +6367,27 @@ namespace BlokScript.BlokScriptApp
 
 			if (Context.selectFnArgList() != null)
 				CreatedSelectFnExpr.Args = (SelectFnExpr[])VisitSelectFnArgList(Context.selectFnArgList());
-			
+
 			return CreatedSelectFnExpr;
 		}
 
-		public override object VisitSelectFnArgList ([NotNull] BlokScriptGrammarParser.SelectFnArgListContext Context)
-		{ 
+		public override object VisitSelectFnArgList([NotNull] BlokScriptGrammarParser.SelectFnArgListContext Context)
+		{
 			/*
 			selectFnArgList: selectFnArg (',' selectFnArgList)?;
 			*/
 			return VisitChildren(Context);
 		}
 
-		public override object VisitSelectFnArg ([NotNull] BlokScriptGrammarParser.SelectFnArgContext Context)
-		{ 
+		public override object VisitSelectFnArg([NotNull] BlokScriptGrammarParser.SelectFnArgContext Context)
+		{
 			/*
 			selectFnArg: VARID | selectGeneralExpr | selectFnExpr;
 			*/
 			return VisitChildren(Context);
 		}
 
-		public override object VisitSelectGeneralExpr ([NotNull] BlokScriptGrammarParser.SelectGeneralExprContext Context)
+		public override object VisitSelectGeneralExpr([NotNull] BlokScriptGrammarParser.SelectGeneralExprContext Context)
 		{
 			/*
 			selectGeneralExpr: regexExpr | stringExpr | intExpr;
@@ -6361,7 +6395,7 @@ namespace BlokScript.BlokScriptApp
 			return VisitChildren(Context);
 		}
 
-		public override object VisitSelectFieldAlias ([NotNull] BlokScriptGrammarParser.SelectFieldAliasContext Context)
+		public override object VisitSelectFieldAlias([NotNull] BlokScriptGrammarParser.SelectFieldAliasContext Context)
 		{
 			/*
 			selectFieldAlias: 'as' VARID;
@@ -6369,7 +6403,7 @@ namespace BlokScript.BlokScriptApp
 			return Context.VARID().GetText();
 		}
 
-		public BlockSchemaEntity GetBlockUsingVariableName (string SymbolName)
+		public BlockSchemaEntity GetBlockUsingVariableName(string SymbolName)
 		{
 			BlokScriptSymbol Symbol = _SymbolTableManager.GetSymbol(SymbolName);
 
@@ -6382,19 +6416,19 @@ namespace BlokScript.BlokScriptApp
 			throw new SymbolTypeException($"Cannot coerce symbol {SymbolName} of type {Symbol.Type} to block type.");
 		}
 
-		public void CopySpaceToLocation (SpaceEntity Space, SpaceOutputLocation Location)
+		public void CopySpaceToLocation(SpaceEntity Space, SpaceOutputLocation Location)
 		{
 			if (Location.ToFile)
 				CopySpaceToFile(Space, Location.FilePath);
 		}
 
-		public void CopySpaceToFile (SpaceEntity Space, string FilePath)
+		public void CopySpaceToFile(SpaceEntity Space, string FilePath)
 		{
 			EchoAction($"Copying space {SpaceFormatter.FormatHumanFriendly(Space)} to file '{FilePath}'.");
 			SpaceFileWriter.Write(Space, FilePath);
 		}
 
-		public void DeleteBlocks (BlockSchemaEntity[] Blocks)
+		public void DeleteBlocks(BlockSchemaEntity[] Blocks)
 		{
 			foreach (BlockSchemaEntity Block in Blocks)
 			{
@@ -6402,7 +6436,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void DeleteBlock (BlockSchemaEntity Block)
+		public void DeleteBlock(BlockSchemaEntity Block)
 		{
 			if (Block.DataLocation == BlokScriptEntityDataLocation.Server)
 				DeleteBlockFromServer(Block);
@@ -6410,7 +6444,7 @@ namespace BlokScript.BlokScriptApp
 				DeleteBlockFromFileSystem(Block);
 		}
 
-		public void DeleteBlockFromServer (BlockSchemaEntity Block)
+		public void DeleteBlockFromServer(BlockSchemaEntity Block)
 		{
 			string RequestPath = ManagementPathFactory.CreateComponentPath(Block.BlockId, Block.SpaceId);
 			EchoAction($"API DELETE {RequestPath}. Deleting block {BlockFormatter.FormatHumanFriendly(Block)} from space {SpaceFormatter.FormatHumanFriendly(GetSpaceById(Block.SpaceId))}.");
@@ -6436,18 +6470,18 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public string ExtractStringResponse (WebException E)
+		public string ExtractStringResponse(WebException E)
 		{
 			HttpWebResponse Response = (HttpWebResponse)E.Response;
 			return Encoding.UTF8.GetString(StreamCopier.CopyToNewByteArray(Response.GetResponseStream()));
 		}
 
-		public void DeleteBlockFromFileSystem (BlockSchemaEntity Block)
+		public void DeleteBlockFromFileSystem(BlockSchemaEntity Block)
 		{
 			File.Delete(Block.FilePath);
 		}
 
-		public StoryblokManagementWebClient GetManagementWebClient ()
+		public StoryblokManagementWebClient GetManagementWebClient()
 		{
 			StoryblokManagementWebClient CreatedWebClient = new StoryblokManagementWebClient();
 			CreatedWebClient.BaseUrl = _SymbolTableManager.GetSymbolValueAsString("_GlobalManagementApiBaseUrl");
@@ -6458,28 +6492,28 @@ namespace BlokScript.BlokScriptApp
 			return CreatedWebClient;
 		}
 
-		public StoryblokContentDeliveryWebClient GetContentDeliveryWebClient ()
+		public StoryblokContentDeliveryWebClient GetContentDeliveryWebClient()
 		{
 			StoryblokContentDeliveryWebClient CreatedWebClient = new StoryblokContentDeliveryWebClient();
 			return CreatedWebClient;
 		}
 
-		public SpaceCache GetSpaceCacheById (string SpaceId)
+		public SpaceCache GetSpaceCacheById(string SpaceId)
 		{
 			return _SpaceCacheByIdDict[SpaceId];
 		}
 
-		public SpaceEntity GetSpaceById (string SpaceId)
+		public SpaceEntity GetSpaceById(string SpaceId)
 		{
 			return _SpaceCacheByIdDict[SpaceId].Space;
 		}
 
-		public SpaceEntity GetSpaceByName (string SpaceName)
+		public SpaceEntity GetSpaceByName(string SpaceName)
 		{
 			return _SpaceCacheByNameDict[SpaceName].Space;
 		}
 
-		public SpaceCache GetSpaceCacheByName (string SpaceName)
+		public SpaceCache GetSpaceCacheByName(string SpaceName)
 		{
 			if (!_SpaceCacheByNameDict.ContainsKey(SpaceName))
 				return null;
@@ -6487,7 +6521,7 @@ namespace BlokScript.BlokScriptApp
 			return _SpaceCacheByNameDict[SpaceName];
 		}
 
-		public SpaceCache GetSpaceCacheWithSpaceDataLoadedById (string SpaceId)
+		public SpaceCache GetSpaceCacheWithSpaceDataLoadedById(string SpaceId)
 		{
 			SpaceCache TargetSpaceCache = GetSpaceCacheById(SpaceId);
 
@@ -6499,7 +6533,7 @@ namespace BlokScript.BlokScriptApp
 			return TargetSpaceCache;
 		}
 
-		public SpaceCache GetSpaceCacheWithSpaceDataLoadedByName (string SpaceName)
+		public SpaceCache GetSpaceCacheWithSpaceDataLoadedByName(string SpaceName)
 		{
 			SpaceCache TargetSpaceCache = GetSpaceCacheByName(SpaceName);
 
@@ -6517,7 +6551,7 @@ namespace BlokScript.BlokScriptApp
 			return TargetSpaceCache;
 		}
 
-		public SpaceCache GetSpaceCacheWithBlocksLoaded (string SpaceId)
+		public SpaceCache GetSpaceCacheWithBlocksLoaded(string SpaceId)
 		{
 			SpaceCache TargetSpaceCache = GetSpaceCacheById(SpaceId);
 
@@ -6529,7 +6563,7 @@ namespace BlokScript.BlokScriptApp
 			return TargetSpaceCache;
 		}
 
-		public SpaceCache GetSpaceCacheWithStoriesLoaded (string SpaceId)
+		public SpaceCache GetSpaceCacheWithStoriesLoaded(string SpaceId)
 		{
 			SpaceCache TargetSpaceCache = GetSpaceCacheById(SpaceId);
 
@@ -6541,7 +6575,7 @@ namespace BlokScript.BlokScriptApp
 			return TargetSpaceCache;
 		}
 
-		public SpaceCache GetSpaceCacheWithDataSourcesLoaded (string SpaceId)
+		public SpaceCache GetSpaceCacheWithDataSourcesLoaded(string SpaceId)
 		{
 			SpaceCache TargetSpaceCache = GetSpaceCacheById(SpaceId);
 
@@ -6553,22 +6587,22 @@ namespace BlokScript.BlokScriptApp
 			return TargetSpaceCache;
 		}
 
-		public void EnsureDatasourcesAreLoadedIntoSpace (SpaceEntity Space)
+		public void EnsureDatasourcesAreLoadedIntoSpace(SpaceEntity Space)
 		{
 			GetSpaceCacheWithDataSourcesLoaded(Space.SpaceId);
 		}
 
-		public DatasourceEntity[] GetDatasourcesInSpace (SpaceEntity Space)
+		public DatasourceEntity[] GetDatasourcesInSpace(SpaceEntity Space)
 		{
 			return GetSpaceCacheWithDataSourcesLoaded(Space.SpaceId).GetDatasources();
 		}
 
-		public DatasourceEntity[] GetDatasourcesFromSpace (SpaceEntity Space)
+		public DatasourceEntity[] GetDatasourcesFromSpace(SpaceEntity Space)
 		{
 			return GetDatasourcesInSpace(Space);
 		}
 
-		public void LoadSpaceCacheSpaceData (SpaceCache TargetSpaceCache)
+		public void LoadSpaceCacheSpaceData(SpaceCache TargetSpaceCache)
 		{
 			SpaceEntity Space = TargetSpaceCache.Space;
 
@@ -6585,7 +6619,7 @@ namespace BlokScript.BlokScriptApp
 			TargetSpaceCache.SpaceDataLoaded = true;
 		}
 
-		public void LoadSpaceCacheBlocks (SpaceCache TargetSpaceCache)
+		public void LoadSpaceCacheBlocks(SpaceCache TargetSpaceCache)
 		{
 			string SpaceId = TargetSpaceCache.SpaceId;
 			string RequestPath = ManagementPathFactory.CreateComponentsPath(SpaceId);
@@ -6602,7 +6636,7 @@ namespace BlokScript.BlokScriptApp
 			TargetSpaceCache.ComponentsLoaded = true;
 		}
 
-		public void LoadSpaceCacheStories (SpaceCache TargetSpaceCache)
+		public void LoadSpaceCacheStories(SpaceCache TargetSpaceCache)
 		{
 			SpaceEntity Space = TargetSpaceCache.Space;
 			string SpaceId = Space.SpaceId;
@@ -6631,7 +6665,7 @@ namespace BlokScript.BlokScriptApp
 			TargetSpaceCache.StoriesLoaded = true;
 		}
 
-		public StoryEntity[] GetStoryPage (string SpaceId, int Page, int RequestedPageSize)
+		public StoryEntity[] GetStoryPage(string SpaceId, int Page, int RequestedPageSize)
 		{
 			SpaceEntity Space = GetSpaceById(SpaceId);
 
@@ -6653,7 +6687,7 @@ namespace BlokScript.BlokScriptApp
 			return Stories;
 		}
 
-		public void LoadSpaceCacheDatasources (SpaceCache TargetSpaceCache)
+		public void LoadSpaceCacheDatasources(SpaceCache TargetSpaceCache)
 		{
 			SpaceEntity TargetSpace = TargetSpaceCache.Space;
 
@@ -6675,14 +6709,14 @@ namespace BlokScript.BlokScriptApp
 			TargetSpaceCache.DatasourcesLoaded = true;
 		}
 
-		public void LoadDatasourceEntries (DatasourceEntity Datasource)
+		public void LoadDatasourceEntries(DatasourceEntity Datasource)
 		{
 			string SpaceId = Datasource.SpaceId;
 			string DatasourceId = Datasource.DatasourceId;
 			int Page = 1;
 			int RequestedPageSize = 1000;
 			int ActualPageSize;
-			
+
 			List<DatasourceEntryEntity> DatasourceEntryEntityList = new List<DatasourceEntryEntity>();
 
 			do
@@ -6705,7 +6739,7 @@ namespace BlokScript.BlokScriptApp
 			Datasource.DatasourceEntriesLoaded = true;
 		}
 
-		public DatasourceEntryEntity[] GetDatasourceEntryPage (string SpaceId, DatasourceEntity Datasource, int Page, int RequestedPageSize)
+		public DatasourceEntryEntity[] GetDatasourceEntryPage(string SpaceId, DatasourceEntity Datasource, int Page, int RequestedPageSize)
 		{
 			EchoDebug("GetDatasourceEntryPage");
 			EchoDebug("SpaceId", SpaceId);
@@ -6732,13 +6766,13 @@ namespace BlokScript.BlokScriptApp
 			return Entries;
 		}
 
-		public void	EnsureDatasourceHasEntriesLoaded (DatasourceEntity Datasource)
+		public void EnsureDatasourceHasEntriesLoaded(DatasourceEntity Datasource)
 		{
 			if (!Datasource.DatasourceEntriesLoaded)
 				LoadDatasourceEntries(Datasource);
 		}
 
-		public void	CopyEntryToDatasource (DatasourceEntryEntity SourceEntry, DatasourceEntity TargetDatasource, DatasourceEntryCopyOptionSet CopyOptionSet)
+		public void CopyEntryToDatasource(DatasourceEntryEntity SourceEntry, DatasourceEntity TargetDatasource, DatasourceEntryCopyOptionSet CopyOptionSet)
 		{
 			EnsureDatasourceHasEntriesLoaded(TargetDatasource);
 
@@ -6779,7 +6813,7 @@ namespace BlokScript.BlokScriptApp
 			FlushDatasourceEntry(TargetDatasource, TargetEntry);
 		}
 
-		public void FlushDatasourceEntry (DatasourceEntity Datasource, DatasourceEntryEntity Entry)
+		public void FlushDatasourceEntry(DatasourceEntity Datasource, DatasourceEntryEntity Entry)
 		{
 			if (Datasource.DataLocation == BlokScriptEntityDataLocation.Server)
 				FlushDatasourceEntryToServer(Datasource, Entry);
@@ -6789,7 +6823,7 @@ namespace BlokScript.BlokScriptApp
 				throw new NotImplementedException();
 		}
 
-		public void FlushDatasourceEntryToServer (DatasourceEntity Datasource, DatasourceEntryEntity Entry)
+		public void FlushDatasourceEntryToServer(DatasourceEntity Datasource, DatasourceEntryEntity Entry)
 		{
 			if (Entry.DatasourceEntryId == null)
 			{
@@ -6817,12 +6851,12 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void FlushDatasourceEntryToFile (DatasourceEntity Datasource, DatasourceEntryEntity Entry)
+		public void FlushDatasourceEntryToFile(DatasourceEntity Datasource, DatasourceEntryEntity Entry)
 		{
 			JsonFileWriter.Write(Entry.Data, Entry.FilePath);
 		}
 
-		public BlockSchemaEntity[] GetBlocksInSpace (string SpaceId)
+		public BlockSchemaEntity[] GetBlocksInSpace(string SpaceId)
 		{
 			SpaceCache CurrentSpaceCache = GetSpaceCacheWithBlocksLoaded(SpaceId);
 
@@ -6831,12 +6865,12 @@ namespace BlokScript.BlokScriptApp
 			return BlockSchemaEntity.ToArray();
 		}
 
-		public BlockSchemaEntity[] GetBlocksFromSpace (SpaceEntity Space)
+		public BlockSchemaEntity[] GetBlocksFromSpace(SpaceEntity Space)
 		{
 			return GetBlocksInSpace(Space.SpaceId);
 		}
 
-		public void EnsureSpaceDictsLoaded ()
+		public void EnsureSpaceDictsLoaded()
 		{
 			if (_SpaceDictsLoaded)
 				return;
@@ -6845,7 +6879,7 @@ namespace BlokScript.BlokScriptApp
 			_SpaceDictsLoaded = true;
 		}
 
-		public void LoadSpaceDicts ()
+		public void LoadSpaceDicts()
 		{
 			string RequestPath = ManagementPathFactory.CreateSpacesPath();
 			string ResponseString = null;
@@ -6907,7 +6941,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void CacheSpace (SpaceEntity Space)
+		public void CacheSpace(SpaceEntity Space)
 		{
 			SpaceCache IdCache = new SpaceCache();
 			IdCache.SpaceId = Space.SpaceId;
@@ -6922,39 +6956,39 @@ namespace BlokScript.BlokScriptApp
 			_SpaceCacheByNameDict[Space.Name] = NameCache;
 		}
 
-		public bool ShouldBeVerbose ()
+		public bool ShouldBeVerbose()
 		{
 			return _SymbolTableManager.GetSymbolValueAsInt32("_GlobalVerbosity") >= (int)BlokScriptVerbosity.Verbose;
 		}
 
-		public bool ShouldBeDebugger ()
+		public bool ShouldBeDebugger()
 		{
 			return _SymbolTableManager.GetSymbolValueAsInt32("_GlobalVerbosity") >= (int)BlokScriptVerbosity.Debugger;
 		}
 
-		public void Echo (string Message)
+		public void Echo(string Message)
 		{
 			Console.WriteLine(Message);
 		}
 
-		public void EchoInfo (string Message)
+		public void EchoInfo(string Message)
 		{
 			Console.WriteLine(Message);
 		}
 
-		public void EchoVerbose (string Message)
+		public void EchoVerbose(string Message)
 		{
 			if (ShouldBeVerbose())
 				Console.WriteLine(Message);
 		}
 
-		public void EchoDebug (string Message)
+		public void EchoDebug(string Message)
 		{
 			if (ShouldBeDebugger())
 				Console.WriteLine(Message);
 		}
 
-		public void EchoDebug (Exception E)
+		public void EchoDebug(Exception E)
 		{
 			if (ShouldBeDebugger())
 			{
@@ -6966,7 +7000,7 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void EchoDebug (string Message, string Data)
+		public void EchoDebug(string Message, string Data)
 		{
 			if (ShouldBeDebugger())
 			{
@@ -6975,28 +7009,28 @@ namespace BlokScript.BlokScriptApp
 			}
 		}
 
-		public void EchoAction (string Message)
+		public void EchoAction(string Message)
 		{
 			if (ShouldBeVerbose())
 				Console.WriteLine($"{_ActionNumber++}. " + Message);
 		}
-		
-		public void EchoError (string Message)
+
+		public void EchoError(string Message)
 		{
 			Console.WriteLine($"ERROR: {Message}");
 		}
 
-		public void EchoWarning (string Message)
+		public void EchoWarning(string Message)
 		{
 			Console.WriteLine($"WARNING: {Message}");
 		}
 
-		public void EchoToConsole (string Message)
+		public void EchoToConsole(string Message)
 		{
 			Console.WriteLine(Message);
 		}
 
-		public void ThrottleWebClientIfNeeded ()
+		public void ThrottleWebClientIfNeeded()
 		{
 			if (_ShouldThrottle)
 			{
@@ -7018,7 +7052,7 @@ namespace BlokScript.BlokScriptApp
 			_ShouldThrottle = true;
 		}
 
-		public void RecordLastWebClientCall ()
+		public void RecordLastWebClientCall()
 		{
 			_LastWebClientCallDateTime = DateTime.Now;
 		}

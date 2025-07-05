@@ -1,4 +1,4 @@
-﻿namespace BlokScript.TemplateAssemblyProject
+﻿namespace BlokScript.RequestModels
 {
 	public class UpdateDatasourceEntryRequestModel
 	{

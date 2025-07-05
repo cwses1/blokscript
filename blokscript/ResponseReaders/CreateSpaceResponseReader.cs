@@ -3,7 +3,7 @@ using BlokScript.Entities;
 
 namespace BlokScript.ResponseReaders
 {
-	public class SpaceResponseReader
+	public class CreateSpaceResponseReader
 	{
 		public static SpaceEntity ReadResponseString (string ResponseString)
 		{

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 
@@ -16,7 +17,6 @@ namespace BlokScript.WebClients
 		static StoryblokManagementWebClient()
 		{
 			_HttpClient = new HttpClient();
-			//_HttpClient.DefaultRequestHeaders.Add("Content-Type", "application/json");
 		}
 
 		private HttpRequestMessage CreateHttpRequestMessage(string RequestPath)
@@ -43,7 +43,7 @@ namespace BlokScript.WebClients
 			*/
 			HttpRequestMessage CreatedRequestMessage = CreateHttpRequestMessage(RequestPath);
 			CreatedRequestMessage.Content = new ByteArrayContent(RequestBodyBytes);
-			CreatedRequestMessage.Content.Headers.ContentType.MediaType = "application/json";
+			CreatedRequestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 			CreatedRequestMessage.Content.Headers.ContentLength = RequestBodyBytes.Length;
 			return CreatedRequestMessage;
 		}
@@ -85,12 +85,18 @@ namespace BlokScript.WebClients
 
 		public string PostJson (string RequestPath, string RequestBody)
 		{
+			Console.WriteLine(RequestPath);
+			Console.WriteLine(RequestBody);
+
 			_HttpClient.Timeout = TimeSpan.FromMilliseconds(TimeoutMs);
 
 			HttpRequestMessage CreatedRequestMessage = CreateHttpRequestMessage(RequestPath, RequestBody);
 			CreatedRequestMessage.Method = HttpMethod.Post;
 
-			Task<HttpResponseMessage> RequestTask = Task.Run<HttpResponseMessage>(async () => await _HttpClient.SendAsync(CreatedRequestMessage));
+			Task<HttpResponseMessage> RequestTask = Task.Run<HttpResponseMessage>(async () =>
+			{
+				return await _HttpClient.SendAsync(CreatedRequestMessage);
+			});
 			RequestTask.Wait();
 
 			using (Stream ResponseStream = RequestTask.Result.Content.ReadAsStream())

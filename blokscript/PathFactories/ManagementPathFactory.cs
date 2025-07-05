@@ -17,7 +17,12 @@
 			return "/v1/spaces";
 		}
 
-		public static string CreateComponentPath (string BlockId, string SpaceId)
+		public static string SpacesPath ()
+		{
+			return "/v1/spaces";
+		}
+
+		public static string CreateComponentPath(string BlockId, string SpaceId)
 		{
 			return $"/v1/spaces/{SpaceId}/components/{BlockId}";
 		}
